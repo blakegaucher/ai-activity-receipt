@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/blakegaucher/ai-activity-receipt/blob/main/schema/activity-receipt.schema.json",
+  ""$id": "https://github.com/blakegaucher/ai-activity-receipt/blob/main/activity-receipt.schema.json",
   "title": "AI Activity Receipt",
   "description": "Candidate, non-normative schema for a human-centered provenance record of consequential AI-agent activity.",
   "type": "object",
