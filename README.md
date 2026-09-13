@@ -11,7 +11,13 @@ AI Activity Receipt is an independent research project by **Blake Gaucher / Anci
 The project is developing a **model-neutral activity record and human-facing receipt** for agent runs. The goal is to make consequential AI activity easier to inspect without exposing private chain-of-thought.
 
 ---
+## Project resources
 
+- [Sample Activity Receipt](examples/sample-receipt.json)
+- [Validation Record](docs/VALIDATION.md)
+- [Project Roadmap](docs/ROADMAP.md)
+
+---
 ## The problem
 
 AI-agent activity is often fragmented across provider logs, application traces, tool calls, policy systems, approval records, and human confirmations.
