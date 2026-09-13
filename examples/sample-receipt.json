@@ -1,0 +1,42 @@
+{
+  "receipt_id": "AR-example-001",
+  "trace_id": "trace-example-001",
+  "record_schema_version": "example-v0.1",
+  "receipt_version": "example-v0.1",
+  "system": {
+    "agent_id": "agent-4",
+    "version": "example-version"
+  },
+  "authority": {
+    "principal": "user-2",
+    "delegate": "agent-4",
+    "scope": ["read", "analyze"],
+    "valid_until": "2026-09-12T12:31:59Z"
+  },
+  "material_sources": [
+    {
+      "source_id": "src-A",
+      "role": "supports_result"
+    }
+  ],
+  "material_actions": [
+    {
+      "operation": "send_email",
+      "status": "blocked",
+      "authorization": "denied"
+    }
+  ],
+  "verification": {
+    "state": "pending"
+  },
+  "incidents": [
+    {
+      "type": "blocked_unauthorized_action"
+    }
+  ],
+  "integrity": {
+    "record_hash": "sha256:example-record-hash",
+    "derived_from_record_hash": "sha256:example-record-hash"
+  },
+  "notes": "Illustrative example only; not a frozen normative schema."
+}
