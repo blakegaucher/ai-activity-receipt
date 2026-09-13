@@ -16,7 +16,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Sample Activity Receipt](examples/sample-receipt.json)
 - [Validation Record](docs/VALIDATION.md)
 - [Project Roadmap](docs/ROADMAP.md)
-
+- [Candidate JSON Schema](activity-receipt.schema.json)
 ---
 ## The problem
 
