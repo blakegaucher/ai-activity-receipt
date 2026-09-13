@@ -1,2 +1,3 @@
-# ai-activity-receipt
-Human-centered, provenance-aware activity records for consequential AI-agent actions — independent research by Blake Gaucher / Ancient Immortal Art.
+# AI Activity Receipt
+
+**Human-centered, provenance-aware records for consequential AI-agent activity.**
