@@ -6,6 +6,24 @@ This document summarizes the current validation state of the **AI Activity Recei
 
 ---
 
+## Aggregate reproducibility runner
+
+**Status:** Public repository-local reproducibility helper
+
+The repository now includes `research/reproduce.py`, which runs the current deterministic/synthetic checks in a fixed order and emits a JSON report containing per-check exit status, captured output, Python version, and SHA-256/byte-size metadata for the scripts, schemas, fixtures, protocol files, requirements, and CI workflow used by the run.
+
+GitHub Actions runs the aggregate suite in addition to the individually named checks. This deliberately duplicates execution: the individual steps remain easy to diagnose, while the aggregate runner tests the exact one-command path available to an external reviewer.
+
+Run:
+
+```bash
+python research/reproduce.py --output reproducibility-report.json
+```
+
+This is a reproducibility convenience layer. A project-authored green report does not constitute independent external reproduction, human-study evidence, standards conformance, production security validation, or real-world effectiveness.
+
+---
+
 ## AR-P001 — Structural Validation
 
 **Status:** Completed synthetic engineering pilot  
