@@ -74,6 +74,9 @@ jobs:
       - name: Run MCP 2026 adapter self-test
         run: python adapters/mcp_2026.py --self-test
 
+      - name: Run cross-adapter normalization parity self-test
+        run: python adapters/cross_adapter_parity.py
+
       - name: Run interoperability mapping self-test
         run: python mappings/validate_mappings.py
 
