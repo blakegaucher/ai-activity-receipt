@@ -18,6 +18,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Intentionally invalid authorization fixture](examples/invalid-completed-with-denied-authorization.json)
 - [Candidate JSON Schema](activity-receipt.schema.json)
 - [Candidate Invariants](docs/INVARIANTS.md)
+- [Terminology and Field Semantics](docs/TERMINOLOGY.md)
 - [Validation Record](docs/VALIDATION.md)
 - [Project Roadmap](docs/ROADMAP.md)
 - [Executable validator](validate_receipts.py)
@@ -143,6 +144,8 @@ python validate_receipts.py
 ```
 
 The invalid fixture is intentionally expected to be **structurally valid but semantically rejected**. A passing test suite therefore means the validator correctly accepts the valid fixtures and rejects that governance-inconsistent fixture.
+
+This public three-fixture check is a reproducible repository smoke test. It does **not** reproduce the complete historical AR-P001/AR-P002 fixture suites summarized below.
 
 ### AR-P003 — comparative audit reconstruction benchmark
 
