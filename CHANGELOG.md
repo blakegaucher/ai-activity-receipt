@@ -90,6 +90,15 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### Canonical-record invariant parity
+
+- enforce key Receipt governance rules on the canonical material event set **before** derivation;
+- reject completed consequential events without approved authorization, in-scope operation, and prior authorization-decision time;
+- reject approved/completed prohibited operations and material events outside the authority window;
+- require linked incidents for materially blocked/failed events and evidence references for confirmed verification;
+- add deterministic adversarial self-tests for denied completion, scope violation, late/missing authorization, prohibited completion, missing incident, authority-window violation, and evidence-free confirmation;
+- retain post-derivation Receipt validation as a second consistency layer.
+
 ### Delegation-chain executable prototype
 
 - add a standalone JSON Schema and valid example for the future multi-hop delegation design;
