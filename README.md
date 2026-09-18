@@ -24,6 +24,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [DSSE Research Prototype](docs/DSSE-PROTOTYPE.md)
 - [Project Payload Type Identifiers](docs/PAYLOAD-TYPES.md)
 - [Multi-Agent Delegation Design](docs/MULTI-AGENT-DELEGATION.md)
+- [Multi-Hop v0.2 Research Profile](docs/MULTI-HOP-V0.2.md)
 - [Heterogeneous Workflow Pilot](docs/WORKFLOW-PILOT.md)
 - [C2PA Evidence-Reference Evaluation](docs/C2PA-EVIDENCE-REFERENCES.md)
 - [Canonical Record Example](examples/canonical-record.json)
