@@ -517,3 +517,16 @@ The validator exercises the chain rules without changing `candidate-record-v0.1`
 Its adversarial self-test covers broken continuity, cycles, authority amplification, late delegation decisions, revoked hops, out-of-window actions, actor mismatch, out-of-scope action, late per-action approval, and unresolved actors.
 
 This is deliberately a **standalone prototype**. Integrating these semantics into the canonical Activity Record still requires a versioned schema/Receipt design and migration tests.
+
+
+---
+
+## 16. Versioned multi-hop record / Receipt prototype
+
+The repository now implements the design as a separate future research profile rather than modifying candidate-record-v0.1 in place.
+
+See [MULTI-HOP-V0.2.md](MULTI-HOP-V0.2.md).
+
+The prototype includes a native two-hop record, candidate-receipt-v0.3 projection, deterministic effective-authority calculation, and a loss-aware v0.1 migration path. Legacy direct-delegation records are marked `legacy_partial` when the old profile did not preserve a delegation decision timestamp; the migration does not invent one.
+
+Promotion into the public canonical schema path remains a separate future decision.

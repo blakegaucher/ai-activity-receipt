@@ -85,6 +85,9 @@ jobs:
       - name: Run delegation-chain prototype self-test
         run: python research/delegation_chain.py --self-test
 
+      - name: Run candidate-record-v0.2 multi-hop self-test
+        run: python research/multi_hop_v02.py
+
       - name: Run heterogeneous workflow derivation pilot
         run: python research/workflow_pilot.py
 

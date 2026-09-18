@@ -1,0 +1,167 @@
+{
+  "record_id": "workflow-research-email-multihop-001",
+  "record_schema_version": "candidate-record-v0.2",
+  "trace_id": "trace-workflow-research-email-multihop-001",
+  "system": {
+    "agent_id": "agent-specialist-7",
+    "version": "pilot-2.0"
+  },
+  "actors": [
+    {
+      "actor_id": "user-pilot",
+      "kind": "human",
+      "role": "principal"
+    },
+    {
+      "actor_id": "agent-orchestrator-4",
+      "kind": "agent",
+      "role": "orchestrator"
+    },
+    {
+      "actor_id": "agent-specialist-7",
+      "kind": "agent",
+      "role": "delegate"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "src-brief",
+      "role": "supports_result",
+      "material": true,
+      "uri": "synthetic://brief"
+    },
+    {
+      "source_id": "src-search",
+      "role": "supports_result",
+      "material": true,
+      "uri": "synthetic://search-results"
+    },
+    {
+      "source_id": "src-cache",
+      "role": "context_only",
+      "material": false
+    },
+    {
+      "source_id": "src-authz-1",
+      "role": "authorization_decision",
+      "material": false,
+      "uri": "synthetic://authz/delegation-1"
+    },
+    {
+      "source_id": "src-authz-2",
+      "role": "authorization_decision",
+      "material": false,
+      "uri": "synthetic://authz/delegation-2"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "event-read",
+      "occurred_at": "2026-09-18T14:05:00Z",
+      "actor_id": "agent-specialist-7",
+      "operation": "read",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": true,
+      "source_refs": [
+        "src-brief"
+      ]
+    },
+    {
+      "event_id": "event-cache",
+      "occurred_at": "2026-09-18T14:07:00Z",
+      "actor_id": "agent-specialist-7",
+      "operation": "internal_cache_lookup",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": false,
+      "source_refs": [
+        "src-cache"
+      ]
+    },
+    {
+      "event_id": "event-analyze",
+      "occurred_at": "2026-09-18T14:10:00Z",
+      "actor_id": "agent-specialist-7",
+      "operation": "analyze",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": true,
+      "source_refs": [
+        "src-brief",
+        "src-search"
+      ]
+    },
+    {
+      "event_id": "event-send",
+      "occurred_at": "2026-09-18T14:20:00Z",
+      "actor_id": "agent-specialist-7",
+      "operation": "send_email",
+      "status": "completed",
+      "authorization": "approved",
+      "authorization_decided_at": "2026-09-18T14:19:30Z",
+      "consequential": true,
+      "material": true,
+      "source_refs": [
+        "src-brief",
+        "src-search"
+      ]
+    }
+  ],
+  "verification": {
+    "state": "confirmed",
+    "evidence_refs": [
+      "event-send"
+    ]
+  },
+  "incidents": [],
+  "integrity": {
+    "generated_at": "2026-09-18T14:25:00Z"
+  },
+  "notes": "Synthetic multi-hop research-to-email workflow for candidate-record-v0.2.",
+  "authority_chain": {
+    "root_principal": "user-pilot",
+    "current_actor": "agent-specialist-7",
+    "evidence_state": "complete",
+    "hops": [
+      {
+        "hop_id": "delegation-1",
+        "delegator": "user-pilot",
+        "delegate": "agent-orchestrator-4",
+        "scope": [
+          "read",
+          "analyze",
+          "send_email",
+          "delegate:analysis"
+        ],
+        "prohibited": [],
+        "valid_from": "2026-09-18T14:00:00Z",
+        "valid_until": "2026-09-18T15:00:00Z",
+        "decision_time_state": "recorded",
+        "decided_at": "2026-09-18T13:59:30Z",
+        "evidence_ref": "src-authz-1",
+        "state": "active"
+      },
+      {
+        "hop_id": "delegation-2",
+        "delegator": "agent-orchestrator-4",
+        "delegate": "agent-specialist-7",
+        "scope": [
+          "read",
+          "analyze",
+          "send_email"
+        ],
+        "prohibited": [],
+        "valid_from": "2026-09-18T14:02:00Z",
+        "valid_until": "2026-09-18T14:45:00Z",
+        "decision_time_state": "recorded",
+        "decided_at": "2026-09-18T14:01:30Z",
+        "evidence_ref": "src-authz-2",
+        "state": "active"
+      }
+    ]
+  }
+}

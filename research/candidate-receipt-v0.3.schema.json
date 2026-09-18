@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Activity Receipt — Multi-Hop Delegation Research View",
+  "$id": "https://github.com/blakegaucher/ai-activity-receipt/blob/main/research/candidate-receipt-v0.3.schema.json",
+  "$comment": "Research-only future Receipt profile: candidate-receipt-v0.3",
+  "description": "Research-only human-facing Receipt projection for candidate-record-v0.2 multi-hop delegation records.",
+  "type": "object",
+  "required": [
+    "receipt_id",
+    "trace_id",
+    "record_schema_version",
+    "receipt_version",
+    "system",
+    "authority",
+    "material_sources",
+    "material_actions",
+    "verification",
+    "incidents",
+    "integrity"
+  ],
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for this Receipt."
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier linking the Receipt to the underlying agent run or trace."
+    },
+    "record_schema_version": {
+      "const": "candidate-record-v0.2"
+    },
+    "receipt_version": {
+      "const": "candidate-receipt-v0.3"
+    },
+    "system": {
+      "type": "object",
+      "required": [
+        "agent_id",
+        "version"
+      ],
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provider": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "principal",
+        "delegate",
+        "scope",
+        "prohibited",
+        "valid_from",
+        "valid_until",
+        "delegation_path",
+        "delegation_evidence_state"
+      ],
+      "properties": {
+        "principal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "delegate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "prohibited": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "valid_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "delegation_path": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "delegation_evidence_state": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "legacy_partial"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "material_sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_id",
+          "role"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uri": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "material_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "operation",
+          "status",
+          "authorization",
+          "event_id",
+          "occurred_at"
+        ],
+        "properties": {
+          "operation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "blocked",
+              "failed",
+              "pending",
+              "unknown"
+            ]
+          },
+          "authorization": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "denied",
+              "not_required",
+              "unknown"
+            ]
+          },
+          "consequential": {
+            "type": "boolean"
+          },
+          "event_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorization_decided_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "not_required",
+            "pending",
+            "confirmed",
+            "failed",
+            "uncertain"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "incidents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "event_id": {
+            "type": "string"
+          },
+          "mitigation": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "required": [
+        "record_hash",
+        "derived_from_record_hash",
+        "generated_at"
+      ],
+      "properties": {
+        "record_hash": {
+          "type": "string",
+          "pattern": "^sha256:.+$"
+        },
+        "previous_record_hash": {
+          "type": "string",
+          "pattern": "^sha256:.+$"
+        },
+        "derived_from_record_hash": {
+          "type": "string",
+          "pattern": "^sha256:.+$"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

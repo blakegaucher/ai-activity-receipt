@@ -119,7 +119,8 @@ A positive result is **not** required for this phase to be successful.
 - [x] Exercise the canonical record as the target of a synthetic OTLP/JSON GenAI adapter.
 - [x] Define candidate multi-agent and multi-hop delegation-chain semantics, invariants, and standards boundaries.
 - [x] Publish a standalone multi-hop delegation-chain validator/schema/example with adversarial invariant tests, without changing candidate-record-v0.1.
-- [ ] Implement multi-hop delegation in a versioned future record/Receipt schema with migration tests from the direct-delegation profile.
+- [x] Implement multi-hop delegation in a versioned research future record/Receipt profile with loss-aware migration tests from the direct-delegation profile.
+- [ ] Decide whether/when candidate-record-v0.2 should graduate from research/ into the public canonical schema path.
 - [x] Publish an integrity/attestation design direction and evaluate established envelope approaches.
 - [x] Define a machine-readable candidate signer identity, key-management, payload-type, trust, threshold, and revocation policy for attestation research.
 - [x] Implement a research-only DSSE v1 + Ed25519 signing/verification prototype with ephemeral test keys and adversarial verification cases.
