@@ -399,6 +399,87 @@
           "notes": "Requires an explicit state-normalization profile before implementation."
         }
       ]
+    },
+    {
+      "profile_id": "oauth-token-exchange-rfc8693",
+      "source_name": "OAuth 2.0 Token Exchange",
+      "source_version": "RFC 8693",
+      "status": "research_mapping",
+      "reference_uris": [
+        "https://www.rfc-editor.org/rfc/rfc8693.html"
+      ],
+      "notes": "Delegation/impersonation token-exchange semantics can contribute authenticated actor and scope evidence. Historical nested actor claims are provenance, not automatic current authorization. Raw tokens remain excluded.",
+      "mappings": [
+        {
+          "mapping_id": "token-exchange.subject-identity",
+          "source_expression": "validated subject identity from subject_token / issued-token top-level subject claims",
+          "decision": "support",
+          "evidence_class": "authenticated_identity",
+          "target_path": "authority.principal",
+          "notes": "Only validated/trusted subject identity evidence should support the principal; the raw subject_token is not copied."
+        },
+        {
+          "mapping_id": "token-exchange.current-actor",
+          "source_expression": "validated current outermost act actor identity",
+          "decision": "support",
+          "evidence_class": "authenticated_identity",
+          "target_path": "authority.delegate",
+          "notes": "RFC 8693 act identifies the current actor. A future multi-hop record may preserve the full actor path separately."
+        },
+        {
+          "mapping_id": "token-exchange.current-system-actor",
+          "source_expression": "validated current outermost act actor identity",
+          "decision": "support",
+          "evidence_class": "authenticated_identity",
+          "target_path": "system.agent_id",
+          "notes": "When the current actor is the executing agent, validated actor identity can support system.agent_id."
+        },
+        {
+          "mapping_id": "token-exchange.nested-act-history",
+          "source_expression": "nested act claims representing prior actors",
+          "decision": "no_equivalent",
+          "evidence_class": "provenance",
+          "notes": "candidate-record-v0.1 has no multi-hop delegation-chain field. Prior nested actors are historical provenance rather than independent current access-control authority."
+        },
+        {
+          "mapping_id": "token-exchange.scope",
+          "source_expression": "validated issued-token scope claim / authorization result",
+          "decision": "support",
+          "evidence_class": "authorization",
+          "target_path": "authority.scope",
+          "notes": "Scope evidence must be normalized to the application's operation vocabulary; raw token text is not copied."
+        },
+        {
+          "mapping_id": "token-exchange.not-before",
+          "source_expression": "validated top-level nbf or equivalent token-validity evidence",
+          "decision": "support",
+          "evidence_class": "authorization",
+          "target_path": "authority.valid_from",
+          "notes": "Token-validity time may bound usable delegated authority but does not by itself prove a per-action approval."
+        },
+        {
+          "mapping_id": "token-exchange.expiration",
+          "source_expression": "validated top-level exp or equivalent token-validity evidence",
+          "decision": "support",
+          "evidence_class": "authorization",
+          "target_path": "authority.valid_until",
+          "notes": "Expiration may bound usable delegated authority and should not be inferred from nested historical actor claims."
+        },
+        {
+          "mapping_id": "token-exchange.may-act",
+          "source_expression": "validated may_act claim",
+          "decision": "no_equivalent",
+          "evidence_class": "authorization",
+          "notes": "may_act can support eligibility to become an actor, but candidate-record-v0.1 has no per-hop delegation authorization field and the claim is not proof that a later action occurred or was approved."
+        },
+        {
+          "mapping_id": "token-exchange.raw-tokens",
+          "source_expression": "access token / subject_token / actor_token raw token material",
+          "decision": "exclude",
+          "evidence_class": "sensitive_content",
+          "notes": "Bearer/delegation credentials and raw token material do not belong in the Activity Record or Receipt."
+        }
+      ]
     }
   ]
 }
