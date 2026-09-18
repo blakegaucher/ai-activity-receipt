@@ -140,11 +140,18 @@ The current derivation utility rejects:
 - unknown verification evidence references;
 - unknown incident event references;
 - direct-delegation mismatch;
+- material events outside the authority time window;
+- completed consequential actions without approved authorization;
+- completed consequential actions outside authority.scope;
+- missing or post-action authorization decision time for completed consequential actions;
+- approved/completed operations that are explicitly prohibited;
+- materially blocked/failed actions without a linked incident;
+- confirmed verification without evidence references;
 - material events that depend on non-material sources;
 - verification evidence not represented in the material Receipt view;
 - incident references to non-material events.
 
-After derivation, the Receipt is validated again using the public Receipt JSON Schema and executable invariants.
+These pre-derivation checks intentionally mirror the corresponding Receipt-level governance invariants for the material view. The derived Receipt is still validated again using the public Receipt JSON Schema and executable invariant checker, providing two consistency layers rather than relying on the projection step to discover a bad canonical record.
 
 ## Evidence symmetry
 
