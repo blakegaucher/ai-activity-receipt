@@ -260,11 +260,28 @@ The interoperability review supports several concrete design rules:
 
 ---
 
+## 10. Machine-readable crosswalk
+
+The repository now publishes `mappings/interoperability-v0.1.json` plus a JSON Schema and semantic validator.
+
+The machine-readable artifact records whether an external field/concept is currently:
+
+- mapped into a canonical-record field;
+- supporting evidence only;
+- deliberately excluded;
+- or without a dedicated current equivalent.
+
+CI verifies that mapped target paths still exist in `activity-record.schema.json`, that implemented-adapter references resolve, that self-reported identity metadata is not promoted into security-sensitive identity fields, and that selected sensitive payload/credential sources remain excluded.
+
+See [MACHINE-READABLE-MAPPINGS.md](MACHINE-READABLE-MAPPINGS.md).
+
+---
+
 ## Next interoperability work
 
-- publish machine-readable field crosswalks after the canonical Activity Record stabilizes;
-- prototype OpenTelemetry-to-Receipt derivation using synthetic traces;
-- test an MCP tool-call adapter while keeping security identity separate from descriptive `clientInfo`/`serverInfo`;
+- extend the machine-readable crosswalk when external specifications or adapter semantics change;
+- add richer evidence-substrate references beyond the current trace/event/source fields;
 - evaluate whether C2PA attestation references should be optional evidence objects for produced content;
+- prototype an A2A evidence adapter only after the task/identity mapping and authenticated-context boundary are sufficiently clear;
 - monitor NIST AI-agent identity/authorization work and emerging industry standards;
 - avoid any standards-conformance claim until an explicit conformance target and test method exist.
