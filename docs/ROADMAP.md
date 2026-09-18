@@ -114,6 +114,7 @@ A positive result is **not** required for this phase to be successful.
 - [x] Add an exact-match synthetic derivation self-test and Receipt re-validation.
 - [x] Add pre-derivation canonical-record governance checks that mirror key Receipt invariants for material actions.
 - [x] Publish a standalone external evidence-reference schema/validator prototype with record-subject resolution and explicit validation state.
+- [x] Content-bind the standalone external evidence-reference index to the exact canonical record under the existing project-local SHA-256 serialization profile.
 - [ ] Integrate richer evidence-substrate/ingestion references into a versioned canonical record or separately bound evidence index.
 - [x] Exercise the canonical record as the target of a synthetic OTLP/JSON GenAI adapter.
 - [x] Define candidate multi-agent and multi-hop delegation-chain semantics, invariants, and standards boundaries.
