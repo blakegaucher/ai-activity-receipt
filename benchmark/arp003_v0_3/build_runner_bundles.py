@@ -267,6 +267,7 @@ def build(
 
     generated: list[Path] = []
     reviewer_summaries: list[dict[str, Any]] = []
+    used_reviewer_filenames: set[str] = set()
 
     for reviewer, rows in sorted(reviewer_rows.items()):
         orders = [row["order"] for row in rows]
@@ -310,7 +311,14 @@ def build(
         )
         if not safe_reviewer:
             raise ValueError("reviewer ID cannot be converted to safe filename")
-        path = reviewer_dir / f"{safe_reviewer}.json"
+        filename = f"{safe_reviewer}.json"
+        if filename in used_reviewer_filenames:
+            raise ValueError(
+                "two reviewer IDs collapse to the same safe output filename: "
+                f"{filename!r}"
+            )
+        used_reviewer_filenames.add(filename)
+        path = reviewer_dir / filename
         path.write_text(
             json.dumps(bundle, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
