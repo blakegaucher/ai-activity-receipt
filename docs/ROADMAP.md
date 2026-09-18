@@ -172,7 +172,7 @@ The **synthetic candidate prototype** now demonstrates deterministic derivation 
 - [x] Cover MCP 2026-07-28, A2A, OAuth RAR, and current NIST agent identity/authorization work.
 - [ ] Publish machine-readable mappings after the canonical Activity Record stabilizes.
 - [x] Prototype an OpenTelemetry GenAI -> canonical-record -> Receipt adapter on synthetic OTLP/JSON traces.
-- [ ] Prototype an MCP evidence adapter that separates descriptive identity from authenticated identity.
+- [x] Prototype an MCP 2026-07-28 evidence adapter that separates self-reported client/server metadata from authenticated identity and authority.
 - [ ] Evaluate optional C2PA attestation references for content-producing workflows.
 
 ### Rule
