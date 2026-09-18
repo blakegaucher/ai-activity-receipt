@@ -34,6 +34,16 @@ The project is pre-commercial research. Version labels below describe repository
 - validate the JSON Schema itself before running fixtures;
 - keep the GitHub Actions validation workflow as the public smoke test.
 
+### Canonical Activity Record
+
+- add a candidate canonical Activity Record JSON Schema;
+- add normalized actor, source, event, authority, verification, incident, and integrity structures;
+- add explicit source/event materiality flags;
+- add deterministic `derive_receipt.py` transformation;
+- add a project-local deterministic JSON serialization + SHA-256 record binding;
+- add synthetic canonical-record and exact expected derived-Receipt fixtures;
+- revalidate the derived Receipt against the public Receipt schema and semantic invariants in CI.
+
 ### Research
 
 - add a dated interoperability research snapshot covering W3C PROV, OpenTelemetry GenAI, C2PA 2.4, MCP 2026-07-28, A2A, OAuth Rich Authorization Requests, and relevant NIST agent identity/authorization work;

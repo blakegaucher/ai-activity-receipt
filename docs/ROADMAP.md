@@ -102,6 +102,19 @@ A positive result is **not** required for this phase to be successful.
 
 **Goal:** Separate the authoritative machine record from the compact human-facing Receipt.
 
+### Current engineering progress
+
+- [x] Publish candidate canonical-record JSON Schema.
+- [x] Publish normalized actor/source/event representation.
+- [x] Add explicit materiality selection for sources and events.
+- [x] Publish deterministic record-to-Receipt derivation utility.
+- [x] Bind the derived Receipt to the exact canonical record with SHA-256 under a documented project-local serialization profile.
+- [x] Add an exact-match synthetic derivation self-test and Receipt re-validation.
+- [ ] Add richer evidence-substrate/ingestion references.
+- [ ] Define multi-agent and multi-hop delegation chains.
+- [ ] Define a signing/attestation envelope around record hashes.
+- [ ] Test derivation against heterogeneous realistic workflow traces.
+
 ### Candidate architecture
 
 1. **Evidence substrate**
@@ -141,7 +154,7 @@ A positive result is **not** required for this phase to be successful.
 
 ### Exit condition
 
-A Receipt can be deterministically derived from a canonical record and traced back to its underlying evidence.
+The **synthetic candidate prototype** now demonstrates deterministic derivation from a canonical record and a hash binding back to that exact record. Phase 3 remains open for evidence-substrate ingestion, richer delegation, attestation, and realistic-workflow testing.
 
 ---
 

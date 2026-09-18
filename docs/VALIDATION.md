@@ -90,6 +90,26 @@ The suite is intentionally a **repository reproducibility check**, not a measure
 
 ---
 
+## Canonical record derivation smoke test
+
+**Status:** Public synthetic engineering check
+
+The repository now publishes one candidate canonical Activity Record, an exact expected derived Receipt, and a deterministic derivation utility.
+
+The self-test checks that:
+
+- the canonical record satisfies `activity-record.schema.json`;
+- actor/source/event references are internally resolvable under the candidate profile;
+- non-material source/event records are excluded from the Receipt view;
+- the derived Receipt exactly matches the published expected fixture;
+- the derived Receipt passes the current Receipt schema and semantic invariant checker;
+- repeated derivation is deterministic;
+- the Receipt carries a SHA-256 binding to the exact parsed source record under the documented project-local serialization profile.
+
+This establishes only deterministic behavior for the published synthetic example. It does not establish raw-log ingestion fidelity, cryptographic signing/non-repudiation, standards conformance, or real-world audit benefit.
+
+---
+
 ## AR-P003 — Comparative Audit Reconstruction Benchmark
 
 **Status:** Benchmark development and auxiliary reviewer testing  

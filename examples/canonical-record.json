@@ -1,0 +1,85 @@
+{
+  "record_id": "record-example-001",
+  "record_schema_version": "candidate-record-v0.1",
+  "trace_id": "trace-record-example-001",
+  "system": {
+    "agent_id": "agent-4",
+    "version": "example-version"
+  },
+  "actors": [
+    {
+      "actor_id": "user-2",
+      "kind": "human",
+      "role": "principal"
+    },
+    {
+      "actor_id": "agent-4",
+      "kind": "agent",
+      "role": "delegate"
+    }
+  ],
+  "authority": {
+    "principal": "user-2",
+    "delegate": "agent-4",
+    "scope": [
+      "read",
+      "analyze",
+      "send_email"
+    ],
+    "prohibited": [],
+    "valid_from": "2026-09-18T04:00:00Z",
+    "valid_until": "2026-09-18T05:00:00Z"
+  },
+  "sources": [
+    {
+      "source_id": "src-A",
+      "role": "supports_result",
+      "material": true
+    },
+    {
+      "source_id": "src-debug",
+      "role": "context_only",
+      "material": false
+    }
+  ],
+  "events": [
+    {
+      "event_id": "event-debug",
+      "occurred_at": "2026-09-18T04:10:00Z",
+      "actor_id": "agent-4",
+      "operation": "internal_cache_lookup",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": false,
+      "source_refs": [
+        "src-debug"
+      ]
+    },
+    {
+      "event_id": "event-1",
+      "occurred_at": "2026-09-18T04:30:00Z",
+      "actor_id": "agent-4",
+      "operation": "send_email",
+      "status": "completed",
+      "authorization": "approved",
+      "authorization_decided_at": "2026-09-18T04:20:00Z",
+      "consequential": true,
+      "material": true,
+      "source_refs": [
+        "src-A"
+      ]
+    }
+  ],
+  "verification": {
+    "state": "confirmed",
+    "evidence_refs": [
+      "event-1"
+    ]
+  },
+  "incidents": [],
+  "integrity": {
+    "generated_at": "2026-09-18T04:35:00Z"
+  },
+  "notes": "Synthetic canonical record used to test deterministic Receipt derivation and materiality filtering."
+}

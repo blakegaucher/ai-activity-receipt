@@ -17,6 +17,10 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Valid authorization fixture](examples/valid-completed-authorized-action.json)
 - [Intentionally invalid authorization fixture](examples/invalid-completed-with-denied-authorization.json)
 - [Candidate JSON Schema](activity-receipt.schema.json)
+- [Candidate Canonical Activity Record Schema](activity-record.schema.json)
+- [Canonical Record Design and Derivation](docs/CANONICAL-RECORD.md)
+- [Canonical Record Example](examples/canonical-record.json)
+- [Expected Derived Receipt](examples/derived-receipt.json)
 - [Candidate Invariants](docs/INVARIANTS.md)
 - [Terminology and Field Semantics](docs/TERMINOLOGY.md)
 - [Fixture expectation manifest](examples/fixture-manifest.json)
@@ -55,6 +59,8 @@ The project is being developed around three layers:
 1. **Evidence substrate** — raw traces, provider logs, application events, authorization records, and other source evidence.
 2. **Canonical Activity Record** — a normalized, append-oriented machine record that preserves identities, authority, provenance, events, verification, incidents, and integrity links.
 3. **Activity Receipt View** — a compact human-facing summary derived from the canonical record.
+
+A candidate canonical-record schema and deterministic derivation utility are now published. The synthetic derivation test filters non-material source/event records, generates a Receipt, binds it to the exact source record with a SHA-256 hash, and validates the result against the Receipt schema/invariants.
 
 The receipt is intended to summarize and index evidence, **not invent new facts**.
 
@@ -225,8 +231,8 @@ These are research mappings only. No standards-conformance, certification, endor
 
 Near-term work:
 
-1. refine and version the canonical Activity Record and Receipt view;
-2. publish deterministic schema/invariant examples;
+1. refine the published candidate Canonical Activity Record and test deterministic Receipt derivation on more realistic traces;
+2. expand deterministic schema/invariant examples;
 3. freeze and run the next human-centered AR-P003 benchmark;
 4. publish null, negative, and positive results together;
 5. develop interoperability mappings;
