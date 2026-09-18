@@ -26,7 +26,20 @@
   },
   "development": {
     "arp003_v0_3": {
-      "status": "draft_not_frozen_not_executed"
+      "status": "draft_not_frozen_not_executed",
+      "offline_runner": {
+        "status": "development_only_ci_green",
+        "structured_response_ui": true,
+        "timing_fields": [
+          "wall",
+          "active"
+        ],
+        "pause_visibility_instrumentation": true,
+        "safe_intermission": true,
+        "reviewer_analysis_data_separation": true,
+        "manual_browser_smoke_test": "open",
+        "confirmatory_freeze": "not_frozen"
+      }
     },
     "public_record_profile": {
       "version": "candidate-record-v0.1",
