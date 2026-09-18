@@ -22,6 +22,8 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Fixture expectation manifest](examples/fixture-manifest.json)
 - [Validation Record](docs/VALIDATION.md)
 - [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)
+- [AR-P003 v0.3 Preregistration Draft](docs/AR-P003-V0.3-PROTOCOL.md)
+- [AR-P003 v0.3 Benchmark Workspace](benchmark/arp003_v0_3/README.md)
 - [Project Roadmap](docs/ROADMAP.md)
 - [Changelog](CHANGELOG.md)
 - [Executable validator](validate_receipts.py)
@@ -172,15 +174,18 @@ The first auxiliary AI-reviewer work was useful mainly because it exposed benchm
 
 That means the current AR-P003 auxiliary results **do not support a claim that the Receipt improves auditability or productivity**.
 
-The preferred next step is a new human-centered benchmark with:
+A candidate **AR-P003 v0.3 preregistration draft and scoring workspace are now published**. They specify:
 
-- fresh sealed cases;
-- randomized reviewer order;
-- reduced answer leakage;
-- better timing instrumentation;
-- explicit stale/incomplete/conflicting-Receipt cases;
-- frozen endpoints and claim gates before inspection;
-- independent human reviewers as the primary evidence arm.
+- fresh sealed cases distinct from development fixtures;
+- randomized balanced incomplete-block assignment;
+- no reviewer seeing the same underlying case in both conditions;
+- system-captured timing and prespecified timing failure rules;
+- explicit stale/incomplete/conflicting-Receipt challenge strata;
+- component-level endpoints rather than a post-hoc composite;
+- freeze hashes for protocol/corpus/scorer artifacts;
+- independent human reviewers as the evidence arm required for any human-benefit claim.
+
+The v0.3 protocol is **not frozen or executed**. Reviewer population, primary endpoint/effect target, sample size or precision analysis, final corpus, ethics determination as applicable, and final freeze manifest still must be completed before confirmatory human data collection.
 
 ---
 
