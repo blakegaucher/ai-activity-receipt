@@ -116,6 +116,17 @@ def invariant_violations(receipt: dict[str, Any]) -> list[dict[str, str]]:
     prohibited = set(authority.get("prohibited") or [])
     valid_from = parse_datetime(authority.get("valid_from"))
     valid_until = parse_datetime(authority.get("valid_until"))
+    generated_at = parse_datetime((receipt.get("integrity") or {}).get("generated_at"))
+
+    # INV-06 — The authority window itself must be coherent.
+    if valid_from and valid_until and valid_from > valid_until:
+        violations.append(
+            {
+                "invariant": "INV-06",
+                "path": "$.authority",
+                "reason": "authority.valid_from occurs after authority.valid_until.",
+            }
+        )
 
     sources = receipt.get("material_sources") or []
     source_values = [
@@ -278,6 +289,26 @@ def invariant_violations(receipt: dict[str, Any]) -> list[dict[str, str]]:
                     "invariant": "INV-06",
                     "path": f"$.material_actions[{index}].occurred_at",
                     "reason": "Material action occurred after authority.valid_until.",
+                }
+            )
+
+        # INV-15 — The Receipt cannot be generated before activity it represents.
+        if occurred_at and generated_at and occurred_at > generated_at:
+            violations.append(
+                {
+                    "invariant": "INV-15",
+                    "path": f"$.material_actions[{index}].occurred_at",
+                    "reason": "Material action occurs after integrity.generated_at.",
+                }
+            )
+
+        decided_at = parse_datetime(action.get("authorization_decided_at"))
+        if decided_at and generated_at and decided_at > generated_at:
+            violations.append(
+                {
+                    "invariant": "INV-15",
+                    "path": f"$.material_actions[{index}].authorization_decided_at",
+                    "reason": "Authorization decision occurs after integrity.generated_at.",
                 }
             )
 

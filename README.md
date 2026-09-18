@@ -169,9 +169,9 @@ python -m pip install -r requirements.txt
 python validate_receipts.py
 ```
 
-The public fixture manifest currently covers **17 synthetic cases**. It includes valid Receipts, structurally valid but semantically invalid Receipts, and structurally invalid Receipts. Negative fixtures also record the invariant(s) expected to fire so a test cannot silently pass for the wrong reason.
+The public fixture manifest currently covers **19 synthetic cases**. It includes valid Receipts, structurally valid but semantically invalid Receipts, and structurally invalid Receipts. Negative fixtures also record the invariant(s) expected to fire so a test cannot silently pass for the wrong reason.
 
-A passing suite means the current candidate schema and executable invariant checker produced the prespecified outcomes for those 17 public fixtures. It does **not** reproduce the complete historical AR-P001/AR-P002 fixture suites summarized above and does not establish real-world effectiveness.
+A passing suite means the current candidate schema and executable invariant checker produced the prespecified outcomes for those 19 public fixtures. It does **not** reproduce the complete historical AR-P001/AR-P002 fixture suites summarized above and does not establish real-world effectiveness.
 
 ### AR-P003 — comparative audit reconstruction benchmark
 

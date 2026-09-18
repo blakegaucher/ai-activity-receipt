@@ -29,7 +29,7 @@ The pilot checked that:
 
 ### Public-repository reproduction note
 
-AR-P001 and AR-P002 summarize earlier internal synthetic engineering suites and may use vocabulary from earlier schema iterations. The current public repository publishes a separate **17-fixture candidate-v0.2 reproducibility suite** using the present `system`, `authority.principal`, `authority.delegate`, provenance, action timing, authorization-decision timing, verification, incident, and integrity fields. The public workflow should not be described as a reproduction of all 12 AR-P001 or 24 AR-P002 historical cases unless those historical fixtures are separately published.
+AR-P001 and AR-P002 summarize earlier internal synthetic engineering suites and may use vocabulary from earlier schema iterations. The current public repository publishes a separate **19-fixture candidate-v0.2 reproducibility suite** using the present `system`, `authority.principal`, `authority.delegate`, provenance, action timing, authorization-decision timing, verification, incident, and integrity fields. The public workflow should not be described as a reproduction of all 12 AR-P001 or 24 AR-P002 historical cases unless those historical fixtures are separately published.
 
 ### Interpretation
 
@@ -67,7 +67,7 @@ It remains an **internal engineering result**, not evidence of real-world effect
 
 **Status:** Public repository engineering smoke test  
 **Manifest:** `examples/fixture-manifest.json`  
-**Current cases:** 17 synthetic fixtures
+**Current cases:** 19 synthetic fixtures
 
 The public suite tests both JSON Schema outcomes and semantic-invariant outcomes. Negative fixtures specify the invariant(s) expected to fire so the suite can detect a case that is rejected for the wrong reason.
 
@@ -78,13 +78,14 @@ The current public cases exercise:
 - approved, in-scope, prior authorization for consequential completion;
 - explicit prohibited-action contradictions;
 - linked incident preservation for materially blocked/failed activity;
-- action timing before/after the authority window;
+- inverted authority windows and action timing before/after the authority window;
 - confirmed-verification evidence requirements;
 - unresolved verification references;
 - unresolved incident references;
 - direct-delegation consistency;
 - duplicate material-action event identifiers;
-- private-reasoning-field rejection.
+- private-reasoning-field rejection;
+- generation timestamps that precede represented activity.
 
 The suite is intentionally a **repository reproducibility check**, not a measurement of human audit benefit, safety, compliance, or commercial performance.
 

@@ -21,6 +21,7 @@ The project is pre-commercial research. Version labels below describe repository
 - validate material-action timing against the authority window;
 - require linked incidents for materially blocked/failed actions;
 - require confirmed verification to cite evidence;
+- reject inverted authority windows and Receipt generation times that precede represented activity;
 - reject unresolved verification and incident references;
 - reject duplicate material-source IDs and material-action event IDs;
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
@@ -29,7 +30,7 @@ The project is pre-commercial research. Version labels below describe repository
 ### Reproducibility
 
 - replace the hard-coded three-fixture list with `examples/fixture-manifest.json`;
-- expand the public repository suite to 17 synthetic fixtures;
+- expand the public repository suite to 19 synthetic fixtures;
 - record expected invariant failures for negative fixtures;
 - validate the JSON Schema itself before running fixtures;
 - keep the GitHub Actions validation workflow as the public smoke test.
