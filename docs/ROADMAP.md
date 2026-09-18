@@ -32,11 +32,11 @@ The project currently has:
 - [x] Publish illustrative sample Receipt.
 - [x] Publish validation record.
 - [x] Preserve limitations and negative findings.
-- [ ] Publish a candidate machine-readable schema.
-- [ ] Publish invariant definitions.
-- [ ] Add additional valid and invalid example Receipts.
+- [x] Publish a candidate machine-readable schema.
+- [x] Publish invariant definitions.
+- [x] Add additional valid and invalid example Receipts.
 - [ ] Document terminology and field semantics.
-- [ ] Add deterministic validation examples.
+- [x] Add deterministic validation examples.
 
 ### Exit condition
 
