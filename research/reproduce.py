@@ -193,6 +193,17 @@ CHECKS: list[dict[str, Any]] = [
         ],
     },
     {
+        "id": "arp003-runner-bundle-builder",
+        "argv": ["benchmark/arp003_v0_3/build_runner_bundles.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/build_runner_bundles.py",
+            "benchmark/arp003_v0_3/runner-build-config.schema.json",
+            "benchmark/arp003_v0_3/case-package.schema.json",
+            "benchmark/arp003_v0_3/runner-bundle.schema.json",
+            "benchmark/arp003_v0_3/runner-analysis.schema.json",
+        ],
+    },
+    {
         "id": "arp003-freeze-manifest",
         "argv": ["benchmark/arp003_v0_3/freeze_manifest.py", "--self-test"],
         "artifacts": ["benchmark/arp003_v0_3/freeze_manifest.py"],

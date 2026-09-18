@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Development Runner Build Config",
+  "description": "Analysis-side configuration for converting case packages + assignments into reviewer bundles and a hidden analysis bundle.",
+  "type": "object",
+  "required": [
+    "build_config_version",
+    "protocol_version",
+    "cases"
+  ],
+  "properties": {
+    "build_config_version": {
+      "const": "AR-P003-v0.3-dev-runner-build-v0.1"
+    },
+    "protocol_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "manifest",
+          "gold_file",
+          "answer_options"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "manifest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "gold_file": {
+            "type": "string",
+            "minLength": 1
+          },
+          "answer_options": {
+            "type": "object",
+            "required": [
+              "material_actions",
+              "material_sources",
+              "incidents"
+            ],
+            "properties": {
+              "material_actions": {
+                "$ref": "#/$defs/stringSet"
+              },
+              "material_sources": {
+                "$ref": "#/$defs/stringSet"
+              },
+              "incidents": {
+                "$ref": "#/$defs/stringSet"
+              }
+            },
+            "additionalProperties": false
+          },
+          "evidence_labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "receipt_label": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}
