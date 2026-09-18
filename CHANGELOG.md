@@ -76,6 +76,8 @@ The project is pre-commercial research. Version labels below describe repository
 - add exact synthetic OTLP -> canonical-record -> Receipt fixtures;
 - verify that successful telemetry without authorization evidence remains `unknown` and fails the consequential-action Receipt invariant;
 - verify that opt-in tool arguments/results are not copied into the canonical record;
+- preserve OTLP Unix-nanosecond timestamp precision when producing RFC 3339 record timestamps;
+- validate OpenTelemetry trace/span identifier widths and reject all-zero identifiers;
 - add CI coverage and a detailed adapter design note.
 
 ### Research
