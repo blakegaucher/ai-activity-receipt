@@ -19,6 +19,11 @@ from jsonschema.exceptions import SchemaError
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from derive_receipt import record_hash  # noqa: E402
+
 DEFAULT_SCHEMA = ROOT / "research" / "external-evidence-reference.schema.json"
 DEFAULT_EXAMPLE = ROOT / "research" / "external-evidence-reference.example.json"
 DEFAULT_RECORD = ROOT / "research" / "workflow-pilot" / "research-email.json"
@@ -53,6 +58,14 @@ def semantic_errors(
         errors.append(
             "record_id does not match the canonical Activity Record "
             f"({doc['record_id']!r} != {record.get('record_id')!r})"
+        )
+
+    expected_digest = record_hash(record)
+    supplied_digest = doc["record_binding"]["digest"]
+    if supplied_digest != expected_digest:
+        errors.append(
+            "record_binding.digest does not match the exact canonical Activity "
+            f"Record ({supplied_digest!r} != {expected_digest!r})"
         )
 
     event_ids = {
@@ -169,6 +182,16 @@ def run_self_test(
     errors = validate(wrong_record, schema, record)
     assert any("record_id does not match" in error for error in errors)
 
+    wrong_digest = copy.deepcopy(example)
+    wrong_digest["record_binding"]["digest"] = "sha256:" + ("0" * 64)
+    errors = validate(wrong_digest, schema, record)
+    assert any("record_binding.digest does not match" in error for error in errors)
+
+    changed_record = copy.deepcopy(record)
+    changed_record["notes"] = "Synthetic record changed after evidence index binding."
+    errors = validate(example, schema, changed_record)
+    assert any("record_binding.digest does not match" in error for error in errors)
+
     unsubstantiated_valid = copy.deepcopy(example)
     unsubstantiated_valid["references"][0]["validation"] = {"state": "valid"}
     errors = validate(unsubstantiated_valid, schema, record)
@@ -193,7 +216,8 @@ def run_self_test(
 
     print(
         "External evidence-reference self-test passed: "
-        "C2PA-oriented reference example plus 7 adversarial mutations."
+        "C2PA-oriented reference example plus 9 adversarial mutations, "
+        "including exact canonical-record digest binding."
     )
     return 0
 
