@@ -64,6 +64,8 @@ Current direction includes:
 
 Do not silently retrofit v0.3 improvements into v0.2.3.
 
+A development offline reviewer runner is now implemented and passing repository CI. It removes raw-JSON answer entry, records wall/active time plus pause/visibility events, provides an untimed intermission between cases, and keeps gold labels/hidden strata outside the reviewer-facing browser bundle. This is instrumentation preparation only: manual browser/device testing and the remaining preregistration/freeze gates are still open.
+
 ## 3. Current public engineering stack
 
 The public repository currently includes:
@@ -83,7 +85,8 @@ The public repository currently includes:
 - research-only DSSE v1 + Ed25519 signing/verification prototype using ephemeral test keys;
 - heterogeneous synthetic workflow derivation pilot;
 - one-command public reproducibility runner with SHA-256 artifact manifest;
-- AR-P003 development scoring, assignment, case-package linting, planning, and freeze-manifest tooling.
+- AR-P003 development scoring, assignment, case-package linting, planning, and freeze-manifest tooling;
+- AR-P003 v0.3 development offline reviewer runner with structured responses, wall/active timing, pause/visibility instrumentation, safe intermissions, and reviewer/analysis data separation.
 
 These are engineering/research capabilities. They do not establish human benefit or production readiness.
 
