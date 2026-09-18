@@ -38,6 +38,7 @@ Candidate v0.1 includes:
 - MCP 2026-07-28;
 - W3C PROV / PROV-O;
 - OAuth 2.0 Rich Authorization Requests (RFC 9396);
+- OAuth 2.0 Token Exchange (RFC 8693);
 - C2PA 2.4;
 - the current A2A development specification.
 

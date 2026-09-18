@@ -90,6 +90,15 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### Multi-agent delegation design
+
+- define a future versioned multi-hop delegation-chain model while keeping candidate-record-v0.1 as the direct-delegation profile;
+- specify continuity, acyclicity, no-authority-amplification, scope intersection, time-window intersection, prior-decision, actor-resolution, and revocation/expiry invariants;
+- distinguish delegation provenance from current authorization evidence;
+- map W3C PROV `actedOnBehalfOf` and OAuth Token Exchange RFC 8693 concepts into the design without treating either as complete authorization proof;
+- add RFC 8693 to the machine-readable interoperability crosswalk, including current actor, scope/time evidence, nested historical actor chains, `may_act`, and raw-token exclusion;
+- defer schema implementation to a versioned future record/Receipt profile rather than changing candidate-record-v0.1 in place.
+
 ### Cross-adapter normalization parity
 
 - add a synthetic OpenTelemetry/MCP parity harness that aligns identity/authority context and compares the derived substrate-independent governance/action projection;

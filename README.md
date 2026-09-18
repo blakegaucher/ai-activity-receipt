@@ -20,6 +20,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Candidate Canonical Activity Record Schema](activity-record.schema.json)
 - [Canonical Record Design and Derivation](docs/CANONICAL-RECORD.md)
 - [Integrity and Attestation Direction](docs/ATTESTATION.md)
+- [Multi-Agent Delegation Design](docs/MULTI-AGENT-DELEGATION.md)
 - [Canonical Record Example](examples/canonical-record.json)
 - [Expected Derived Receipt](examples/derived-receipt.json)
 - [Candidate Invariants](docs/INVARIANTS.md)
@@ -74,7 +75,8 @@ The current prototype/design work includes:
 
 - run / trace identity;
 - agent, human, organization, and tool actors;
-- principal-to-agent delegated authority;
+- principal-to-agent delegated authority in the current direct-delegation profile;
+- multi-hop delegation is defined as a future versioned extension, not silently implemented in candidate-record-v0.1;
 - bounded scope and time-limited authorization;
 - material source and resource provenance;
 - tool and action events;
@@ -227,7 +229,7 @@ A dated [Interoperability Research Snapshot](docs/INTEROPERABILITY.md) records c
 - **OAuth 2.0 Rich Authorization Requests (RFC 9396)**;
 - relevant **NIST AI-agent identity and authorization** work.
 
-Executable interoperability prototypes are published for both [OpenTelemetry GenAI](docs/OTEL-ADAPTER.md) and [MCP 2026-07-28](docs/MCP-ADAPTER.md). Both target the canonical Activity Record before Receipt derivation, deliberately separate observed execution from authorization evidence, and minimize copied protocol content. A [machine-readable candidate crosswalk](docs/MACHINE-READABLE-MAPPINGS.md) now records and validates source-to-record mapping decisions across OpenTelemetry, MCP, PROV, OAuth RAR, C2PA, and A2A.
+Executable interoperability prototypes are published for both [OpenTelemetry GenAI](docs/OTEL-ADAPTER.md) and [MCP 2026-07-28](docs/MCP-ADAPTER.md). Both target the canonical Activity Record before Receipt derivation, deliberately separate observed execution from authorization evidence, and minimize copied protocol content. A [machine-readable candidate crosswalk](docs/MACHINE-READABLE-MAPPINGS.md) now records and validates source-to-record mapping decisions across OpenTelemetry, MCP, PROV, OAuth RAR, OAuth Token Exchange, C2PA, and A2A.
 
 These remain research mappings and synthetic engineering tests. No standards-conformance, certification, endorsement, production-readiness, or real-world interoperability claim is made here.
 

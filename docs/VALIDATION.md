@@ -166,6 +166,20 @@ This establishes only deterministic behavior on the published synthetic capture.
 
 ---
 
+## Multi-agent delegation design definition
+
+**Status:** Design/research definition; not implemented in candidate-record-v0.1
+
+The repository now defines a candidate future multi-hop delegation model with explicit invariants for ordered chain continuity, root/current actor continuity, cycle rejection, no authority amplification, scope intersection, time-window intersection, prior delegation decisions, actor resolution, action-in-scope checks, historical-vs-current authority separation, and revocation/expiry handling.
+
+The design treats the current direct principal -> delegate profile as the one-hop special case and explicitly defers schema/validator implementation to a future versioned record profile.
+
+The interoperability crosswalk also includes RFC 8693 Token Exchange concepts such as validated subject/current actor identity, scope/time evidence, nested `act` history, `may_act`, and raw-token exclusion.
+
+This definition does not establish authenticated delegation or production authorization correctness.
+
+---
+
 ## Cross-adapter normalization parity smoke test
 
 **Status:** Public synthetic interoperability consistency check
@@ -191,7 +205,7 @@ This is a single synthetic normalization check. It does not establish general cr
 
 **Status:** Public synthetic/research consistency check
 
-The repository publishes a versioned machine-readable crosswalk covering OpenTelemetry GenAI, MCP 2026-07-28, W3C PROV, OAuth RAR, C2PA 2.4, and A2A.
+The repository publishes a versioned machine-readable crosswalk covering OpenTelemetry GenAI, MCP 2026-07-28, W3C PROV, OAuth RAR, OAuth Token Exchange RFC 8693, C2PA 2.4, and A2A.
 
 The mapping validator checks that:
 
