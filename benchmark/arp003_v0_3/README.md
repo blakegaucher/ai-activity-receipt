@@ -22,6 +22,8 @@ This directory contains **development infrastructure** for the next human-center
 - `runner-bundle.example.json` — synthetic development-only runner bundle.
 - `validate_runner_data.py` — bundle/response validation plus static offline/no-network runner checks.
 - `merge_runner_responses.py` — analysis-side join from reviewer export + hidden gold bundle into scorer-compatible JSONL.
+- `runner-build-config.schema.json` — analysis-side configuration for turning case packages + assignment rows into reviewer bundles.
+- `build_runner_bundles.py` — validates case packages, enforces assignment/manifest stratum agreement, emits condition-specific reviewer bundles plus a separate hidden analysis bundle and SHA-256 build manifest.
 
 The human-readable preregistration draft is in:
 
@@ -101,6 +103,7 @@ python benchmark/arp003_v0_3/lint_case_packages.py --self-test
 python benchmark/arp003_v0_3/plan_sample_size.py --self-test
 python benchmark/arp003_v0_3/validate_runner_data.py --self-test
 python benchmark/arp003_v0_3/merge_runner_responses.py --self-test
+python benchmark/arp003_v0_3/build_runner_bundles.py --self-test
 python benchmark/arp003_v0_3/freeze_manifest.py --self-test
 ```
 
@@ -168,6 +171,8 @@ The development runner removes several avoidable v0.2.3 interface/timing confoun
 Reviewer-facing bundles contain only evidence, optional Receipt, pseudonymous IDs, and selectable response vocabularies. Gold labels and hidden challenge strata remain in a separate analysis bundle and are joined only after reviewer export.
 
 The browser runner is self-contained and offline, records wall and active time, supports manual and visibility pauses, inserts a safe intermission between cases, and uses structured controls rather than raw JSON editing.
+
+The analysis-side bundle builder now closes the development packaging loop: it reads the seeded assignment and linted case manifests, verifies the assignment's hidden stratum against each case manifest, gives control reviewers only shared evidence, gives Receipt reviewers the same evidence plus the Receipt, and emits gold/stratum data to a separate hidden analysis bundle.
 
 See `../../docs/AR-P003-V0.3-OFFLINE-RUNNER.md`.
 
