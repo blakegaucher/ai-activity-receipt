@@ -8,6 +8,7 @@ This directory contains **development infrastructure** for the next human-center
 
 - `protocol.json` — machine-readable candidate protocol scaffold.
 - `score_responses.py` — deterministic component-level scorer with a built-in synthetic self-test.
+- `freeze_manifest.py` — SHA-256 manifest utility for protocol/corpus/scorer freeze artifacts.
 
 The human-readable preregistration draft is in:
 
@@ -82,6 +83,18 @@ The scorer intentionally reports endpoint components separately:
 - confidence as a descriptive measure.
 
 It does **not** generate a post-hoc weighted primary composite.
+
+Create a development freeze manifest when the artifact set is ready:
+
+```bash
+python benchmark/arp003_v0_3/freeze_manifest.py \
+  docs/AR-P003-V0.3-PROTOCOL.md \
+  benchmark/arp003_v0_3/protocol.json \
+  benchmark/arp003_v0_3/score_responses.py \
+  --output benchmark/arp003_v0_3/FREEZE-MANIFEST.json
+```
+
+Do not treat a development manifest as the final confirmatory freeze unless it also includes the final corpus, instructions, assignments, exclusions, and analysis artifacts required by the protocol.
 
 ## Before human execution
 
