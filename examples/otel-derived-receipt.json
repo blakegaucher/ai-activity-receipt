@@ -1,0 +1,51 @@
+{
+  "receipt_id": "AR-record-otel-example-001",
+  "trace_id": "0123456789abcdef0123456789abcdef",
+  "record_schema_version": "candidate-record-v0.1",
+  "receipt_version": "candidate-v0.2",
+  "system": {
+    "agent_id": "agent-otel-1",
+    "version": "1.0.0",
+    "provider": "openai",
+    "model": "gpt-example"
+  },
+  "authority": {
+    "principal": "user-2",
+    "delegate": "agent-otel-1",
+    "scope": [
+      "send_email"
+    ],
+    "prohibited": [],
+    "valid_from": "2026-09-18T05:55:00Z",
+    "valid_until": "2026-09-18T06:30:00Z"
+  },
+  "material_sources": [
+    {
+      "source_id": "kb-1",
+      "role": "supports_result"
+    }
+  ],
+  "material_actions": [
+    {
+      "event_id": "otel-span:2222222222222222",
+      "occurred_at": "2026-09-18T06:05:00Z",
+      "operation": "send_email",
+      "status": "completed",
+      "authorization": "approved",
+      "authorization_decided_at": "2026-09-18T06:04:30Z",
+      "consequential": true,
+      "source_refs": [
+        "kb-1"
+      ]
+    }
+  ],
+  "verification": {
+    "state": "pending"
+  },
+  "incidents": [],
+  "integrity": {
+    "record_hash": "sha256:7fdc38d2b5da5ebfd7ee5fcf1c67436f19a55b19f3d47c929716cabb6671926d",
+    "derived_from_record_hash": "sha256:7fdc38d2b5da5ebfd7ee5fcf1c67436f19a55b19f3d47c929716cabb6671926d",
+    "generated_at": "2026-09-18T06:10:00Z"
+  }
+}
