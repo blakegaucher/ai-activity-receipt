@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; connect-src 'none'; img-src 'none'; object-src 'none'; frame-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>AR-P003 v0.3 Development Offline Runner</title>
+<style>
+  :root { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color-scheme: light dark; }
+  body { margin: 0; background: Canvas; color: CanvasText; }
+  main { max-width: 980px; margin: 0 auto; padding: 24px; }
+  h1, h2, h3 { line-height: 1.2; }
+  .muted { opacity: .75; }
+  .card { border: 1px solid color-mix(in srgb, CanvasText 20%, transparent); border-radius: 12px; padding: 16px; margin: 16px 0; }
+  .receipt { border-width: 2px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  fieldset { border: 1px solid color-mix(in srgb, CanvasText 20%, transparent); border-radius: 10px; padding: 12px; margin: 0; }
+  legend { font-weight: 700; padding: 0 6px; }
+  label.option { display: block; padding: 5px 0; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; background: color-mix(in srgb, CanvasText 6%, Canvas); padding: 12px; border-radius: 8px; max-height: 420px; overflow: auto; }
+  button, input[type="file"] { font: inherit; }
+  button { padding: 10px 14px; border-radius: 9px; border: 1px solid color-mix(in srgb, CanvasText 25%, transparent); cursor: pointer; }
+  button.primary { font-weight: 700; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 16px 0; }
+  .status { font-weight: 650; }
+  .warning { border-left: 4px solid currentColor; padding-left: 12px; }
+  .error { font-weight: 700; }
+  .hidden { display: none !important; }
+  .progress { font-variant-numeric: tabular-nums; }
+  .section-note { font-size: .95rem; opacity: .8; }
+</style>
+</head>
+<body>
+<main>
+  <h1>AR-P003 v0.3 Development Offline Runner</h1>
+  <p class="warning"><strong>Development only.</strong> This runner is not a frozen human-study instrument. It makes no claim that Activity Receipts improve auditing.</p>
+
+  <section id="setup" class="card">
+    <h2>Load reviewer bundle</h2>
+    <p>Select one reviewer-facing JSON bundle. The file must not contain gold labels, hidden strata, or analysis-only material.</p>
+    <input id="bundleFile" type="file" accept=".json,application/json">
+    <div class="toolbar">
+      <button id="loadBtn" class="primary">Load bundle</button>
+    </div>
+    <p id="setupStatus" class="status muted">No bundle loaded.</p>
+    <div id="bundleSummary" class="hidden"></div>
+    <button id="startBtn" class="primary hidden">Start session</button>
+  </section>
+
+  <section id="caseView" class="hidden">
+    <div class="toolbar">
+      <span id="progress" class="progress status"></span>
+      <span id="timerStatus" class="muted">Timer stopped.</span>
+      <button id="pauseBtn">Pause</button>
+      <button id="downloadBtn">Download progress</button>
+    </div>
+
+    <h2 id="caseTitle"></h2>
+    <p class="section-note">Use only the materials shown in this case. Do not provide private chain-of-thought.</p>
+
+    <div id="evidence"></div>
+    <div id="receiptContainer"></div>
+
+    <form id="answerForm" class="card">
+      <h3>Structured reconstruction</h3>
+      <div class="grid">
+        <fieldset>
+          <legend>Material actions</legend>
+          <div id="actionsOptions"></div>
+          <p class="section-note">Select none if no listed action is material.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Authorization violation</legend>
+          <label class="option"><input type="radio" name="authorization" value="true"> True</label>
+          <label class="option"><input type="radio" name="authorization" value="false"> False</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Material sources</legend>
+          <div id="sourcesOptions"></div>
+          <p class="section-note">Select none if no listed source is material.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Incidents</legend>
+          <div id="incidentsOptions"></div>
+          <p class="section-note">Select none if no listed incident applies.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Verification state</legend>
+          <label for="verification">Choose one:</label>
+          <select id="verification" required>
+            <option value="">— select —</option>
+            <option value="not_required">not_required</option>
+            <option value="pending">pending</option>
+            <option value="confirmed">confirmed</option>
+            <option value="failed">failed</option>
+            <option value="uncertain">uncertain</option>
+          </select>
+        </fieldset>
+
+        <fieldset>
+          <legend>Important evidence missing?</legend>
+          <label class="option"><input type="radio" name="missing" value="true"> True</label>
+          <label class="option"><input type="radio" name="missing" value="false"> False</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Confidence</legend>
+          <label class="option"><input type="radio" name="confidence" value="1"> 1 — Very low</label>
+          <label class="option"><input type="radio" name="confidence" value="2"> 2 — Low</label>
+          <label class="option"><input type="radio" name="confidence" value="3"> 3 — Moderate</label>
+          <label class="option"><input type="radio" name="confidence" value="4"> 4 — High</label>
+          <label class="option"><input type="radio" name="confidence" value="5"> 5 — Very high</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Technical issue</legend>
+          <label class="option"><input id="technicalIssue" type="checkbox"> A technical interruption affected this case</label>
+        </fieldset>
+      </div>
+
+      <p id="formError" class="error hidden"></p>
+      <div class="toolbar">
+        <button id="submitBtn" type="submit" class="primary">Submit final answer</button>
+      </div>
+    </form>
+  </section>
+
+  <section id="intermission" class="card hidden">
+    <h2>Case submitted</h2>
+    <p>The case timer is stopped. Take a break here if needed. The next case does not begin until you press the button below.</p>
+    <div class="toolbar">
+      <button id="nextBtn" class="primary">Begin next case</button>
+      <button id="downloadBreakBtn">Download progress</button>
+    </div>
+  </section>
+
+  <section id="complete" class="card hidden">
+    <h2>Session complete</h2>
+    <p>All assigned cases have been submitted. Download the response file and return it using the study's approved transfer method.</p>
+    <button id="downloadFinalBtn" class="primary">Download final responses</button>
+  </section>
+</main>
+
+<script>
+"use strict";
+
+const EXPECTED_VERSION = "AR-P003-v0.3-dev-runner-bundle-v0.1";
+const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.1";
+const PROHIBITED_KEYS = new Set([
+  "gold", "gold_labels", "analysis_files", "analysis_only", "hidden_stratum",
+  "stratum", "receipt_state", "expected_answer", "answer_key"
+]);
+
+let bundle = null;
+let results = [];
+let currentIndex = -1;
+let caseState = null;
+let sessionStartedAt = null;
+let sessionCompletedAt = null;
+
+const $ = (id) => document.getElementById(id);
+const nowIso = () => new Date().toISOString();
+
+function fail(message) {
+  $("setupStatus").textContent = message;
+  $("setupStatus").classList.remove("muted");
+  $("setupStatus").classList.add("error");
+}
+
+function hasProhibitedKey(value) {
+  if (Array.isArray(value)) return value.some(hasProhibitedKey);
+  if (value && typeof value === "object") {
+    for (const [key, item] of Object.entries(value)) {
+      if (PROHIBITED_KEYS.has(key)) return true;
+      if (hasProhibitedKey(item)) return true;
+    }
+  }
+  return false;
+}
+
+function validateBundleBasic(doc) {
+  if (!doc || typeof doc !== "object" || Array.isArray(doc)) throw new Error("Bundle must be a JSON object.");
+  if (doc.bundle_version !== EXPECTED_VERSION) throw new Error("Unexpected bundle_version.");
+  if (typeof doc.protocol_version !== "string" || !doc.protocol_version) throw new Error("protocol_version is required.");
+  if (typeof doc.reviewer_id !== "string" || !doc.reviewer_id) throw new Error("reviewer_id is required.");
+  if (!Array.isArray(doc.cases) || doc.cases.length < 1) throw new Error("At least one case is required.");
+  if (hasProhibitedKey(doc)) throw new Error("Bundle contains prohibited analysis-side keys.");
+
+  const ids = new Set();
+  for (const item of doc.cases) {
+    if (!item || typeof item !== "object" || typeof item.case_id !== "string" || !item.case_id) throw new Error("Every case requires case_id.");
+    if (ids.has(item.case_id)) throw new Error("Duplicate case_id in bundle.");
+    ids.add(item.case_id);
+    if (!Array.isArray(item.evidence) || item.evidence.length < 1) throw new Error("Every case requires reviewer evidence.");
+    if (!item.answer_options || typeof item.answer_options !== "object") throw new Error("Every case requires answer_options.");
+    for (const key of ["material_actions", "material_sources", "incidents"]) {
+      if (!Array.isArray(item.answer_options[key])) throw new Error("Answer option arrays are required.");
+    }
+    if (!(item.receipt === null || (item.receipt && typeof item.receipt === "object"))) throw new Error("receipt must be null or an artifact.");
+  }
+}
+
+function clearChildren(node) {
+  while (node.firstChild) node.removeChild(node.firstChild);
+}
+
+function artifactCard(artifact, receipt=false) {
+  const card = document.createElement("section");
+  card.className = receipt ? "card receipt" : "card";
+  const h = document.createElement("h3");
+  h.textContent = artifact.label;
+  const meta = document.createElement("p");
+  meta.className = "muted";
+  meta.textContent = artifact.media_type;
+  const pre = document.createElement("pre");
+  pre.textContent = artifact.content;
+  card.append(h, meta, pre);
+  return card;
+}
+
+function checkboxOptions(container, groupName, values) {
+  clearChildren(container);
+  if (values.length === 0) {
+    const p = document.createElement("p");
+    p.className = "muted";
+    p.textContent = "No selectable labels supplied for this case.";
+    container.appendChild(p);
+    return;
+  }
+  for (const value of values) {
+    const label = document.createElement("label");
+    label.className = "option";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.dataset.group = groupName;
+    input.value = value;
+    label.append(input, document.createTextNode(" " + value));
+    container.appendChild(label);
+  }
+}
+
+function selectedCheckboxes(groupName) {
+  return [...document.querySelectorAll('input[type="checkbox"][data-group="' + groupName + '"]:checked')].map(x => x.value);
+}
+
+function selectedRadio(name) {
+  const item = document.querySelector('input[name="' + name + '"]:checked');
+  return item ? item.value : null;
+}
+
+function logEvent(event, reason=null) {
+  if (!caseState) return;
+  const item = {event, at: nowIso()};
+  if (reason) item.reason = reason;
+  caseState.events.push(item);
+}
+
+function beginPause(reason) {
+  if (!caseState || caseState.pauseReasons.has(reason)) return;
+  if (caseState.pauseReasons.size === 0) caseState.pauseStartedPerf = performance.now();
+  caseState.pauseReasons.add(reason);
+  logEvent("pause_started", reason);
+  updatePauseButton();
+}
+
+function endPause(reason) {
+  if (!caseState || !caseState.pauseReasons.has(reason)) return;
+  caseState.pauseReasons.delete(reason);
+  logEvent("pause_ended", reason);
+  if (caseState.pauseReasons.size === 0 && caseState.pauseStartedPerf !== null) {
+    caseState.pausedMs += performance.now() - caseState.pauseStartedPerf;
+    caseState.pauseStartedPerf = null;
+  }
+  updatePauseButton();
+}
+
+function updatePauseButton() {
+  const manual = caseState && caseState.pauseReasons.has("manual");
+  $("pauseBtn").textContent = manual ? "Resume" : "Pause";
+  if (!caseState) {
+    $("timerStatus").textContent = "Timer stopped.";
+  } else if (caseState.pauseReasons.size > 0) {
+    $("timerStatus").textContent = "Timer paused.";
+  } else {
+    $("timerStatus").textContent = "Timer running.";
+  }
+  $("submitBtn").disabled = Boolean(caseState && caseState.pauseReasons.size > 0);
+}
+
+function startCase(index) {
+  currentIndex = index;
+  const item = bundle.cases[index];
+  caseState = {
+    startedAtIso: nowIso(),
+    startedPerf: performance.now(),
+    pausedMs: 0,
+    pauseStartedPerf: null,
+    pauseReasons: new Set(),
+    events: []
+  };
+
+  $("intermission").classList.add("hidden");
+  $("complete").classList.add("hidden");
+  $("caseView").classList.remove("hidden");
+  $("progress").textContent = "Case " + (index + 1) + " of " + bundle.cases.length;
+  $("caseTitle").textContent = "Case " + item.case_id;
+
+  clearChildren($("evidence"));
+  for (const artifact of item.evidence) $("evidence").appendChild(artifactCard(artifact, false));
+
+  clearChildren($("receiptContainer"));
+  if (item.receipt) $("receiptContainer").appendChild(artifactCard(item.receipt, true));
+
+  checkboxOptions($("actionsOptions"), "actions", item.answer_options.material_actions);
+  checkboxOptions($("sourcesOptions"), "sources", item.answer_options.material_sources);
+  checkboxOptions($("incidentsOptions"), "incidents", item.answer_options.incidents);
+
+  $("answerForm").reset();
+  $("formError").classList.add("hidden");
+  $("technicalIssue").checked = false;
+  updatePauseButton();
+  window.scrollTo({top: 0, behavior: "instant"});
+}
+
+function currentElapsed() {
+  if (!caseState) return {wall: 0, active: 0};
+  const now = performance.now();
+  const wall = now - caseState.startedPerf;
+  let paused = caseState.pausedMs;
+  if (caseState.pauseReasons.size > 0 && caseState.pauseStartedPerf !== null) {
+    paused += now - caseState.pauseStartedPerf;
+  }
+  return {
+    wall: Math.max(0, wall / 1000),
+    active: Math.max(0, (wall - paused) / 1000)
+  };
+}
+
+function collectAnswer() {
+  const authorization = selectedRadio("authorization");
+  const missing = selectedRadio("missing");
+  const confidence = selectedRadio("confidence");
+  const verification = $("verification").value;
+
+  const missingFields = [];
+  if (authorization === null) missingFields.push("authorization violation");
+  if (!verification) missingFields.push("verification state");
+  if (missing === null) missingFields.push("missing evidence");
+  if (confidence === null) missingFields.push("confidence");
+  if (missingFields.length) throw new Error("Complete: " + missingFields.join(", ") + ".");
+
+  return {
+    material_actions: selectedCheckboxes("actions"),
+    authorization_violation: authorization === "true",
+    material_sources: selectedCheckboxes("sources"),
+    incidents: selectedCheckboxes("incidents"),
+    verification_state: verification,
+    missing_evidence: missing === "true",
+    confidence: Number(confidence)
+  };
+}
+
+function exportObject() {
+  return {
+    response_bundle_version: RESPONSE_VERSION,
+    protocol_version: bundle.protocol_version,
+    reviewer_id: bundle.reviewer_id,
+    session_started_at: sessionStartedAt,
+    session_completed_at: sessionCompletedAt,
+    cases: results
+  };
+}
+
+function downloadResponses() {
+  if (!bundle) return;
+  const payload = JSON.stringify(exportObject(), null, 2) + "\n";
+  const blob = new Blob([payload], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "AR-P003-v0.3-" + bundle.reviewer_id.replace(/[^A-Za-z0-9._-]/g, "_") + "-responses.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+$("loadBtn").addEventListener("click", async () => {
+  const file = $("bundleFile").files[0];
+  if (!file) return fail("Choose a JSON bundle first.");
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    validateBundleBasic(parsed);
+    bundle = parsed;
+    results = [];
+    currentIndex = -1;
+    caseState = null;
+    sessionStartedAt = null;
+    sessionCompletedAt = null;
+
+    $("setupStatus").textContent = "Bundle loaded successfully.";
+    $("setupStatus").classList.remove("muted", "error");
+    $("bundleSummary").textContent =
+      "Reviewer: " + bundle.reviewer_id +
+      " • Protocol: " + bundle.protocol_version +
+      " • Cases: " + bundle.cases.length;
+    $("bundleSummary").classList.remove("hidden");
+    $("startBtn").classList.remove("hidden");
+  } catch (error) {
+    bundle = null;
+    $("startBtn").classList.add("hidden");
+    fail("Bundle rejected: " + error.message);
+  }
+});
+
+$("startBtn").addEventListener("click", () => {
+  if (!bundle) return;
+  sessionStartedAt = nowIso();
+  $("setup").classList.add("hidden");
+  startCase(0);
+});
+
+$("pauseBtn").addEventListener("click", () => {
+  if (!caseState) return;
+  if (caseState.pauseReasons.has("manual")) endPause("manual");
+  else beginPause("manual");
+});
+
+$("answerForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!caseState || caseState.pauseReasons.size > 0) return;
+
+  try {
+    const answer = collectAnswer();
+    const elapsed = currentElapsed();
+    const item = bundle.cases[currentIndex];
+
+    results.push({
+      case_id: item.case_id,
+      condition: item.receipt ? "receipt" : "control",
+      started_at: caseState.startedAtIso,
+      submitted_at: nowIso(),
+      elapsed_wall_seconds: Number(elapsed.wall.toFixed(3)),
+      elapsed_active_seconds: Number(elapsed.active.toFixed(3)),
+      events: caseState.events,
+      technical_issue: $("technicalIssue").checked,
+      answer
+    });
+
+    caseState = null;
+    updatePauseButton();
+    $("caseView").classList.add("hidden");
+
+    if (results.length >= bundle.cases.length) {
+      sessionCompletedAt = nowIso();
+      $("complete").classList.remove("hidden");
+    } else {
+      $("intermission").classList.remove("hidden");
+    }
+  } catch (error) {
+    $("formError").textContent = error.message;
+    $("formError").classList.remove("hidden");
+  }
+});
+
+$("nextBtn").addEventListener("click", () => {
+  if (!bundle || results.length >= bundle.cases.length) return;
+  startCase(results.length);
+});
+
+for (const id of ["downloadBtn", "downloadBreakBtn", "downloadFinalBtn"]) {
+  $(id).addEventListener("click", downloadResponses);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!caseState) return;
+  if (document.hidden) {
+    logEvent("hidden");
+    beginPause("visibility");
+  } else {
+    logEvent("visible");
+    endPause("visibility");
+  }
+});
+
+window.addEventListener("beforeunload", (event) => {
+  if (bundle && sessionStartedAt && !sessionCompletedAt) {
+    event.preventDefault();
+    event.returnValue = "";
+  }
+});
+</script>
+</body>
+</html>
