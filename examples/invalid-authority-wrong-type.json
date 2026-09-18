@@ -1,0 +1,46 @@
+{
+  "receipt_id": "AR-invalid-authority-type",
+  "trace_id": "trace-invalid-authority-type",
+  "record_schema_version": "candidate-v0.2",
+  "receipt_version": "candidate-v0.2",
+  "system": {
+    "agent_id": "agent-4",
+    "version": "example-version"
+  },
+  "authority": [
+    "not-an-authority-object"
+  ],
+  "material_sources": [
+    {
+      "source_id": "src-A",
+      "role": "supports_result"
+    }
+  ],
+  "material_actions": [
+    {
+      "operation": "send_email",
+      "status": "completed",
+      "authorization": "approved",
+      "consequential": true,
+      "event_id": "event-1",
+      "occurred_at": "2026-09-13T15:30:00Z",
+      "authorization_decided_at": "2026-09-13T15:20:00Z",
+      "source_refs": [
+        "src-A"
+      ]
+    }
+  ],
+  "verification": {
+    "state": "confirmed",
+    "evidence_refs": [
+      "event-1"
+    ]
+  },
+  "incidents": [],
+  "integrity": {
+    "record_hash": "sha256:example-record-hash",
+    "derived_from_record_hash": "sha256:example-record-hash",
+    "generated_at": "2026-09-13T15:30:00Z"
+  },
+  "notes": "Intentionally structurally invalid: authority has the wrong JSON type."
+}

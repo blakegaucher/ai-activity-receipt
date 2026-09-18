@@ -80,9 +80,16 @@ def parse_datetime(value: Any) -> datetime | None:
     if not isinstance(value, str):
         return None
     try:
-        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:
         return None
+
+    # Candidate schema timestamps use RFC 3339 date-time values. Returning None
+    # for offset-naive values prevents accidental aware/naive comparisons when
+    # this helper is called outside the schema-gated validation path.
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed
 
 
 def walk_for_private_reasoning_keys(value: Any, path: str = "$") -> list[dict[str, str]]:
@@ -392,7 +399,19 @@ def validate(path: Path, schema: dict[str, Any]) -> dict[str, Any]:
         }
 
     structural = schema_errors(receipt, schema)
-    semantic = invariant_violations(receipt) if isinstance(receipt, dict) else []
+
+    # Semantic invariants assume the candidate schema's object shapes. Running
+    # them against structurally invalid data can turn a useful schema rejection
+    # into a Python type error (for example authority=[]). Keep one defensive
+    # diagnostic independent of schema validity: private-reasoning exclusion.
+    if structural:
+        semantic = (
+            walk_for_private_reasoning_keys(receipt)
+            if isinstance(receipt, (dict, list))
+            else []
+        )
+    else:
+        semantic = invariant_violations(receipt) if isinstance(receipt, dict) else []
 
     return {
         "file": str(path),
