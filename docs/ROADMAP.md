@@ -223,6 +223,11 @@ Determine which Receipt fields remain useful, redundant, missing, or impractical
 
 **Goal:** Allow people outside the project to challenge the design.
 
+Preparation completed:
+
+- [x] Publish a one-command public reproducibility runner with machine-readable results and SHA-256 artifact manifest.
+- [ ] Obtain at least one independent external reproduction attempt.
+
 Potential activities:
 
 - independent reviewers;
