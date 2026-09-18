@@ -69,6 +69,9 @@ jobs:
       - name: Run OpenTelemetry GenAI adapter self-test
         run: python adapters/otel_genai.py --self-test
 
+      - name: Run MCP 2026 adapter self-test
+        run: python adapters/mcp_2026.py --self-test
+
       - name: Run AR-P003 scorer self-test
         run: python benchmark/arp003_v0_3/score_responses.py --self-test
 
