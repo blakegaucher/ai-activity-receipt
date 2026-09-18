@@ -132,6 +132,22 @@
       "expected_schema_valid": false,
       "expected_semantic_valid": false,
       "expected_invariants": []
+    },
+    {
+      "path": "examples/invalid-inverted-authority-window.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-06"
+      ]
+    },
+    {
+      "path": "examples/invalid-generated-before-action.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-15"
+      ]
     }
   ]
 }
