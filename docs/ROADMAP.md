@@ -64,6 +64,8 @@ A technically informed reader should be able to understand what an Activity Rece
 - [x] Publish SHA-256 freeze-manifest utility.
 - [x] Publish a development case-package schema/linter for file separation, path safety, exact leakage markers, and condition-symmetry checks.
 - [x] Publish a development sample-size/precision planner and illustrative sensitivity grid without freezing assumptions.
+- [x] Publish a development-only offline reviewer runner with structured responses, pause/visibility timing, safe intermissions, and reviewer/analysis data separation.
+- [ ] Complete manual browser/device, pause/visibility, reload/download-loss, scrolling, and accessibility smoke tests for the intended study environment.
 - [ ] Define target reviewer population.
 - [ ] Freeze primary endpoint(s) and meaningful effect/precision target.
 - [ ] Complete sample-size or precision analysis.
