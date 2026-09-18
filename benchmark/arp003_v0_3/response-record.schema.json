@@ -40,46 +40,7 @@
       "$ref": "#/$defs/reconstruction"
     },
     "answer": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/reconstruction"
-        }
-      ],
-      "type": "object",
-      "properties": {
-        "material_actions": {
-          "$ref": "#/$defs/stringSet"
-        },
-        "authorization_violation": {
-          "type": "boolean"
-        },
-        "material_sources": {
-          "$ref": "#/$defs/stringSet"
-        },
-        "incidents": {
-          "$ref": "#/$defs/stringSet"
-        },
-        "verification_state": {
-          "$ref": "#/$defs/verificationState"
-        },
-        "missing_evidence": {
-          "type": "boolean"
-        },
-        "confidence": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 5
-        }
-      },
-      "required": [
-        "material_actions",
-        "authorization_violation",
-        "material_sources",
-        "incidents",
-        "verification_state",
-        "missing_evidence"
-      ],
-      "additionalProperties": false
+      "$ref": "#/$defs/reviewerAnswer"
     }
   },
   "$defs": {
@@ -121,6 +82,43 @@
         },
         "missing_evidence": {
           "type": "boolean"
+        }
+      },
+      "required": [
+        "material_actions",
+        "authorization_violation",
+        "material_sources",
+        "incidents",
+        "verification_state",
+        "missing_evidence"
+      ],
+      "additionalProperties": false
+    },
+    "reviewerAnswer": {
+      "type": "object",
+      "properties": {
+        "material_actions": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "authorization_violation": {
+          "type": "boolean"
+        },
+        "material_sources": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "incidents": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "verification_state": {
+          "$ref": "#/$defs/verificationState"
+        },
+        "missing_evidence": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
         }
       },
       "required": [
