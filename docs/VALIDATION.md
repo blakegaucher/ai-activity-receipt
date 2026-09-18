@@ -229,6 +229,22 @@ This is synthetic engineering coverage. It does not complete the roadmap item fo
 
 ---
 
+## candidate-record-v0.2 multi-hop migration smoke test
+
+**Status:** Versioned future research profile; current candidate-record-v0.1 remains unchanged
+
+The repository publishes `research/candidate-record-v0.2.schema.json`, a valid two-hop example, `candidate-receipt-v0.3.schema.json`, and `multi_hop_v02.py`.
+
+The validator computes delegation-path continuity, effective scope by hop intersection, effective prohibitions by union, and the effective validity window. It requires complete native chains to carry active hops, recorded delegation decision times, and resolvable hop evidence.
+
+The migration test converts a direct-delegation v0.1 record into a one-hop `legacy_partial` chain without inventing a delegation-decision timestamp, then requires the new Receipt to preserve the v0.1 human-visible core while exposing the delegation path/evidence state.
+
+Adversarial cases cover broken continuity, cycles, authority amplification, revoked hops, missing complete-chain evidence, late delegation decisions, material actor mismatch, action outside the effective chain window, misuse of `legacy_partial` for multi-hop chains, and upstream prohibitions.
+
+This does not replace the current canonical schema or claim authenticated multi-agent authorization.
+
+---
+
 ## Delegation-chain prototype smoke test
 
 **Status:** Standalone research prototype; not integrated into candidate-record-v0.1
