@@ -121,7 +121,9 @@ A positive result is **not** required for this phase to be successful.
 - [x] Publish a standalone multi-hop delegation-chain validator/schema/example with adversarial invariant tests, without changing candidate-record-v0.1.
 - [ ] Implement multi-hop delegation in a versioned future record/Receipt schema with migration tests from the direct-delegation profile.
 - [x] Publish an integrity/attestation design direction and evaluate established envelope approaches.
-- [ ] Implement signing/attestation only after signer identity, key management, payload type, and trust/revocation policy are defined.
+- [x] Define a machine-readable candidate signer identity, key-management, payload-type, trust, threshold, and revocation policy for attestation research.
+- [ ] Implement a research-only DSSE signing/verification prototype with test-only keys and adversarial verification cases.
+- [ ] Implement production signing/attestation only when real identity issuance, protected key storage, revocation/status infrastructure, and deployment trust roots exist.
 - [x] Add a heterogeneous synthetic workflow derivation pilot spanning direct records, OpenTelemetry, MCP, success/failure/blocked/pending states, incidents, and verification variants.
 - [ ] Test derivation against heterogeneous realistic workflow traces.
 
