@@ -211,11 +211,21 @@ def chain_semantic_errors(
                         f"event {event.get('event_id')!r}"
                     )
 
+    first_scope_order = list(hops[0].get("scope") or [])
+    effective_scope_ordered = [
+        operation for operation in first_scope_order if operation in effective_scope
+    ]
+    effective_prohibited_ordered: list[str] = []
+    for hop in hops:
+        for operation in hop.get("prohibited") or []:
+            if operation not in effective_prohibited_ordered:
+                effective_prohibited_ordered.append(operation)
+
     summary = {
         "principal": root,
         "delegate": current,
-        "scope": sorted(effective_scope),
-        "prohibited": sorted(effective_prohibited),
+        "scope": effective_scope_ordered,
+        "prohibited": effective_prohibited_ordered,
         "valid_from": _iso(effective_from) if effective_from else None,
         "valid_until": _iso(effective_until) if effective_until else None,
         "delegation_path": path,
@@ -375,7 +385,7 @@ def run_self_test() -> int:
     assert summary == {
         "principal": "user-pilot",
         "delegate": "agent-specialist-7",
-        "scope": ["analyze", "read", "send_email"],
+        "scope": ["read", "analyze", "send_email"],
         "prohibited": [],
         "valid_from": "2026-09-18T14:02:00Z",
         "valid_until": "2026-09-18T14:45:00Z",
