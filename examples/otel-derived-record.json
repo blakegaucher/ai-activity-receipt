@@ -1,0 +1,77 @@
+{
+  "record_id": "record-otel-example-001",
+  "record_schema_version": "candidate-record-v0.1",
+  "trace_id": "0123456789abcdef0123456789abcdef",
+  "system": {
+    "agent_id": "agent-otel-1",
+    "version": "1.0.0",
+    "provider": "openai",
+    "model": "gpt-example"
+  },
+  "actors": [
+    {
+      "actor_id": "user-2",
+      "kind": "human",
+      "role": "principal"
+    },
+    {
+      "actor_id": "agent-otel-1",
+      "kind": "agent",
+      "role": "delegate"
+    }
+  ],
+  "authority": {
+    "principal": "user-2",
+    "delegate": "agent-otel-1",
+    "scope": [
+      "send_email"
+    ],
+    "prohibited": [],
+    "valid_from": "2026-09-18T05:55:00Z",
+    "valid_until": "2026-09-18T06:30:00Z"
+  },
+  "sources": [
+    {
+      "source_id": "kb-1",
+      "role": "supports_result",
+      "material": true
+    }
+  ],
+  "events": [
+    {
+      "event_id": "otel-span:1111111111111111",
+      "occurred_at": "2026-09-18T06:00:00Z",
+      "actor_id": "agent-otel-1",
+      "operation": "invoke_agent",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": false,
+      "source_refs": [
+        "kb-1"
+      ]
+    },
+    {
+      "event_id": "otel-span:2222222222222222",
+      "occurred_at": "2026-09-18T06:05:00Z",
+      "actor_id": "agent-otel-1",
+      "operation": "send_email",
+      "status": "completed",
+      "authorization": "approved",
+      "authorization_decided_at": "2026-09-18T06:04:30Z",
+      "consequential": true,
+      "material": true,
+      "source_refs": [
+        "kb-1"
+      ]
+    }
+  ],
+  "verification": {
+    "state": "pending"
+  },
+  "incidents": [],
+  "integrity": {
+    "generated_at": "2026-09-18T06:10:00Z"
+  },
+  "notes": "Adapted by otel-genai-v0.1 from OTLP/JSON GenAI telemetry. Authority and materiality are sidecar evidence; telemetry success is not treated as authorization."
+}

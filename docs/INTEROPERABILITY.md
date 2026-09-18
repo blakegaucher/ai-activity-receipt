@@ -76,6 +76,16 @@ Sensitive prompt/message content is explicitly a telemetry concern in the GenAI 
 
 Because the GenAI conventions are developing, adapters should be versioned and should not hard-code a single provider's telemetry as the canonical Activity Receipt model.
 
+### Implemented prototype
+
+The repository now includes a candidate `otel-genai-v0.1` adapter and synthetic OTLP/JSON fixture. It targets the **Canonical Activity Record**, not the human-facing Receipt directly.
+
+The prototype uses standard OTLP trace nesting and selected current GenAI attributes such as `gen_ai.operation.name`, `gen_ai.agent.id`, `gen_ai.agent.version`, `gen_ai.provider.name`, `gen_ai.request.model`, `gen_ai.tool.name`, and `gen_ai.data_source.id`.
+
+Authorization and materiality are supplied separately through sidecar evidence. This is intentional: an observed successful span does not establish that an action was authorized.
+
+The adapter also deliberately does not copy opt-in tool arguments or results into the record. See [OTEL-ADAPTER.md](OTEL-ADAPTER.md) for the exact mapping and test boundary.
+
 ---
 
 ## 3. C2PA / Content Credentials

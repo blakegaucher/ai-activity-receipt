@@ -111,6 +111,25 @@ This establishes only deterministic behavior for the published synthetic example
 
 ---
 
+## OpenTelemetry GenAI adapter smoke test
+
+**Status:** Public synthetic interoperability engineering check
+
+The repository now includes a candidate adapter that consumes one OTLP/JSON GenAI trace plus separate authority/materiality context and produces a canonical Activity Record.
+
+The self-test checks that:
+
+- the OTLP fixture maps exactly to the published expected canonical record;
+- the canonical record passes the record schema and semantic checks;
+- deterministic Receipt derivation exactly matches the published expected Receipt;
+- the derived Receipt passes the Receipt schema and executable invariants;
+- a successful consequential tool span without separate authorization evidence remains `unknown` and is rejected by the Receipt authorization invariant;
+- opt-in tool arguments/results in the synthetic telemetry are not copied into the canonical record.
+
+This establishes only deterministic behavior on the published synthetic trace. It does not establish OpenTelemetry conformance, production telemetry completeness, authorization correctness, real-world interoperability, or human audit benefit.
+
+---
+
 ## AR-P003 — Comparative Audit Reconstruction Benchmark
 
 **Status:** Benchmark development and auxiliary reviewer testing  

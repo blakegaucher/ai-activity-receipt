@@ -26,6 +26,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Fixture expectation manifest](examples/fixture-manifest.json)
 - [Validation Record](docs/VALIDATION.md)
 - [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)
+- [OpenTelemetry GenAI Adapter Prototype](docs/OTEL-ADAPTER.md)
 - [AR-P003 v0.3 Preregistration Draft](docs/AR-P003-V0.3-PROTOCOL.md)
 - [AR-P003 v0.3 Reviewer Instructions Draft](docs/AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md)
 - [AR-P003 v0.3 Benchmark Workspace](benchmark/arp003_v0_3/README.md)
@@ -213,7 +214,7 @@ The v0.3 protocol is **not frozen or executed**. Reviewer population, primary en
 
 AI Activity Receipt is intended to **map to, not replace**, existing observability and provenance systems.
 
-A dated [Interoperability Research Snapshot](docs/INTEROPERABILITY.md) now records candidate crosswalks and boundaries for:
+A dated [Interoperability Research Snapshot](docs/INTEROPERABILITY.md) records candidate crosswalks and boundaries for:
 
 - **W3C PROV / PROV-O**;
 - **OpenTelemetry and the developing GenAI semantic conventions**;
@@ -223,7 +224,9 @@ A dated [Interoperability Research Snapshot](docs/INTEROPERABILITY.md) now recor
 - **OAuth 2.0 Rich Authorization Requests (RFC 9396)**;
 - relevant **NIST AI-agent identity and authorization** work.
 
-These are research mappings only. No standards-conformance, certification, endorsement, or interoperability-test claim is made here.
+A first executable interoperability prototype is also published: an [OpenTelemetry GenAI Adapter](docs/OTEL-ADAPTER.md) that maps one OTLP/JSON GenAI trace plus separate authority/materiality context into the canonical Activity Record and then exercises deterministic Receipt derivation. The adapter deliberately refuses to treat successful telemetry as authorization and ignores opt-in tool-argument/result content.
+
+These remain research mappings and synthetic engineering tests. No standards-conformance, certification, endorsement, production-readiness, or real-world interoperability claim is made here.
 
 ---
 
