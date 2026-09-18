@@ -166,6 +166,31 @@ This establishes only deterministic behavior on the published synthetic capture.
 
 ---
 
+## Delegation-chain prototype smoke test
+
+**Status:** Standalone research prototype; not integrated into candidate-record-v0.1
+
+The repository publishes a separate delegation-chain JSON Schema, valid example, and executable semantic validator under `research/`.
+
+The prototype computes the effective actor path, scope intersection, and time-window intersection and rejects adversarial cases for:
+
+- broken adjacent-hop continuity;
+- cycles;
+- downstream scope amplification;
+- delegation decisions after the action;
+- revoked hops;
+- actions outside the effective time window;
+- current-actor mismatch;
+- completed consequential actions outside effective scope;
+- action authorization decisions after execution;
+- unresolved actors.
+
+The self-test currently requires one valid multi-hop example plus ten adversarial mutations to behave as expected.
+
+This prototype validates the candidate semantics only. It does not authenticate identities, validate OAuth tokens, implement revocation infrastructure, or change the current direct-delegation record schema.
+
+---
+
 ## Multi-agent delegation design definition
 
 **Status:** Design/research definition; not implemented in candidate-record-v0.1

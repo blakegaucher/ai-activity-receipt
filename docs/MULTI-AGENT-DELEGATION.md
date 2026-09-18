@@ -489,3 +489,31 @@ For the present project stage:
 - **defer implementation** to a versioned future record schema rather than changing candidate-record-v0.1 in place.
 
 This closes the design-definition gap without pretending that the current schema already implements multi-agent authorization.
+
+
+---
+
+## 15. Executable standalone prototype
+
+The repository includes a non-integrated research prototype:
+
+- `research/delegation-chain.schema.json`
+- `research/delegation-chain-example.json`
+- `research/delegation_chain.py`
+
+Run:
+
+```bash
+python research/delegation_chain.py --self-test
+```
+
+The validator exercises the chain rules without changing `candidate-record-v0.1`. A valid example produces:
+
+- the ordered actor path;
+- the effective scope intersection;
+- the effective `valid_from`;
+- the effective `valid_until`.
+
+Its adversarial self-test covers broken continuity, cycles, authority amplification, late delegation decisions, revoked hops, out-of-window actions, actor mismatch, out-of-scope action, late per-action approval, and unresolved actors.
+
+This is deliberately a **standalone prototype**. Integrating these semantics into the canonical Activity Record still requires a versioned schema/Receipt design and migration tests.

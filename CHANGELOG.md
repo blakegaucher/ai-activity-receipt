@@ -90,6 +90,14 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### Delegation-chain executable prototype
+
+- add a standalone JSON Schema and valid example for the future multi-hop delegation design;
+- add an executable validator for continuity, cycles, scope amplification/intersection, time-window intersection, decision ordering, actor resolution, active-hop state, effective action scope, and action-authorization timing;
+- add one valid and ten adversarial deterministic self-test cases;
+- report the computed actor path, effective scope, and effective delegation window for valid chains;
+- add CI coverage under a separate `research/` prototype path so candidate-record-v0.1 remains unchanged.
+
 ### Multi-agent delegation design
 
 - define a future versioned multi-hop delegation-chain model while keeping candidate-record-v0.1 as the direct-delegation profile;
