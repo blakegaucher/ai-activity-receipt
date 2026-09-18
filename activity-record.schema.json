@@ -1,0 +1,312 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Activity Record",
+  "$id": "https://github.com/blakegaucher/ai-activity-receipt/blob/main/activity-record.schema.json",
+  "$comment": "Candidate non-normative canonical-record profile: candidate-record-v0.1",
+  "description": "Candidate machine-oriented record from which a compact AI Activity Receipt can be deterministically derived.",
+  "type": "object",
+  "required": [
+    "record_id",
+    "record_schema_version",
+    "trace_id",
+    "system",
+    "actors",
+    "authority",
+    "sources",
+    "events",
+    "verification",
+    "incidents",
+    "integrity"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "record_schema_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "system": {
+      "type": "object",
+      "required": [
+        "agent_id",
+        "version"
+      ],
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provider": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "actor_id",
+          "kind"
+        ],
+        "properties": {
+          "actor_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "human",
+              "agent",
+              "organization",
+              "tool",
+              "service"
+            ]
+          },
+          "role": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "principal",
+        "delegate",
+        "scope",
+        "valid_from",
+        "valid_until"
+      ],
+      "properties": {
+        "principal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "delegate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "prohibited": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "valid_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_id",
+          "role",
+          "material"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "material": {
+            "type": "boolean"
+          },
+          "uri": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "event_id",
+          "occurred_at",
+          "actor_id",
+          "operation",
+          "status",
+          "authorization",
+          "consequential",
+          "material"
+        ],
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actor_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "blocked",
+              "failed",
+              "pending",
+              "unknown"
+            ]
+          },
+          "authorization": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "denied",
+              "not_required",
+              "unknown"
+            ]
+          },
+          "authorization_decided_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "consequential": {
+            "type": "boolean"
+          },
+          "material": {
+            "type": "boolean"
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "not_required",
+            "pending",
+            "confirmed",
+            "failed",
+            "uncertain"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "incidents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "event_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mitigation": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "required": [
+        "generated_at"
+      ],
+      "properties": {
+        "previous_record_hash": {
+          "type": "string",
+          "pattern": "^sha256:.+$"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
