@@ -1,0 +1,137 @@
+{
+  "manifest_version": "1",
+  "schema_profile": "candidate-v0.2",
+  "description": "Public synthetic fixture expectations for the candidate AI Activity Receipt validator. This is a repository test suite, not the historical AR-P001/AR-P002 corpus.",
+  "fixtures": [
+    {
+      "path": "examples/sample-receipt.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": true,
+      "expected_invariants": []
+    },
+    {
+      "path": "examples/valid-completed-authorized-action.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": true,
+      "expected_invariants": []
+    },
+    {
+      "path": "examples/invalid-completed-with-denied-authorization.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-03"
+      ]
+    },
+    {
+      "path": "examples/invalid-unregistered-source.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-02"
+      ]
+    },
+    {
+      "path": "examples/invalid-duplicate-source-id.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-02"
+      ]
+    },
+    {
+      "path": "examples/invalid-prohibited-approved-action.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-04"
+      ]
+    },
+    {
+      "path": "examples/invalid-blocked-without-incident.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-05"
+      ]
+    },
+    {
+      "path": "examples/invalid-action-after-authority-expiry.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-06"
+      ]
+    },
+    {
+      "path": "examples/invalid-action-before-authority-start.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-06"
+      ]
+    },
+    {
+      "path": "examples/invalid-unresolved-verification-reference.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-07"
+      ]
+    },
+    {
+      "path": "examples/invalid-confirmed-without-evidence.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-07"
+      ]
+    },
+    {
+      "path": "examples/invalid-unresolved-incident-reference.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-08"
+      ]
+    },
+    {
+      "path": "examples/invalid-delegate-mismatch.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-09"
+      ]
+    },
+    {
+      "path": "examples/invalid-duplicate-event-id.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-11"
+      ]
+    },
+    {
+      "path": "examples/invalid-authorization-after-action.json",
+      "expected_schema_valid": true,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-03"
+      ]
+    },
+    {
+      "path": "examples/invalid-private-reasoning-field.json",
+      "expected_schema_valid": false,
+      "expected_semantic_valid": false,
+      "expected_invariants": [
+        "INV-14"
+      ]
+    },
+    {
+      "path": "examples/invalid-missing-receipt-id.json",
+      "expected_schema_valid": false,
+      "expected_semantic_valid": false,
+      "expected_invariants": []
+    }
+  ]
+}
