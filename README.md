@@ -27,6 +27,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Fixture expectation manifest](examples/fixture-manifest.json)
 - [Validation Record](docs/VALIDATION.md)
 - [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)
+- [Machine-Readable Interoperability Crosswalk](docs/MACHINE-READABLE-MAPPINGS.md)
 - [OpenTelemetry GenAI Adapter Prototype](docs/OTEL-ADAPTER.md)
 - [MCP 2026-07-28 Adapter Prototype](docs/MCP-ADAPTER.md)
 - [AR-P003 v0.3 Preregistration Draft](docs/AR-P003-V0.3-PROTOCOL.md)
@@ -226,7 +227,7 @@ A dated [Interoperability Research Snapshot](docs/INTEROPERABILITY.md) records c
 - **OAuth 2.0 Rich Authorization Requests (RFC 9396)**;
 - relevant **NIST AI-agent identity and authorization** work.
 
-Executable interoperability prototypes are now published for both [OpenTelemetry GenAI](docs/OTEL-ADAPTER.md) and [MCP 2026-07-28](docs/MCP-ADAPTER.md). Both target the canonical Activity Record before Receipt derivation, deliberately separate observed execution from authorization evidence, and minimize copied protocol content.
+Executable interoperability prototypes are published for both [OpenTelemetry GenAI](docs/OTEL-ADAPTER.md) and [MCP 2026-07-28](docs/MCP-ADAPTER.md). Both target the canonical Activity Record before Receipt derivation, deliberately separate observed execution from authorization evidence, and minimize copied protocol content. A [machine-readable candidate crosswalk](docs/MACHINE-READABLE-MAPPINGS.md) now records and validates source-to-record mapping decisions across OpenTelemetry, MCP, PROV, OAuth RAR, C2PA, and A2A.
 
 These remain research mappings and synthetic engineering tests. No standards-conformance, certification, endorsement, production-readiness, or real-world interoperability claim is made here.
 
