@@ -1,0 +1,39 @@
+{
+  "receipt_id": "AR-invalid-private",
+  "trace_id": "trace-invalid-private",
+  "record_schema_version": "candidate-v0.2",
+  "receipt_version": "candidate-v0.2",
+  "system": {
+    "agent_id": "agent-4",
+    "version": "example-version"
+  },
+  "authority": {
+    "principal": "user-2",
+    "delegate": "agent-4",
+    "scope": [
+      "read",
+      "analyze",
+      "send_email"
+    ],
+    "prohibited": [],
+    "valid_from": "2026-09-13T15:00:00Z",
+    "valid_until": "2026-09-13T16:00:00Z"
+  },
+  "material_sources": [
+    {
+      "source_id": "src-A",
+      "role": "supports_result"
+    }
+  ],
+  "material_actions": [],
+  "verification": {
+    "state": "pending"
+  },
+  "incidents": [],
+  "integrity": {
+    "record_hash": "sha256:example-record-hash",
+    "derived_from_record_hash": "sha256:example-record-hash",
+    "generated_at": "2026-09-13T15:30:00Z"
+  },
+  "private_reasoning": "synthetic hidden scratchpad"
+}
