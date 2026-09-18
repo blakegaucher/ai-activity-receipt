@@ -166,6 +166,27 @@ This establishes only deterministic behavior on the published synthetic capture.
 
 ---
 
+## Cross-adapter normalization parity smoke test
+
+**Status:** Public synthetic interoperability consistency check
+
+The repository includes `adapters/cross_adapter_parity.py`, which adapts aligned synthetic OpenTelemetry GenAI and MCP episodes into the canonical record, derives Receipts, and compares a protocol-independent governance/action projection.
+
+The self-test requires matching:
+
+- aligned agent identity/version;
+- principal/delegate/scope/prohibited authority fields;
+- material operation, status, authorization, and consequentiality;
+- verification state.
+
+It simultaneously requires protocol-specific evidence to remain distinct, including trace identifiers, timestamps, and material-source provenance where the source fixtures differ.
+
+A negative test removes separate MCP approval evidence and verifies that the action remains `unknown`, fails the existing Receipt authorization invariant, and no longer matches the authorized OpenTelemetry projection.
+
+This is a single synthetic normalization check. It does not establish general cross-protocol interoperability, capture completeness, or standards conformance.
+
+---
+
 ## Machine-readable interoperability mapping smoke test
 
 **Status:** Public synthetic/research consistency check

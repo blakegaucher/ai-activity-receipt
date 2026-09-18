@@ -277,6 +277,27 @@ See [MACHINE-READABLE-MAPPINGS.md](MACHINE-READABLE-MAPPINGS.md).
 
 ---
 
+## Cross-adapter normalization parity
+
+The repository now includes a synthetic cross-adapter parity test that passes aligned identity/authority context through both the OpenTelemetry GenAI and MCP adapters, derives Receipts, and compares the substrate-independent governance/action projection.
+
+The test requires the two adapters to agree on:
+
+- normalized agent identity/version after explicit authenticated-context alignment;
+- principal/delegate authority scope and prohibited set;
+- material consequential operation;
+- execution status;
+- authorization state;
+- verification state.
+
+The test deliberately does **not** require whole-record equality. Protocol/run identifiers, timestamps, and protocol-specific provenance remain distinct. In the current synthetic fixtures, OpenTelemetry carries a material retrieval source that MCP does not.
+
+The negative parity case removes separate MCP authorization evidence and verifies that successful execution remains `unknown`, the derived Receipt fails the consequential-authorization invariant, and parity with the authorized OpenTelemetry projection is lost.
+
+This is evidence of normalization consistency on one synthetic paired scenario, not proof of general interoperability or standards conformance.
+
+---
+
 ## Next interoperability work
 
 - extend the machine-readable crosswalk when external specifications or adapter semantics change;
