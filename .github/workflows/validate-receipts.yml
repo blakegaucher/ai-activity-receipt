@@ -85,6 +85,9 @@ jobs:
       - name: Run delegation-chain prototype self-test
         run: python research/delegation_chain.py --self-test
 
+      - name: Run heterogeneous workflow derivation pilot
+        run: python research/workflow_pilot.py
+
       - name: Run AR-P003 scorer self-test
         run: python benchmark/arp003_v0_3/score_responses.py --self-test
 
