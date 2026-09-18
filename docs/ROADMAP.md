@@ -65,6 +65,7 @@ A technically informed reader should be able to understand what an Activity Rece
 - [x] Publish a development case-package schema/linter for file separation, path safety, exact leakage markers, and condition-symmetry checks.
 - [x] Publish a development sample-size/precision planner and illustrative sensitivity grid without freezing assumptions.
 - [x] Publish a development-only offline reviewer runner with structured responses, pause/visibility timing, safe intermissions, and reviewer/analysis data separation.
+- [x] Publish an analysis-side reviewer-bundle builder that packages seeded assignments + linted case packages while keeping gold/strata hidden and hashing generated artifacts.
 - [ ] Complete manual browser/device, pause/visibility, reload/download-loss, scrolling, and accessibility smoke tests for the intended study environment.
 - [ ] Define target reviewer population.
 - [ ] Freeze primary endpoint(s) and meaningful effect/precision target.
