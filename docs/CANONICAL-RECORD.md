@@ -163,6 +163,14 @@ Deterministic derivation helps enforce a narrow technical form of evidence symme
 
 This does **not** prove that the canonical record itself faithfully captured every raw log or real-world event. Evidence-substrate ingestion and source-to-record fidelity remain separate problems.
 
+### External evidence index binding
+
+The standalone external evidence-reference prototype now binds its index to the exact canonical record using the same project-local deterministic JSON + SHA-256 profile as Receipt derivation.
+
+This lets an external evidence index prove which exact record bytes-under-profile it was prepared for, while keeping the index outside candidate-record-v0.1. It is still only a content binding; signer identity and authenticated attestation remain separate work.
+
+See [C2PA-EVIDENCE-REFERENCES.md](C2PA-EVIDENCE-REFERENCES.md).
+
 ## Synthetic heterogeneous workflow pilot
 
 A development-only pilot now exercises this derivation model across six synthetic paths: four direct canonical records plus the OpenTelemetry GenAI and MCP adapters.
