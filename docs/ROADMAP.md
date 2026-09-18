@@ -113,7 +113,8 @@ A positive result is **not** required for this phase to be successful.
 - [x] Bind the derived Receipt to the exact canonical record with SHA-256 under a documented project-local serialization profile.
 - [x] Add an exact-match synthetic derivation self-test and Receipt re-validation.
 - [x] Add pre-derivation canonical-record governance checks that mirror key Receipt invariants for material actions.
-- [ ] Add richer evidence-substrate/ingestion references beyond trace/span identity.
+- [x] Publish a standalone external evidence-reference schema/validator prototype with record-subject resolution and explicit validation state.
+- [ ] Integrate richer evidence-substrate/ingestion references into a versioned canonical record or separately bound evidence index.
 - [x] Exercise the canonical record as the target of a synthetic OTLP/JSON GenAI adapter.
 - [x] Define candidate multi-agent and multi-hop delegation-chain semantics, invariants, and standards boundaries.
 - [x] Publish a standalone multi-hop delegation-chain validator/schema/example with adversarial invariant tests, without changing candidate-record-v0.1.
@@ -181,7 +182,7 @@ The **synthetic candidate prototype** now demonstrates deterministic derivation 
 - [x] Prototype an OpenTelemetry GenAI -> canonical-record -> Receipt adapter on synthetic OTLP/JSON traces.
 - [x] Prototype an MCP 2026-07-28 evidence adapter that separates self-reported client/server metadata from authenticated identity and authority.
 - [x] Add a synthetic cross-adapter normalization parity test for aligned OpenTelemetry/MCP governance-action semantics.
-- [ ] Evaluate optional C2PA attestation references for content-producing workflows.
+- [x] Evaluate optional C2PA 2.4 content-provenance/repository-receipt references and document an external-reference-first design direction.
 
 ### Rule
 
