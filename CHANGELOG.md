@@ -90,6 +90,15 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### Heterogeneous workflow derivation pilot
+
+- add four synthetic direct canonical-record workflows covering research/email success, document upload failure, blocked administrative submission, and pending publication;
+- combine those with the existing OpenTelemetry GenAI and MCP adapter paths for six derivation cases;
+- require deterministic record-to-Receipt derivation and schema/invariant validity for every case;
+- assert expected material operations, sources, incidents, verification state, and non-material filtering;
+- require aggregate coverage of completed/failed/blocked/pending execution, approved/denied/unknown/not-required authorization, major incident types, and four verification states;
+- add CI coverage while keeping realistic heterogeneous workflow testing explicitly open.
+
 ### Canonical-record invariant parity
 
 - enforce key Receipt governance rules on the canonical material event set **before** derivation;
