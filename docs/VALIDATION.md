@@ -27,6 +27,10 @@ The pilot checked that:
 6. completed consequential actions include an explicit verification state;
 7. private chain-of-thought / hidden-reasoning fields are excluded.
 
+### Public-repository reproduction note
+
+AR-P001 and AR-P002 summarize earlier internal synthetic engineering suites and may use vocabulary from earlier schema iterations. The current public repository publishes a smaller reproducible fixture set and candidate schema using the present `system`, `authority.principal`, `authority.delegate`, provenance, action, verification, incident, and integrity fields. The public workflow should not be described as a reproduction of all 12 AR-P001 or 24 AR-P002 cases unless those historical fixtures are separately published.
+
 ### Interpretation
 
 AR-P001 supports the narrow conclusion that the schema and invariant checker behaved consistently on these synthetic fixtures.
