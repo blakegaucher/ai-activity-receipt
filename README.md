@@ -27,6 +27,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Validation Record](docs/VALIDATION.md)
 - [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)
 - [OpenTelemetry GenAI Adapter Prototype](docs/OTEL-ADAPTER.md)
+- [MCP 2026-07-28 Adapter Prototype](docs/MCP-ADAPTER.md)
 - [AR-P003 v0.3 Preregistration Draft](docs/AR-P003-V0.3-PROTOCOL.md)
 - [AR-P003 v0.3 Reviewer Instructions Draft](docs/AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md)
 - [AR-P003 v0.3 Benchmark Workspace](benchmark/arp003_v0_3/README.md)
@@ -224,7 +225,7 @@ A dated [Interoperability Research Snapshot](docs/INTEROPERABILITY.md) records c
 - **OAuth 2.0 Rich Authorization Requests (RFC 9396)**;
 - relevant **NIST AI-agent identity and authorization** work.
 
-A first executable interoperability prototype is also published: an [OpenTelemetry GenAI Adapter](docs/OTEL-ADAPTER.md) that maps one OTLP/JSON GenAI trace plus separate authority/materiality context into the canonical Activity Record and then exercises deterministic Receipt derivation. The adapter deliberately refuses to treat successful telemetry as authorization and ignores opt-in tool-argument/result content.
+Executable interoperability prototypes are now published for both [OpenTelemetry GenAI](docs/OTEL-ADAPTER.md) and [MCP 2026-07-28](docs/MCP-ADAPTER.md). Both target the canonical Activity Record before Receipt derivation, deliberately separate observed execution from authorization evidence, and minimize copied protocol content.
 
 These remain research mappings and synthetic engineering tests. No standards-conformance, certification, endorsement, production-readiness, or real-world interoperability claim is made here.
 
