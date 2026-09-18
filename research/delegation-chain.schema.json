@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Activity Receipt Multi-Hop Delegation Prototype",
+  "type": "object",
+  "required": [
+    "prototype_version",
+    "root_principal",
+    "current_actor",
+    "actors",
+    "hops",
+    "action"
+  ],
+  "properties": {
+    "prototype_version": {
+      "const": "delegation-chain-v0.1"
+    },
+    "root_principal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "current_actor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actors": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "hops": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "hop_id",
+          "delegator",
+          "delegate",
+          "scope",
+          "valid_from",
+          "valid_until",
+          "decided_at",
+          "evidence_ref",
+          "state"
+        ],
+        "properties": {
+          "hop_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "delegator": {
+            "type": "string",
+            "minLength": 1
+          },
+          "delegate": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valid_until": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "decided_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "evidence_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked",
+              "invalid"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "event_id",
+        "actor_id",
+        "operation",
+        "occurred_at",
+        "status",
+        "consequential",
+        "authorization"
+      ],
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "blocked",
+            "failed",
+            "pending",
+            "unknown"
+          ]
+        },
+        "consequential": {
+          "type": "boolean"
+        },
+        "authorization": {
+          "type": "string",
+          "enum": [
+            "approved",
+            "denied",
+            "not_required",
+            "unknown"
+          ]
+        },
+        "authorization_decided_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
