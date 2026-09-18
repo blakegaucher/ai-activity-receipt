@@ -128,6 +128,28 @@ Each external reference records:
 
 The prototype does not contain raw bearer tokens, private reasoning, or repository-specific proof objects.
 
+## Exact canonical-record binding
+
+A plain `record_id` is not sufficient because the same identifier could later point to changed content.
+
+The standalone index therefore carries:
+
+```json
+{
+  "record_binding": {
+    "algorithm": "sha256",
+    "serialization_profile": "candidate-record-v0.1-project-local-json",
+    "digest": "sha256:..."
+  }
+}
+```
+
+The validator recomputes the digest from the supplied canonical record using the same project-local deterministic serialization profile as Receipt derivation.
+
+If any canonical-record content changes after the index is created, validation fails until a new index binding is intentionally produced.
+
+This remains a content binding, not a signature or authenticated attestation.
+
 ## Semantic checks
 
 The validator requires:

@@ -175,7 +175,7 @@ The repository publishes a generic external evidence-reference JSON Schema, a C2
 
 The example links a synthetic canonical record to a C2PA content-provenance manifest reference, a C2PA 2.4 `c2pa.repository-receipt` anchor, and a separate authorization-decision reference.
 
-The validator requires record identity match, unique evidence IDs, event/source subject resolution, explicit validator/time metadata before a reference may claim `state = valid`, and C2PA/profile/manifest-ID/URI information for repository-receipt references. Its self-test also verifies that an arbitrary repository proof body cannot be inserted into the constrained locator object.
+The validator requires record identity match, exact canonical-record SHA-256 binding under the existing project-local deterministic serialization profile, unique evidence IDs, event/source subject resolution, explicit validator/time metadata before a reference may claim `state = valid`, and C2PA/profile/manifest-ID/URI information for repository-receipt references. Its self-test also verifies that a changed canonical record breaks the binding and that an arbitrary repository proof body cannot be inserted into the constrained locator object.
 
 This demonstrates the external-reference design boundary only. It does not validate a real Content Credential, repository receipt, trust list, certificate, signature, or external authorization decision.
 

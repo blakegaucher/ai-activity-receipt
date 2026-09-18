@@ -57,5 +57,10 @@
       },
       "notes": "Shows that the same index can reference non-C2PA evidence without conflating the evidence classes."
     }
-  ]
+  ],
+  "record_binding": {
+    "algorithm": "sha256",
+    "serialization_profile": "candidate-record-v0.1-project-local-json",
+    "digest": "sha256:dbed49fe058c45417641d512eb047609eb8b681fd061112ae2a785f719d175da"
+  }
 }
