@@ -227,8 +227,16 @@ def build_record(capture: dict[str, Any], context: dict[str, Any]) -> dict[str, 
                 f"interaction {req_id!r} must provide request_observed_at"
             )
 
-        status = status_by_request_id.get(req_id) or response_status(response_body)
-        if status not in {"completed", "blocked", "failed", "pending", "unknown"}:
+        status = status_by_request_id.get(req_id)
+        if status is None:
+            status = response_status(response_body)
+        if not isinstance(status, str) or status not in {
+            "completed",
+            "blocked",
+            "failed",
+            "pending",
+            "unknown",
+        }:
             raise ValueError(
                 f"unsupported status override for request {req_id!r}: {status!r}"
             )
@@ -243,7 +251,12 @@ def build_record(capture: dict[str, Any], context: dict[str, Any]) -> dict[str, 
         authorization = auth_info.get("authorization")
         if authorization is None:
             authorization = "unknown" if consequential else "not_required"
-        if authorization not in {"approved", "denied", "not_required", "unknown"}:
+        if not isinstance(authorization, str) or authorization not in {
+            "approved",
+            "denied",
+            "not_required",
+            "unknown",
+        }:
             raise ValueError(
                 f"unsupported authorization state for request {req_id!r}: "
                 f"{authorization!r}"
@@ -296,8 +309,10 @@ def build_record(capture: dict[str, Any], context: dict[str, Any]) -> dict[str, 
             f"{unknown_status_ids!r}"
         )
 
-    verification = context.get("verification") or {"state": "pending"}
-    if not isinstance(verification, dict):
+    verification = context.get("verification")
+    if verification is None:
+        verification = {"state": "pending"}
+    elif not isinstance(verification, dict):
         raise ValueError("verification must be an object when supplied")
 
     record_id = context.get("record_id")
@@ -431,6 +446,26 @@ def run_self_test(
         assert "material_tools must be a list" in str(exc)
     else:
         raise AssertionError("string material_tools was not rejected")
+
+    # Sidecar status values must be explicit strings rather than arbitrary JSON.
+    malformed_status = json.loads(json.dumps(context))
+    malformed_status["status_by_request_id"] = {"req-1": {"status": "completed"}}
+    try:
+        build_record(capture, malformed_status)
+    except ValueError as exc:
+        assert "unsupported status override" in str(exc)
+    else:
+        raise AssertionError("non-string MCP status override was not rejected")
+
+    # An explicitly supplied malformed verification value must not become pending.
+    malformed_verification = json.loads(json.dumps(context))
+    malformed_verification["verification"] = []
+    try:
+        build_record(capture, malformed_verification)
+    except ValueError as exc:
+        assert "verification must be an object" in str(exc)
+    else:
+        raise AssertionError("malformed MCP verification was not rejected")
 
     # Stale sidecar evidence for an unknown request must fail closed.
     dangling_auth = json.loads(json.dumps(context))
