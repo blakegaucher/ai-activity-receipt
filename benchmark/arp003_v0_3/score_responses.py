@@ -19,6 +19,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from jsonschema import Draft202012Validator
+from jsonschema.exceptions import SchemaError
+
+
+ROOT = Path(__file__).resolve().parent
+DEFAULT_RESPONSE_SCHEMA = ROOT / "response-record.schema.json"
 
 SET_FIELDS = ("material_actions", "material_sources", "incidents")
 EXACT_FIELDS = (
@@ -57,7 +63,31 @@ def strict_exact(gold: Any, predicted: Any) -> float:
     return 1.0 if type(gold) is type(predicted) and gold == predicted else 0.0
 
 
-def validate_record(record: dict[str, Any]) -> None:
+def load_response_validator(path: Path) -> Draft202012Validator:
+    try:
+        schema = json.loads(path.read_text(encoding="utf-8"))
+        Draft202012Validator.check_schema(schema)
+    except (OSError, json.JSONDecodeError, SchemaError) as exc:
+        raise ValueError(f"unable to load/validate response schema {path}: {exc}") from exc
+    return Draft202012Validator(schema)
+
+
+def validate_record(
+    record: dict[str, Any],
+    validator: Draft202012Validator | None = None,
+) -> None:
+    if validator is not None:
+        errors = sorted(
+            validator.iter_errors(record),
+            key=lambda error: list(error.absolute_path),
+        )
+        if errors:
+            error = errors[0]
+            path = "$"
+            for part in error.absolute_path:
+                path += f"[{part}]" if isinstance(part, int) else f".{part}"
+            raise ValueError(f"response schema error at {path}: {error.message}")
+
     for key in ("reviewer_id", "case_id", "condition", "stratum", "gold", "answer"):
         if key not in record:
             raise ValueError(f"missing required field {key!r}")
@@ -88,8 +118,11 @@ def validate_record(record: dict[str, Any]) -> None:
             raise ValueError("answer.confidence must be between 1 and 5")
 
 
-def score_record(record: dict[str, Any]) -> dict[str, Any]:
-    validate_record(record)
+def score_record(
+    record: dict[str, Any],
+    validator: Draft202012Validator | None = None,
+) -> dict[str, Any]:
+    validate_record(record, validator=validator)
     gold = record["gold"]
     answer = record["answer"]
 
@@ -189,7 +222,9 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def run_self_test() -> int:
+def run_self_test(
+    validator: Draft202012Validator | None = None,
+) -> int:
     records = [
         {
             "reviewer_id": "smoke-r1",
@@ -265,7 +300,7 @@ def run_self_test() -> int:
         },
     ]
 
-    scored = [score_record(record) for record in records]
+    scored = [score_record(record, validator=validator) for record in records]
     assert scored[0]["material_actions_f1"] == 1.0
     assert scored[0]["incidents_f1"] == 1.0
     assert scored[1]["material_actions_f1"] == 0.5
@@ -297,10 +332,21 @@ def main() -> int:
         action="store_true",
         help="Run deterministic development smoke tests and exit.",
     )
+    parser.add_argument(
+        "--schema",
+        default=str(DEFAULT_RESPONSE_SCHEMA),
+        help="Path to the AR-P003 scoring-record JSON Schema.",
+    )
     args = parser.parse_args()
 
+    try:
+        validator = load_response_validator(Path(args.schema))
+    except ValueError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+
     if args.self_test:
-        return run_self_test()
+        return run_self_test(validator=validator)
 
     if not args.input:
         parser.error("provide at least one JSONL input file or use --self-test")
@@ -309,7 +355,7 @@ def main() -> int:
     try:
         for raw_path in args.input:
             records.extend(load_jsonl(Path(raw_path)))
-        scored = [score_record(record) for record in records]
+        scored = [score_record(record, validator=validator) for record in records]
     except (OSError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
