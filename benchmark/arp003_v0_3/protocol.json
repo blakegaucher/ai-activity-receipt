@@ -53,6 +53,7 @@
   },
   "confirmatory_requirements": [
     "fresh_sealed_corpus",
+    "case_package_lint_and_leakage_scan",
     "target_reviewer_population_frozen",
     "primary_endpoints_frozen",
     "sample_size_or_precision_analysis_frozen",
@@ -71,5 +72,13 @@
     "challenge_case_results_must_be_reported_with_ordinary_results": true
   },
   "private_chain_of_thought_collected": false,
-  "repository_smoke_data_is_confirmatory": false
+  "repository_smoke_data_is_confirmatory": false,
+  "case_package_contract": {
+    "version": "AR-P003-v0.3-dev-case-v0.1",
+    "condition_contract": "same_evidence_plus_receipt",
+    "reviewer_analysis_file_separation_required": true,
+    "path_traversal_rejected": true,
+    "forbidden_marker_scan_required_before_freeze": true,
+    "challenge_state_must_match_stratum": true
+  }
 }

@@ -11,6 +11,8 @@ This directory contains **development infrastructure** for the next human-center
 - `response-record.schema.json` — JSON Schema for one analysis-side reviewer/case scoring record.
 - `generate_assignment.py` — seeded reviewer/case assignment generator that avoids showing the same case twice to one reviewer and balances case exposure/conditions.
 - `freeze_manifest.py` — SHA-256 manifest utility for protocol/corpus/scorer freeze artifacts.
+- `case-package.schema.json` — development manifest schema for reviewer-facing evidence, Receipt, and analysis-only files.
+- `lint_case_packages.py` — file-separation, path-safety, stratum/state, leakage-marker, and hash-report linter for development case packages.
 
 The human-readable preregistration draft is in:
 
@@ -70,6 +72,7 @@ Run the development self-tests:
 ```bash
 python benchmark/arp003_v0_3/score_responses.py --self-test
 python benchmark/arp003_v0_3/generate_assignment.py --self-test
+python benchmark/arp003_v0_3/lint_case_packages.py --self-test
 python benchmark/arp003_v0_3/freeze_manifest.py --self-test
 ```
 
@@ -87,6 +90,21 @@ The scorer intentionally reports endpoint components separately:
 - confidence as a descriptive measure.
 
 It does **not** generate a post-hoc weighted primary composite.
+
+## Development case-package linting
+
+The case-package linter is designed to catch mechanical corpus mistakes **before** a future sealed set is frozen.
+
+A case manifest uses one shared `reviewer_evidence_files` list for both conditions and a separate `receipt_file`. This encodes the ordinary comparison contract as:
+
+```text
+control = shared underlying evidence
+receipt = same shared underlying evidence + Receipt
+```
+
+The linter also requires analysis-only files (including gold labels) to remain disjoint from reviewer-facing files, rejects unsafe or missing paths, checks that stale/incomplete/conflicting strata use the matching Receipt state, scans exact prespecified leakage markers, and reports SHA-256 hashes for linked files.
+
+This tool cannot prove that a case is realistic, unbiased, or free of all semantic leakage. Human review of the underlying evidence and Receipt is still required before freeze.
 
 Create a development freeze manifest when the artifact set is ready:
 

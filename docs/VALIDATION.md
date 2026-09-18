@@ -182,6 +182,27 @@ This is a consistency tool for research mappings. It does not establish conforma
 
 ---
 
+## AR-P003 case-package linter smoke test
+
+**Status:** Development governance/tooling check
+
+The AR-P003 workspace now includes a case-package manifest schema and linter intended for development corpus preparation.
+
+The linter checks that:
+
+- the control and Receipt conditions share one declared underlying evidence file set, with the Receipt represented separately;
+- reviewer-facing evidence and Receipt files are disjoint from analysis-only files such as gold labels;
+- linked paths are relative, remain inside the package root, and exist;
+- declared Receipt state matches ordinary/stale/incomplete/conflicting stratum;
+- exact prespecified forbidden reviewer markers do not appear in reviewer-facing files;
+- file hashes and sizes can be recorded for later freeze preparation.
+
+The self-test requires rejection of reviewer/analysis overlap, path traversal, exact leakage markers, stratum/state mismatch, and missing files.
+
+This is a mechanical corpus-preparation tool. It cannot establish realism, eliminate all semantic answer leakage, validate gold labels, or substitute for independent pre-freeze review.
+
+---
+
 ## AR-P003 — Comparative Audit Reconstruction Benchmark
 
 **Status:** Benchmark development and auxiliary reviewer testing  

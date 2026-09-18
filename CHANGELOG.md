@@ -90,6 +90,17 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### AR-P003 corpus-preparation tooling
+
+- add a development case-package JSON Schema that structurally encodes the same-evidence-plus-Receipt condition contract;
+- add a linter that keeps reviewer-facing evidence/Receipt files separate from analysis-only gold files;
+- reject absolute/traversing/missing case-package paths and reviewer/analysis file overlap;
+- require stale/incomplete/conflicting strata to use matching declared Receipt states;
+- scan exact prespecified forbidden reviewer markers across reviewer-facing files;
+- emit SHA-256/size reports for linked case files to support later freeze preparation;
+- add adversarial self-tests and CI coverage;
+- add a protocol-level requirement for case-package lint/leakage scanning before confirmatory freeze.
+
 ### Research
 
 - add a dated interoperability research snapshot covering W3C PROV, OpenTelemetry GenAI, C2PA 2.4, MCP 2026-07-28, A2A, OAuth Rich Authorization Requests, and relevant NIST agent identity/authorization work;
