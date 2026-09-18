@@ -45,6 +45,16 @@ The project is pre-commercial research. Version labels below describe repository
 - add synthetic canonical-record and exact expected derived-Receipt fixtures;
 - revalidate the derived Receipt against the public Receipt schema and semantic invariants in CI.
 
+### OpenTelemetry adapter
+
+- add a candidate OTLP/JSON GenAI -> Canonical Activity Record adapter;
+- extract trace, agent, provider/model, tool-operation, data-source, and error evidence from selected OpenTelemetry GenAI attributes;
+- keep authority, materiality, and consequentiality in a separate sidecar rather than inferring them from telemetry;
+- add exact synthetic OTLP -> canonical-record -> Receipt fixtures;
+- verify that successful telemetry without authorization evidence remains `unknown` and fails the consequential-action Receipt invariant;
+- verify that opt-in tool arguments/results are not copied into the canonical record;
+- add CI coverage and a detailed adapter design note.
+
 ### Research
 
 - add a dated interoperability research snapshot covering W3C PROV, OpenTelemetry GenAI, C2PA 2.4, MCP 2026-07-28, A2A, OAuth Rich Authorization Requests, and relevant NIST agent identity/authorization work;
