@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Development Offline Runner Response Export",
+  "description": "Reviewer-side response export. It deliberately contains no gold labels.",
+  "type": "object",
+  "required": [
+    "response_bundle_version",
+    "protocol_version",
+    "reviewer_id",
+    "session_started_at",
+    "session_completed_at",
+    "cases"
+  ],
+  "properties": {
+    "response_bundle_version": {
+      "const": "AR-P003-v0.3-dev-runner-response-v0.1"
+    },
+    "protocol_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "session_started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "session_completed_at": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/caseResponse"
+      }
+    }
+  },
+  "$defs": {
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "event": {
+      "type": "object",
+      "required": [
+        "event",
+        "at"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "pause_started",
+            "pause_ended",
+            "hidden",
+            "visible"
+          ]
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "visibility"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "answer": {
+      "type": "object",
+      "required": [
+        "material_actions",
+        "authorization_violation",
+        "material_sources",
+        "incidents",
+        "verification_state",
+        "missing_evidence",
+        "confidence"
+      ],
+      "properties": {
+        "material_actions": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "authorization_violation": {
+          "type": "boolean"
+        },
+        "material_sources": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "incidents": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "verification_state": {
+          "type": "string",
+          "enum": [
+            "not_required",
+            "pending",
+            "confirmed",
+            "failed",
+            "uncertain"
+          ]
+        },
+        "missing_evidence": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        }
+      },
+      "additionalProperties": false
+    },
+    "caseResponse": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "condition",
+        "started_at",
+        "submitted_at",
+        "elapsed_wall_seconds",
+        "elapsed_active_seconds",
+        "events",
+        "technical_issue",
+        "answer"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "type": "string",
+          "enum": [
+            "control",
+            "receipt"
+          ]
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "elapsed_wall_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "elapsed_active_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/event"
+          }
+        },
+        "technical_issue": {
+          "type": "boolean"
+        },
+        "answer": {
+          "$ref": "#/$defs/answer"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
