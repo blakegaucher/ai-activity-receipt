@@ -1,0 +1,61 @@
+{
+  "evidence_reference_version": "external-evidence-ref-v0.1",
+  "record_id": "workflow-research-email-001",
+  "references": [
+    {
+      "evidence_id": "evidence-c2pa-source-1",
+      "kind": "content_provenance",
+      "subject": {
+        "type": "source",
+        "id": "src-brief"
+      },
+      "standard": "C2PA",
+      "profile": "2.4 active manifest",
+      "external_id": "urn:c2pa:manifest:sha256:96f9c4b2d8d95dfc2ac7d93ab9d8c72f4f3c8b12e1a6c7ad2e0cc9123456789a",
+      "locator": {
+        "uri": "https://example.invalid/content-credentials/manifest/96f9c4b2",
+        "digest": "sha256:96f9c4b2d8d95dfc2ac7d93ab9d8c72f4f3c8b12e1a6c7ad2e0cc9123456789a"
+      },
+      "validation": {
+        "state": "not_checked"
+      },
+      "notes": "Synthetic external reference only; no C2PA validation claim."
+    },
+    {
+      "evidence_id": "evidence-c2pa-repository-receipt-1",
+      "kind": "repository_receipt",
+      "subject": {
+        "type": "source",
+        "id": "src-brief"
+      },
+      "standard": "C2PA",
+      "profile": "c2pa.repository-receipt / 2.4",
+      "external_id": "urn:c2pa:manifest:sha256:96f9c4b2d8d95dfc2ac7d93ab9d8c72f4f3c8b12e1a6c7ad2e0cc9123456789a",
+      "locator": {
+        "uri": "https://example.invalid/repository/anchors/7f3d91"
+      },
+      "validation": {
+        "state": "not_checked"
+      },
+      "notes": "Synthetic pointer to a repository-ingestion proof. The proof body is not copied into the Activity Record."
+    },
+    {
+      "evidence_id": "evidence-authz-1",
+      "kind": "authorization_decision",
+      "subject": {
+        "type": "event",
+        "id": "event-send"
+      },
+      "standard": "example-control-plane",
+      "profile": "authorization-decision-v1",
+      "external_id": "authz-record-101",
+      "locator": {
+        "uri": "https://example.invalid/authz/101"
+      },
+      "validation": {
+        "state": "not_checked"
+      },
+      "notes": "Shows that the same index can reference non-C2PA evidence without conflating the evidence classes."
+    }
+  ]
+}
