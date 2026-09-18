@@ -94,6 +94,9 @@ jobs:
       - name: Run attestation trust-policy self-test
         run: python research/validate_attestation_policy.py --self-test
 
+      - name: Run DSSE research signing/verification self-test
+        run: python research/dsse_prototype.py
+
       - name: Run AR-P003 scorer self-test
         run: python benchmark/arp003_v0_3/score_responses.py --self-test
 
