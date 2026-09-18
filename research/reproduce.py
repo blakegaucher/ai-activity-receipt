@@ -97,6 +97,16 @@ CHECKS: list[dict[str, Any]] = [
         ],
     },
     {
+        "id": "continuity-guard",
+        "argv": ["research/validate_continuity_state.py"],
+        "artifacts": [
+            "research/validate_continuity_state.py",
+            "research/project-continuity-state.json",
+            "docs/PROJECT-CONTINUITY-2026-09-18.md",
+            "docs/AR-P003-V0.2.3-HISTORICAL-BASELINE.md",
+        ],
+    },
+    {
         "id": "heterogeneous-workflow-pilot",
         "argv": ["research/workflow_pilot.py"],
         "artifacts": [

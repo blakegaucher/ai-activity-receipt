@@ -6,6 +6,39 @@ This document summarizes the current validation state of the **AI Activity Recei
 
 ---
 
+## Historical AR-P003 v0.2.3 auxiliary baseline
+
+**Status:** Frozen historical synthetic benchmark; preserved separately from current v0.3 development
+
+The earlier AR-P003 v0.2.3 corpus has freeze ID `8a381f4ae20a5f6824e513c7f96920fdf3cfe6b00b0b8d301127f5e0b659d0fd`.
+
+C1, an auxiliary AI reviewer, completed all 80 frozen episodes: 40 control and 40 Receipt + raw logs. Every frozen non-timing endpoint was 100% in both conditions; timing was unavailable for all 80.
+
+The result supports contract interpretability to that auxiliary AI reviewer. It does not demonstrate a Receipt accuracy advantage because the control condition was also at ceiling, and it cannot establish a speed or human-audit benefit because wall-clock timing/human evidence were absent.
+
+A post-C1 methodology audit identified label leakage, presentation asymmetry, fixed class order, timing/runner limitations, JSON-entry burden, lack of bad-Receipt robustness, and a limited remaining human-reviewer design. The historical artifact therefore remains append-only and is not silently patched.
+
+See [AR-P003 v0.2.3 Historical Frozen Baseline](AR-P003-V0.2.3-HISTORICAL-BASELINE.md).
+
+---
+
+## Continuity guard
+
+**Status:** Repository-local consistency guard
+
+The machine-readable `research/project-continuity-state.json` and `research/validate_continuity_state.py` protect a small set of high-risk continuity facts from silent drift:
+
+- the frozen v0.2.3 freeze ID and C1 counts;
+- v0.3 draft/not-executed state;
+- current public direct-delegation profile;
+- research-only status of multi-hop and DSSE work;
+- claim gates for human benefit, safety, compliance, conformance, production signing, customer demand, and institutional endorsement;
+- separation of ARC and Julia/DGAP research lanes from the Activity Receipt project.
+
+The guard is not an external validator. It is a project discipline mechanism so later development does not accidentally rewrite frozen history or promote research status into unsupported claims.
+
+---
+
 ## Aggregate reproducibility runner
 
 **Status:** Public repository-local reproducibility helper

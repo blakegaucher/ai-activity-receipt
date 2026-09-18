@@ -1,0 +1,76 @@
+{
+  "snapshot_version": "project-continuity-v0.1",
+  "snapshot_date": "2026-09-18",
+  "project": "AI Activity Receipt",
+  "owner": "Blake Gaucher / Ancient Immortal Art",
+  "historical": {
+    "arp003_v0_2_3": {
+      "status": "frozen_append_only",
+      "freeze_id": "8a381f4ae20a5f6824e513c7f96920fdf3cfe6b00b0b8d301127f5e0b659d0fd",
+      "c1_auxiliary": {
+        "episodes": 80,
+        "control": 40,
+        "receipt_plus_raw_logs": 40,
+        "all_non_timing_endpoints": "100_percent_both_conditions",
+        "timing": "unavailable",
+        "supports": [
+          "contract_interpretability_to_auxiliary_ai_reviewer"
+        ],
+        "does_not_support": [
+          "receipt_accuracy_advantage",
+          "speed_advantage",
+          "human_audit_benefit"
+        ]
+      }
+    }
+  },
+  "development": {
+    "arp003_v0_3": {
+      "status": "draft_not_frozen_not_executed"
+    },
+    "public_record_profile": {
+      "version": "candidate-record-v0.1",
+      "status": "current_public_direct_delegation"
+    },
+    "multi_hop_record_profile": {
+      "version": "candidate-record-v0.2",
+      "status": "research_only"
+    },
+    "multi_hop_receipt_profile": {
+      "version": "candidate-receipt-v0.3",
+      "status": "research_only"
+    },
+    "dsse": {
+      "status": "research_only_test_keys"
+    },
+    "external_evidence_index": {
+      "status": "research_only"
+    },
+    "reproducibility_runner": {
+      "status": "public_repository_local"
+    }
+  },
+  "cross_project_boundaries": {
+    "arc_agi_2": "separate_lane",
+    "julia_dgap_meta_anchor": "separate_lane",
+    "ancient_immortal_art_business": "commercialization_context_not_technical_validation"
+  },
+  "claim_gates": {
+    "human_productivity": "unproven",
+    "human_audit_accuracy_advantage": "unproven",
+    "real_world_safety": "unproven",
+    "legal_compliance": "not_claimed",
+    "standards_conformance": "not_claimed",
+    "production_signing": "not_claimed",
+    "customer_demand": "unproven",
+    "institutional_endorsement": "not_claimed"
+  },
+  "open_external_or_human_gates": [
+    "independent_external_reproduction",
+    "human_AR_P003_execution",
+    "ethics_REB_IRB_determination_as_applicable",
+    "production_identity_key_revocation_infrastructure",
+    "customer_demand_and_pricing_validation",
+    "financing_readiness"
+  ]
+}

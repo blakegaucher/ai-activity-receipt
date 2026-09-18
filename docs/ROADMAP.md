@@ -8,6 +8,9 @@ This roadmap describes the current development direction for the **AI Activity R
 
 ## Current foundation
 
+- [x] Preserve cross-conversation/project continuity with a dated human-readable snapshot and machine-readable continuity guard.
+- [x] Preserve the frozen AR-P003 v0.2.3 auxiliary-AI baseline separately from v0.3 development.
+
 The project currently has:
 
 - a model-neutral Activity Receipt concept;

@@ -27,6 +27,14 @@ The project is pre-commercial research. Version labels below describe repository
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
 - preserve private-reasoning exclusion diagnostics.
 
+### Continuity synchronization
+
+- add a dated cross-source project continuity snapshot covering frozen benchmark history, current engineering profiles, claim gates, cross-project boundaries, and open external/human gates;
+- publish the frozen AR-P003 v0.2.3 C1 auxiliary baseline separately from v0.3 development, including the 80/80 ceiling result, unavailable timing, and post-C1 methodology limitations;
+- add a machine-readable continuity state and guard that fails if the historical freeze ID/counts, current draft/public-profile state, protected claim gates, or ARC/Julia lane boundaries silently drift;
+- run the continuity guard directly in CI and through the one-command reproducibility suite;
+- keep business correspondence, standards feedback, and competition work as context/evidence boundaries rather than technical validation claims.
+
 ### Aggregate reproducibility runner
 
 - add a one-command runner for the current public deterministic/synthetic validation stack;

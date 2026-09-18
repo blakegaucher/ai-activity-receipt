@@ -88,6 +88,9 @@ jobs:
       - name: Run candidate-record-v0.2 multi-hop self-test
         run: python research/multi_hop_v02.py
 
+      - name: Run continuity guard
+        run: python research/validate_continuity_state.py
+
       - name: Run heterogeneous workflow derivation pilot
         run: python research/workflow_pilot.py
 
