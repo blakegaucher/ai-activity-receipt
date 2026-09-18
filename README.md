@@ -20,6 +20,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Candidate Canonical Activity Record Schema](activity-record.schema.json)
 - [Canonical Record Design and Derivation](docs/CANONICAL-RECORD.md)
 - [Integrity and Attestation Direction](docs/ATTESTATION.md)
+- [Multi-Agent Delegation Design](docs/MULTI-AGENT-DELEGATION.md)
 - [Canonical Record Example](examples/canonical-record.json)
 - [Expected Derived Receipt](examples/derived-receipt.json)
 - [Candidate Invariants](docs/INVARIANTS.md)
@@ -74,7 +75,8 @@ The current prototype/design work includes:
 
 - run / trace identity;
 - agent, human, organization, and tool actors;
-- principal-to-agent delegated authority;
+- principal-to-agent delegated authority in the current direct-delegation profile;
+- multi-hop delegation is defined as a future versioned extension, not silently implemented in candidate-record-v0.1;
 - bounded scope and time-limited authorization;
 - material source and resource provenance;
 - tool and action events;
