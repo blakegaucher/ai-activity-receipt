@@ -15,7 +15,7 @@ from typing import Any
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import SchemaError
 
-from validate_receipts import invariant_violations, schema_errors
+from validate_receipts import invariant_violations, parse_datetime, schema_errors
 
 
 ROOT = Path(__file__).resolve().parent
@@ -120,6 +120,12 @@ def record_semantic_errors(record: dict[str, Any]) -> list[str]:
 
     system = record.get("system") or {}
     authority = record.get("authority") or {}
+    valid_from = parse_datetime(authority.get("valid_from"))
+    valid_until = parse_datetime(authority.get("valid_until"))
+    generated_at = parse_datetime((record.get("integrity") or {}).get("generated_at"))
+
+    if valid_from and valid_until and valid_from > valid_until:
+        errors.append("authority.valid_from occurs after authority.valid_until")
 
     agent_id = system.get("agent_id")
     if agent_id and agent_id not in actor_ids:
@@ -148,6 +154,19 @@ def record_semantic_errors(record: dict[str, Any]) -> list[str]:
         if actor_id and actor_id not in actor_ids:
             errors.append(
                 f"events[{index}].actor_id {actor_id!r} is not registered in actors"
+            )
+
+        occurred_at = parse_datetime(event.get("occurred_at"))
+        if occurred_at and generated_at and occurred_at > generated_at:
+            errors.append(
+                f"events[{index}].occurred_at occurs after integrity.generated_at"
+            )
+
+        decided_at = parse_datetime(event.get("authorization_decided_at"))
+        if decided_at and generated_at and decided_at > generated_at:
+            errors.append(
+                f"events[{index}].authorization_decided_at occurs after "
+                "integrity.generated_at"
             )
 
         for source_ref in event.get("source_refs") or []:
@@ -295,6 +314,20 @@ def run_self_test(
     assert derive_receipt(record) == derive_receipt(record)
     assert derived["integrity"]["record_hash"] == (
         "sha256:ade688ba6ecfb64f6ded458ba114b6d029f81e03df0757994fc91ab1f5e571be"
+    )
+
+    inverted = copy.deepcopy(record)
+    inverted["authority"]["valid_from"] = "2026-09-18T05:01:00Z"
+    inverted["authority"]["valid_until"] = "2026-09-18T05:00:00Z"
+    inverted_errors = record_semantic_errors(inverted)
+    assert any("valid_from occurs after" in error for error in inverted_errors)
+
+    early_generation = copy.deepcopy(record)
+    early_generation["integrity"]["generated_at"] = "2026-09-18T04:20:00Z"
+    early_generation_errors = record_semantic_errors(early_generation)
+    assert any(
+        "occurs after integrity.generated_at" in error
+        for error in early_generation_errors
     )
 
     print("Canonical Activity Record derivation self-test passed.")
