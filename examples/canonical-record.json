@@ -35,9 +35,27 @@
       "source_id": "src-A",
       "role": "supports_result",
       "material": true
+    },
+    {
+      "source_id": "src-debug",
+      "role": "context_only",
+      "material": false
     }
   ],
   "events": [
+    {
+      "event_id": "event-debug",
+      "occurred_at": "2026-09-18T04:10:00Z",
+      "actor_id": "agent-4",
+      "operation": "internal_cache_lookup",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": false,
+      "source_refs": [
+        "src-debug"
+      ]
+    },
     {
       "event_id": "event-1",
       "occurred_at": "2026-09-18T04:30:00Z",
@@ -63,5 +81,5 @@
   "integrity": {
     "generated_at": "2026-09-18T04:35:00Z"
   },
-  "notes": "Synthetic canonical record used to test deterministic Receipt derivation."
+  "notes": "Synthetic canonical record used to test deterministic Receipt derivation and materiality filtering."
 }
