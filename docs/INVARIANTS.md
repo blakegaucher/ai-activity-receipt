@@ -12,6 +12,16 @@ The current public validator implements an executable subset of the rules below.
 
 ---
 
+## Validation ordering
+
+The executable validator treats structural validation as the prerequisite for ordinary semantic-invariant evaluation. Semantic rules assume the object shapes defined by the candidate JSON Schema and therefore are not run against arbitrary malformed structures.
+
+One defense-in-depth exception remains: private-reasoning field names are scanned even when structural validation fails, so an excluded field can still be surfaced as a diagnostic.
+
+This ordering means a structurally invalid Receipt is rejected at the schema layer rather than producing misleading semantic failures or implementation type errors.
+
+---
+
 ## Why invariants are separate from the schema
 
 A Receipt can be structurally valid while still being semantically inconsistent.
