@@ -1,0 +1,51 @@
+{
+  "prototype_version": "delegation-chain-v0.1",
+  "root_principal": "user-2",
+  "current_actor": "agent-specialist-7",
+  "actors": [
+    "user-2",
+    "agent-orchestrator-4",
+    "agent-specialist-7"
+  ],
+  "hops": [
+    {
+      "hop_id": "delegation-1",
+      "delegator": "user-2",
+      "delegate": "agent-orchestrator-4",
+      "scope": [
+        "read",
+        "analyze",
+        "delegate:analysis"
+      ],
+      "valid_from": "2026-09-18T12:00:00Z",
+      "valid_until": "2026-09-18T13:00:00Z",
+      "decided_at": "2026-09-18T11:59:30Z",
+      "evidence_ref": "authz-record-101",
+      "state": "active"
+    },
+    {
+      "hop_id": "delegation-2",
+      "delegator": "agent-orchestrator-4",
+      "delegate": "agent-specialist-7",
+      "scope": [
+        "read",
+        "analyze"
+      ],
+      "valid_from": "2026-09-18T12:02:00Z",
+      "valid_until": "2026-09-18T12:30:00Z",
+      "decided_at": "2026-09-18T12:01:55Z",
+      "evidence_ref": "authz-record-102",
+      "state": "active"
+    }
+  ],
+  "action": {
+    "event_id": "event-analysis-1",
+    "actor_id": "agent-specialist-7",
+    "operation": "analyze",
+    "occurred_at": "2026-09-18T12:10:00Z",
+    "status": "completed",
+    "consequential": true,
+    "authorization": "approved",
+    "authorization_decided_at": "2026-09-18T12:09:30Z"
+  }
+}
