@@ -109,6 +109,7 @@ The self-test checks that:
 - the derived Receipt exactly matches the published expected fixture;
 - the derived Receipt passes the current Receipt schema and semantic invariant checker;
 - repeated derivation is deterministic;
+- canonical-record semantic checks reject denied completion, out-of-scope consequential actions, late/missing authorization decisions, prohibited approved completion, missing incidents for materially blocked/failed actions, actions outside the authority window, and confirmed verification without evidence;
 - recursive dictionary insertion-order changes do not alter the project-local digest;
 - a non-material record mutation changes the record binding while leaving the non-integrity Receipt projection unchanged;
 - a material record mutation changes both the record binding and the visible Receipt projection;

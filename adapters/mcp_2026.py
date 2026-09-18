@@ -404,8 +404,19 @@ def run_self_test(
     missing_auth_record = build_record(capture, missing_auth)
     action = missing_auth_record["events"][0]
     assert action["authorization"] == "unknown"
-    missing_auth_receipt = derive_receipt(missing_auth_record)
-    assert validate_derived_receipt(missing_auth_receipt, receipt_schema)
+    missing_auth_record_errors = validate_record(missing_auth_record, record_schema)
+    assert any(
+        "does not have approved authorization" in error
+        for error in missing_auth_record_errors
+    )
+    try:
+        derive_receipt(missing_auth_record)
+    except ValueError as exc:
+        assert "does not have approved authorization" in str(exc)
+    else:
+        raise AssertionError(
+            "missing authorization evidence was not rejected before derivation"
+        )
 
     # Header/body routing metadata must agree.
     mismatched = json.loads(json.dumps(capture))

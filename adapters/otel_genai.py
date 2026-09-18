@@ -674,8 +674,19 @@ def run_self_test(
         if event["consequential"] is True
     ]
     assert consequential and consequential[0]["authorization"] == "unknown"
-    missing_auth_receipt = derive_receipt(missing_auth_record)
-    assert validate_derived_receipt(missing_auth_receipt, receipt_schema)
+    missing_auth_record_errors = validate_record(missing_auth_record, record_schema)
+    assert any(
+        "does not have approved authorization" in error
+        for error in missing_auth_record_errors
+    )
+    try:
+        derive_receipt(missing_auth_record)
+    except ValueError as exc:
+        assert "does not have approved authorization" in str(exc)
+    else:
+        raise AssertionError(
+            "missing authorization evidence was not rejected before derivation"
+        )
 
     # Preserve OTLP nanosecond precision rather than truncating to microseconds.
     assert unix_nano_to_iso("1789711500123456789") == (

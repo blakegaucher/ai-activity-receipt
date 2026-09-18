@@ -112,6 +112,7 @@ A positive result is **not** required for this phase to be successful.
 - [x] Publish deterministic record-to-Receipt derivation utility.
 - [x] Bind the derived Receipt to the exact canonical record with SHA-256 under a documented project-local serialization profile.
 - [x] Add an exact-match synthetic derivation self-test and Receipt re-validation.
+- [x] Add pre-derivation canonical-record governance checks that mirror key Receipt invariants for material actions.
 - [ ] Add richer evidence-substrate/ingestion references beyond trace/span identity.
 - [x] Exercise the canonical record as the target of a synthetic OTLP/JSON GenAI adapter.
 - [x] Define candidate multi-agent and multi-hop delegation-chain semantics, invariants, and standards boundaries.
