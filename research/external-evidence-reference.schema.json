@@ -59,8 +59,7 @@
                   "authority",
                   "event",
                   "source",
-                  "verification",
-                  "incident"
+                  "verification"
                 ]
               },
               "id": {
@@ -73,7 +72,11 @@
                 "if": {
                   "properties": {
                     "type": {
-                      "const": "record"
+                      "enum": [
+                        "record",
+                        "authority",
+                        "verification"
+                      ]
                     }
                   },
                   "required": [
@@ -94,8 +97,7 @@
                     "type": {
                       "enum": [
                         "event",
-                        "source",
-                        "incident"
+                        "source"
                       ]
                     }
                   },
