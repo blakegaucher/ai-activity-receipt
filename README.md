@@ -14,9 +14,13 @@ The project is developing a **model-neutral activity record and human-facing rec
 ## Project resources
 
 - [Sample Activity Receipt](examples/sample-receipt.json)
+- [Valid authorization fixture](examples/valid-completed-authorized-action.json)
+- [Intentionally invalid authorization fixture](examples/invalid-completed-with-denied-authorization.json)
+- [Candidate JSON Schema](activity-receipt.schema.json)
+- [Candidate Invariants](docs/INVARIANTS.md)
 - [Validation Record](docs/VALIDATION.md)
 - [Project Roadmap](docs/ROADMAP.md)
-- [Candidate JSON Schema](activity-receipt.schema.json)
+- [Executable validator](validate_receipts.py)
 ---
 ## The problem
 
@@ -126,6 +130,19 @@ The pilot tested invariants including required identity/version fields, register
 **24 / 24** new synthetic v0.2 fixtures behaved as expected, covering authorization timing, event tampering, delegation, provenance, failed tools, incident linking, verification, and private-reasoning exclusion.
 
 These remain **internal engineering checks**, not external effectiveness evidence.
+
+### Repository validation automation
+
+The public repository includes a candidate JSON Schema, semantic-invariant fixtures, an executable Python validator, and a GitHub Actions workflow. The automated check is intended to confirm that the published examples continue to produce their prespecified structural and semantic outcomes as the repository changes.
+
+Run locally with:
+
+```bash
+python -m pip install -r requirements.txt
+python validate_receipts.py
+```
+
+The invalid fixture is intentionally expected to be **structurally valid but semantically rejected**. A passing test suite therefore means the validator correctly accepts the valid fixtures and rejects that governance-inconsistent fixture.
 
 ### AR-P003 — comparative audit reconstruction benchmark
 
