@@ -113,7 +113,8 @@ A positive result is **not** required for this phase to be successful.
 - [ ] Add richer evidence-substrate/ingestion references beyond trace/span identity.
 - [x] Exercise the canonical record as the target of a synthetic OTLP/JSON GenAI adapter.
 - [ ] Define multi-agent and multi-hop delegation chains.
-- [ ] Define a signing/attestation envelope around record hashes.
+- [x] Publish an integrity/attestation design direction and evaluate established envelope approaches.
+- [ ] Implement signing/attestation only after signer identity, key management, payload type, and trust/revocation policy are defined.
 - [ ] Test derivation against heterogeneous realistic workflow traces.
 
 ### Candidate architecture
@@ -155,7 +156,7 @@ A positive result is **not** required for this phase to be successful.
 
 ### Exit condition
 
-The **synthetic candidate prototype** now demonstrates deterministic derivation from a canonical record and a hash binding back to that exact record. Phase 3 remains open for evidence-substrate ingestion, richer delegation, attestation, and realistic-workflow testing.
+The **synthetic candidate prototype** now demonstrates deterministic derivation from a canonical record and a hash binding back to that exact record. Phase 3 remains open for evidence-substrate ingestion, richer delegation, authenticated attestation implementation, and realistic-workflow testing.
 
 ---
 

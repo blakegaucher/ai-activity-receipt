@@ -105,9 +105,12 @@ The self-test checks that:
 - the derived Receipt exactly matches the published expected fixture;
 - the derived Receipt passes the current Receipt schema and semantic invariant checker;
 - repeated derivation is deterministic;
-- the Receipt carries a SHA-256 binding to the exact parsed source record under the documented project-local serialization profile.
+- recursive dictionary insertion-order changes do not alter the project-local digest;
+- a non-material record mutation changes the record binding while leaving the non-integrity Receipt projection unchanged;
+- a material record mutation changes both the record binding and the visible Receipt projection;
+- the Receipt carries a SHA-256 binding to the parsed source record under the documented project-local serialization profile.
 
-This establishes only deterministic behavior for the published synthetic example. It does not establish raw-log ingestion fidelity, cryptographic signing/non-repudiation, standards conformance, or real-world audit benefit.
+This establishes only deterministic behavior for the published synthetic example and the stated project-local digest properties. It does not establish exact input-byte preservation, RFC 8785/JCS conformance, raw-log ingestion fidelity, cryptographic signing/non-repudiation, standards conformance, or real-world audit benefit.
 
 ---
 

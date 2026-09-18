@@ -49,6 +49,22 @@ def record_hash(record: dict[str, Any]) -> str:
     return "sha256:" + hashlib.sha256(canonical_record_bytes(record)).hexdigest()
 
 
+def _reverse_mapping_order(value: Any) -> Any:
+    """Return an equivalent JSON value with dictionary insertion order reversed.
+
+    Used only by the self-test to demonstrate that the project-local digest is
+    based on the deterministic serialization rather than Python insertion order.
+    """
+    if isinstance(value, dict):
+        return {
+            key: _reverse_mapping_order(value[key])
+            for key in reversed(list(value.keys()))
+        }
+    if isinstance(value, list):
+        return [_reverse_mapping_order(item) for item in value]
+    return copy.deepcopy(value)
+
+
 def validate_record_structure(
     record: Any,
     schema: dict[str, Any],
@@ -315,6 +331,47 @@ def run_self_test(
     assert derived["integrity"]["record_hash"] == (
         "sha256:ade688ba6ecfb64f6ded458ba114b6d029f81e03df0757994fc91ab1f5e571be"
     )
+
+    # Dictionary insertion order must not change the project-local digest.
+    reordered = _reverse_mapping_order(record)
+    assert reordered == record
+    assert record_hash(reordered) == record_hash(record)
+
+    # A non-material record change must still change the record binding even
+    # though the visible Receipt projection is otherwise unchanged.
+    nonmaterial_change = copy.deepcopy(record)
+    nonmaterial_event = next(
+        event
+        for event in nonmaterial_change["events"]
+        if event.get("material") is False
+    )
+    nonmaterial_event["operation"] = "internal_cache_lookup_v2"
+    nonmaterial_receipt = derive_receipt(nonmaterial_change)
+    assert nonmaterial_receipt["integrity"]["record_hash"] != (
+        derived["integrity"]["record_hash"]
+    )
+
+    original_projection = copy.deepcopy(derived)
+    changed_projection = copy.deepcopy(nonmaterial_receipt)
+    for candidate in (original_projection, changed_projection):
+        candidate["integrity"].pop("record_hash", None)
+        candidate["integrity"].pop("derived_from_record_hash", None)
+    assert changed_projection == original_projection
+
+    # A material record change must change both the binding and the visible
+    # Receipt projection.
+    material_change = copy.deepcopy(record)
+    material_event = next(
+        event
+        for event in material_change["events"]
+        if event.get("material") is True
+    )
+    material_event["occurred_at"] = "2026-09-18T04:31:00Z"
+    material_receipt = derive_receipt(material_change)
+    assert material_receipt["integrity"]["record_hash"] != (
+        derived["integrity"]["record_hash"]
+    )
+    assert material_receipt["material_actions"] != derived["material_actions"]
 
     inverted = copy.deepcopy(record)
     inverted["authority"]["valid_from"] = "2026-09-18T05:01:00Z"

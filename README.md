@@ -19,6 +19,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Candidate JSON Schema](activity-receipt.schema.json)
 - [Candidate Canonical Activity Record Schema](activity-record.schema.json)
 - [Canonical Record Design and Derivation](docs/CANONICAL-RECORD.md)
+- [Integrity and Attestation Direction](docs/ATTESTATION.md)
 - [Canonical Record Example](examples/canonical-record.json)
 - [Expected Derived Receipt](examples/derived-receipt.json)
 - [Candidate Invariants](docs/INVARIANTS.md)
@@ -62,7 +63,7 @@ The project is being developed around three layers:
 2. **Canonical Activity Record** — a normalized, append-oriented machine record that preserves identities, authority, provenance, events, verification, incidents, and integrity links.
 3. **Activity Receipt View** — a compact human-facing summary derived from the canonical record.
 
-A candidate canonical-record schema and deterministic derivation utility are now published. The synthetic derivation test filters non-material source/event records, generates a Receipt, binds it to the exact source record with a SHA-256 hash, and validates the result against the Receipt schema/invariants.
+A candidate canonical-record schema and deterministic derivation utility are now published. The synthetic derivation test filters non-material source/event records, generates a Receipt, binds it to the parsed canonical record under a documented project-local SHA-256 serialization profile, and validates the result against the Receipt schema/invariants.
 
 The receipt is intended to summarize and index evidence, **not invent new facts**.
 
@@ -81,7 +82,7 @@ The current prototype/design work includes:
 - incidents and mitigation records;
 - timestamps and trace links;
 - a compact human-readable summary;
-- SHA-256-linked integrity records for tamper detection.
+- SHA-256-linked content bindings for deterministic change detection and lineage experiments.
 
 Private chain-of-thought, hidden scratchpads, passwords, tokens, and unnecessary sensitive prompt content are intentionally outside the receipt model.
 

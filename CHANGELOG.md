@@ -45,6 +45,15 @@ The project is pre-commercial research. Version labels below describe repository
 - add synthetic canonical-record and exact expected derived-Receipt fixtures;
 - revalidate the derived Receipt against the public Receipt schema and semantic invariants in CI.
 
+### Integrity / attestation research
+
+- document the current SHA-256 record binding as a project-local, non-authenticated content digest;
+- add self-tests showing dictionary insertion order does not change the digest under the project serializer;
+- add self-tests showing non-material record changes still change the record binding while leaving the visible Receipt projection otherwise unchanged;
+- add self-tests showing material record changes alter both the binding and the visible Receipt projection;
+- document why the current serializer is **not** claimed as RFC 8785 / JCS;
+- identify DSSE / in-toto-style external envelopes as the leading future attestation direction while deferring signing code until signer/key/trust semantics are defined.
+
 ### MCP adapter
 
 - add a candidate MCP 2026-07-28 `tools/call` capture -> Canonical Activity Record adapter;

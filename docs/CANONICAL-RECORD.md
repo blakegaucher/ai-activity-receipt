@@ -92,6 +92,8 @@ python derive_receipt.py --self-test
 
 The self-test requires the derived value to match `examples/derived-receipt.json` exactly and then validates the result against the current Receipt schema and semantic invariant checker.
 
+It also checks integrity behavior explicitly: recursive dictionary insertion-order changes do not alter the project-local digest; a non-material record mutation changes the record binding without otherwise changing the visible Receipt projection; and a material event mutation changes both the binding and the visible Receipt projection.
+
 ## Record hash profile
 
 Candidate v0.1 calculates:
@@ -114,7 +116,9 @@ The Receipt stores the resulting value as both:
 
 This is a **project-local deterministic serialization profile**. It is not presented as RFC 8785 JSON Canonicalization Scheme conformance.
 
-The current record does not store its own hash inside itself, avoiding a self-referential hash field. A future envelope/attestation design may carry the current record hash alongside the record.
+The current record does not store its own hash inside itself, avoiding a self-referential hash field.
+
+The current digest is a **content binding, not an authenticated attestation**. It does not prove signer identity, key ownership, non-repudiation, or that the underlying evidence is true. The project's current attestation direction is documented in [ATTESTATION.md](ATTESTATION.md). That design note also explains why the present serializer must not be described as RFC 8785 / JCS and why an established external envelope such as DSSE/in-toto is preferable to inventing custom signature fields.
 
 If `integrity.previous_record_hash` exists on the canonical record, derivation copies it into the Receipt to preserve candidate lineage.
 
@@ -182,8 +186,7 @@ The strongest next technical steps are:
 
 - add explicit evidence-substrate references and ingestion provenance;
 - decide how multi-agent delegation chains are represented;
-- define an envelope/attestation model around record hashes;
-- prototype an OpenTelemetry-to-record adapter;
-- prototype an MCP evidence adapter;
+- define signer identity, key-management, payload-type, trust, revocation, and freshness policy before implementing the documented attestation-envelope direction;
+- extend the existing OpenTelemetry and MCP adapters to preserve richer evidence-substrate references;
 - evaluate optional C2PA references for content-producing events;
 - test derivation on heterogeneous realistic workflow traces.
