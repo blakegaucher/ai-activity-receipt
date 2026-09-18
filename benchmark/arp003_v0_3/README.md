@@ -8,6 +8,8 @@ This directory contains **development infrastructure** for the next human-center
 
 - `protocol.json` — machine-readable candidate protocol scaffold.
 - `score_responses.py` — deterministic component-level scorer with a built-in synthetic self-test.
+- `response-record.schema.json` — JSON Schema for one analysis-side reviewer/case scoring record.
+- `generate_assignment.py` — seeded reviewer/case assignment generator that avoids showing the same case twice to one reviewer and balances case exposure/conditions.
 - `freeze_manifest.py` — SHA-256 manifest utility for protocol/corpus/scorer freeze artifacts.
 
 The human-readable preregistration draft is in:
@@ -63,10 +65,12 @@ In an actual study, gold labels must remain hidden from reviewers. The combined 
 
 ## Scoring
 
-Run the development self-test:
+Run the development self-tests:
 
 ```bash
 python benchmark/arp003_v0_3/score_responses.py --self-test
+python benchmark/arp003_v0_3/generate_assignment.py --self-test
+python benchmark/arp003_v0_3/freeze_manifest.py --self-test
 ```
 
 Score JSONL records:
