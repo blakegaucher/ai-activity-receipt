@@ -176,6 +176,7 @@ The **synthetic candidate prototype** now demonstrates deterministic derivation 
 - [x] Publish a versioned machine-readable candidate mapping artifact with schema/CI validation against the current canonical Activity Record.
 - [x] Prototype an OpenTelemetry GenAI -> canonical-record -> Receipt adapter on synthetic OTLP/JSON traces.
 - [x] Prototype an MCP 2026-07-28 evidence adapter that separates self-reported client/server metadata from authenticated identity and authority.
+- [x] Add a synthetic cross-adapter normalization parity test for aligned OpenTelemetry/MCP governance-action semantics.
 - [ ] Evaluate optional C2PA attestation references for content-producing workflows.
 
 ### Rule
