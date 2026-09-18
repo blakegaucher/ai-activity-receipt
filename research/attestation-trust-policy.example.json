@@ -4,7 +4,7 @@
   "envelope_profile": "DSSE-v1",
   "payload_types": [
     {
-      "payload_type": "urn:ai-activity-receipt:activity-record:candidate-record-v0.1",
+      "payload_type": "https://github.com/blakegaucher/ai-activity-receipt/blob/main/docs/PAYLOAD-TYPES.md#activity-record-candidate-record-v01",
       "record_schema_version": "candidate-record-v0.1",
       "payload_semantics": "exact_payload_bytes"
     }
@@ -14,14 +14,14 @@
       "role_id": "record_emitter",
       "description": "Attests that the signer emitted the exact canonical Activity Record payload.",
       "may_attest_payload_types": [
-        "urn:ai-activity-receipt:activity-record:candidate-record-v0.1"
+        "https://github.com/blakegaucher/ai-activity-receipt/blob/main/docs/PAYLOAD-TYPES.md#activity-record-candidate-record-v01"
       ]
     },
     {
       "role_id": "independent_verifier",
       "description": "Optional independent verifier role for a future additional signature or separate attestation.",
       "may_attest_payload_types": [
-        "urn:ai-activity-receipt:activity-record:candidate-record-v0.1"
+        "https://github.com/blakegaucher/ai-activity-receipt/blob/main/docs/PAYLOAD-TYPES.md#activity-record-candidate-record-v01"
       ]
     }
   ],
