@@ -57,6 +57,8 @@ It expects one logical GenAI trace per adapter invocation.
 
 OTLP `traceId` becomes the canonical record `trace_id`.
 
+The adapter now checks the OpenTelemetry identifier widths directly: trace IDs must be 32 hexadecimal characters (16 bytes), span IDs must be 16 hexadecimal characters (8 bytes), and all-zero identifiers are rejected. Hexadecimal identifiers are normalized to lowercase.
+
 Each adapted GenAI span receives a canonical event ID derived from its OTLP span ID:
 
 ```text
@@ -95,6 +97,20 @@ The adapter therefore ignores:
 - hidden/private reasoning.
 
 The synthetic OTLP fixture deliberately contains a fake recipient address inside tool arguments. The self-test confirms that this value never appears in the canonical record.
+
+## Timestamp fidelity
+
+OTLP span timestamps are Unix nanoseconds. Candidate v0.1 preserves the full significant nanosecond fraction when converting `startTimeUnixNano` to RFC 3339 UTC text.
+
+For example:
+
+```text
+1789711500123456789 -> 2026-09-18T06:05:00.123456789Z
+```
+
+This avoids silently truncating telemetry timestamps to Python's microsecond-resolution `datetime` representation.
+
+The canonical record still does not claim that source clocks are synchronized or factually accurate; this is a fidelity rule for the captured timestamp value.
 
 ## Event status
 
@@ -181,7 +197,9 @@ The test confirms that:
 3. deterministic Receipt derivation exactly matches the published expected Receipt;
 4. the derived Receipt passes the Receipt schema and executable invariants;
 5. missing authorization evidence is preserved as `unknown` and causes the consequential-action Receipt check to fail;
-6. sensitive tool arguments/results are not copied into the record.
+6. sensitive tool arguments/results are not copied into the record;
+7. OTLP nanosecond timestamp precision is preserved;
+8. malformed, short, or all-zero trace/span identifiers are rejected.
 
 ## Manual use
 
