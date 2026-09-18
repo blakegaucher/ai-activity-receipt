@@ -42,6 +42,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [MCP 2026-07-28 Adapter Prototype](docs/MCP-ADAPTER.md)
 - [AR-P003 v0.3 Preregistration Draft](docs/AR-P003-V0.3-PROTOCOL.md)
 - [AR-P003 v0.3 Reviewer Instructions Draft](docs/AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md)
+- [AR-P003 v0.3 Development Offline Runner](docs/AR-P003-V0.3-OFFLINE-RUNNER.md)
 - [AR-P003 v0.3 Benchmark Workspace](benchmark/arp003_v0_3/README.md)
 - [Project Roadmap](docs/ROADMAP.md)
 - [Changelog](CHANGELOG.md)
