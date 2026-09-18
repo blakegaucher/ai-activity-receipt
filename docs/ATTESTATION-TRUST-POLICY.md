@@ -252,9 +252,9 @@ With this candidate policy, the four prerequisites are now defined at research l
 - payload type: project-controlled Activity Record URI with exact-byte semantics;
 - trust/revocation: role-based trusted signer registry, fail-closed production revocation behavior, threshold rules.
 
-The next cryptographic step may therefore be a **research-only DSSE signing/verification prototype** using test-only keys.
+A **research-only DSSE signing/verification prototype** now exercises this policy with ephemeral in-memory Ed25519 keys and adversarial verification cases. See [DSSE-PROTOTYPE.md](DSSE-PROTOTYPE.md).
 
-Production signing must remain blocked until a deployment provides actual identity issuance, protected private-key storage, revocation/status infrastructure, and operational trust roots.
+Production signing remains blocked until a deployment provides actual identity issuance, protected private-key storage, revocation/status infrastructure, operational trust roots, and an appropriate timestamp/history strategy.
 
 ## Evidence boundary
 
