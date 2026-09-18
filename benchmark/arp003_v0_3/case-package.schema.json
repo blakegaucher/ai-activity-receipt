@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Development Case Package",
+  "description": "Development-only manifest for one reviewer case package. It is designed to enforce file separation and condition symmetry before a future sealed corpus is frozen.",
+  "type": "object",
+  "required": [
+    "package_version",
+    "case_id",
+    "stratum",
+    "condition_contract",
+    "reviewer_evidence_files",
+    "receipt_file",
+    "analysis_files",
+    "receipt_state",
+    "forbidden_reviewer_markers"
+  ],
+  "properties": {
+    "package_version": {
+      "const": "AR-P003-v0.3-dev-case-v0.1"
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stratum": {
+      "type": "string",
+      "enum": [
+        "ordinary",
+        "stale_receipt",
+        "incomplete_receipt",
+        "conflicting_receipt"
+      ]
+    },
+    "condition_contract": {
+      "const": "same_evidence_plus_receipt"
+    },
+    "reviewer_evidence_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "receipt_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "analysis_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "receipt_state": {
+      "type": "string",
+      "enum": [
+        "current",
+        "stale",
+        "incomplete",
+        "conflicting"
+      ]
+    },
+    "forbidden_reviewer_markers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 4
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
