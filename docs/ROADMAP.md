@@ -18,7 +18,9 @@ The project currently has:
 - AR-P002 expanded engineering checks;
 - AR-P003 comparative-audit benchmark development;
 - documented benchmark defects and evidence boundaries;
-- a human-centered next-test direction.
+- a human-centered next-test direction;
+- a public candidate-v0.2 schema/validator with a 17-fixture reproducibility manifest;
+- a dated interoperability research snapshot covering provenance, telemetry, content credentials, agent protocols, and authorization.
 
 ---
 
@@ -142,12 +144,15 @@ A Receipt can be deterministically derived from a canonical record and traced ba
 
 ### Research directions
 
-- W3C PROV / PROV-O;
-- OpenTelemetry traces and GenAI conventions;
-- content-provenance approaches such as C2PA;
-- agent identity and authorization systems;
-- incident-reporting frameworks;
-- AI evaluation and TEVV practices.
+- [x] Publish an initial dated field/concept crosswalk.
+- [x] Cover W3C PROV / PROV-O.
+- [x] Cover OpenTelemetry traces and developing GenAI conventions.
+- [x] Cover C2PA 2.4 / Content Credentials.
+- [x] Cover MCP 2026-07-28, A2A, OAuth RAR, and current NIST agent identity/authorization work.
+- [ ] Publish machine-readable mappings after the canonical Activity Record stabilizes.
+- [ ] Prototype an OpenTelemetry-to-Receipt adapter.
+- [ ] Prototype an MCP evidence adapter that separates descriptive identity from authenticated identity.
+- [ ] Evaluate optional C2PA attestation references for content-producing workflows.
 
 ### Rule
 
@@ -155,7 +160,7 @@ Interoperability research does not imply standards certification or conformance.
 
 ### Exit condition
 
-Publish explicit field mappings and document where Activity Receipt concepts align, extend, or differ.
+Publish explicit field mappings and document where Activity Receipt concepts align, extend, or differ. The first dated research snapshot now satisfies the documentation portion; implementation/conformance work remains open.
 
 ---
 
