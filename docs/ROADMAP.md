@@ -114,7 +114,8 @@ A positive result is **not** required for this phase to be successful.
 - [x] Add an exact-match synthetic derivation self-test and Receipt re-validation.
 - [ ] Add richer evidence-substrate/ingestion references beyond trace/span identity.
 - [x] Exercise the canonical record as the target of a synthetic OTLP/JSON GenAI adapter.
-- [ ] Define multi-agent and multi-hop delegation chains.
+- [x] Define candidate multi-agent and multi-hop delegation-chain semantics, invariants, and standards boundaries.
+- [ ] Implement multi-hop delegation in a versioned future record/Receipt schema with migration tests from the direct-delegation profile.
 - [x] Publish an integrity/attestation design direction and evaluate established envelope approaches.
 - [ ] Implement signing/attestation only after signer identity, key management, payload type, and trust/revocation policy are defined.
 - [ ] Test derivation against heterogeneous realistic workflow traces.
