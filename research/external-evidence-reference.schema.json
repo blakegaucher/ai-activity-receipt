@@ -6,6 +6,7 @@
   "required": [
     "evidence_reference_version",
     "record_id",
+    "record_binding",
     "references"
   ],
   "properties": {
@@ -193,6 +194,27 @@
         },
         "additionalProperties": false
       }
+    },
+    "record_binding": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "serialization_profile",
+        "digest"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "serialization_profile": {
+          "const": "candidate-record-v0.1-project-local-json"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false
