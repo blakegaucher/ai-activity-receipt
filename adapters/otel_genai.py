@@ -76,55 +76,106 @@ def decode_any_value(value: Any) -> Any:
     return None
 
 
-def attributes_to_dict(attributes: Any) -> dict[str, Any]:
+def attributes_to_dict(attributes: Any, *, label: str) -> dict[str, Any]:
     result: dict[str, Any] = {}
-    if not isinstance(attributes, list):
+    if attributes is None:
         return result
-    for item in attributes:
+    if not isinstance(attributes, list):
+        raise ValueError(f"{label} must be a list when supplied")
+
+    for index, item in enumerate(attributes):
         if not isinstance(item, dict):
-            continue
+            raise ValueError(f"{label}[{index}] must be an object")
         key = item.get("key")
         if not isinstance(key, str) or not key:
-            continue
+            raise ValueError(f"{label}[{index}].key must be a non-empty string")
+        if key in result:
+            raise ValueError(f"{label} contains duplicate attribute key {key!r}")
         result[key] = decode_any_value(item.get("value"))
     return result
 
 
+def _object_list(value: Any, label: str) -> list[dict[str, Any]]:
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise ValueError(f"{label} must be a list")
+    if not all(isinstance(item, dict) for item in value):
+        raise ValueError(f"{label} entries must be objects")
+    return list(value)
+
+
 def flatten_spans(otlp: dict[str, Any]) -> list[dict[str, Any]]:
     flattened: list[dict[str, Any]] = []
-    for resource_span in otlp.get("resourceSpans") or []:
-        if not isinstance(resource_span, dict):
-            continue
+    for resource_index, resource_span in enumerate(
+        _object_list(otlp.get("resourceSpans"), "resourceSpans")
+    ):
         resource = resource_span.get("resource") or {}
-        resource_attrs = attributes_to_dict(resource.get("attributes"))
-        for scope_span in resource_span.get("scopeSpans") or []:
-            if not isinstance(scope_span, dict):
-                continue
+        if not isinstance(resource, dict):
+            raise ValueError(
+                f"resourceSpans[{resource_index}].resource must be an object"
+            )
+        resource_attrs = attributes_to_dict(
+            resource.get("attributes"),
+            label=f"resourceSpans[{resource_index}].resource.attributes",
+        )
+        for scope_index, scope_span in enumerate(
+            _object_list(
+                resource_span.get("scopeSpans"),
+                f"resourceSpans[{resource_index}].scopeSpans",
+            )
+        ):
             scope = scope_span.get("scope") or {}
-            for span in scope_span.get("spans") or []:
-                if not isinstance(span, dict):
-                    continue
+            if not isinstance(scope, dict):
+                raise ValueError(
+                    "scope must be an object at "
+                    f"resourceSpans[{resource_index}].scopeSpans[{scope_index}]"
+                )
+            for span_index, span in enumerate(
+                _object_list(
+                    scope_span.get("spans"),
+                    "resourceSpans"
+                    f"[{resource_index}].scopeSpans[{scope_index}].spans",
+                )
+            ):
                 flattened.append(
                     {
                         "resource_attributes": resource_attrs,
                         "scope": scope,
                         "span": span,
-                        "attributes": attributes_to_dict(span.get("attributes")),
+                        "attributes": attributes_to_dict(
+                            span.get("attributes"),
+                            label=(
+                                "resourceSpans"
+                                f"[{resource_index}].scopeSpans[{scope_index}]"
+                                f".spans[{span_index}].attributes"
+                            ),
+                        ),
                     }
                 )
     return flattened
 
 
-def unix_nano_to_iso(value: Any) -> str:
+def unix_nano_int(value: Any) -> int:
     try:
         total = int(value)
     except (TypeError, ValueError) as exc:
         raise ValueError(f"invalid OTLP Unix-nanosecond timestamp: {value!r}") from exc
     if total < 0:
         raise ValueError("OTLP Unix-nanosecond timestamp must be non-negative")
+    return total
+
+
+def unix_nano_to_iso(value: Any) -> str:
+    total = unix_nano_int(value)
 
     seconds, nanos = divmod(total, 1_000_000_000)
-    dt = datetime.fromtimestamp(seconds, tz=timezone.utc)
+    try:
+        dt = datetime.fromtimestamp(seconds, tz=timezone.utc)
+    except (OverflowError, OSError, ValueError) as exc:
+        raise ValueError(
+            f"OTLP Unix-nanosecond timestamp is outside supported range: {value!r}"
+        ) from exc
     base = dt.strftime("%Y-%m-%dT%H:%M:%S")
     if nanos:
         # OTLP timestamps are Unix nanoseconds. Preserve all significant
@@ -154,6 +205,39 @@ def normalize_span_id(value: Any) -> str:
     normalized = value.lower()
     if normalized == "0" * 16:
         raise ValueError("OTLP spanId must contain at least one non-zero byte")
+    return normalized
+
+
+def require_string_list(value: Any, label: str) -> list[str]:
+    if value is None:
+        return []
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item for item in value
+    ):
+        raise ValueError(f"{label} must be a list of non-empty strings")
+    return list(value)
+
+
+def require_mapping(value: Any, label: str) -> dict[str, Any]:
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be an object")
+    if not all(isinstance(key, str) and key for key in value):
+        raise ValueError(f"{label} keys must be non-empty strings")
+    return value
+
+
+def normalize_span_key_mapping(value: Any, label: str) -> dict[str, Any]:
+    raw = require_mapping(value, label)
+    normalized: dict[str, Any] = {}
+    for key, item in raw.items():
+        span_id = normalize_span_id(key)
+        if span_id in normalized:
+            raise ValueError(
+                f"{label} contains duplicate span id after normalization: {span_id!r}"
+            )
+        normalized[span_id] = item
     return normalized
 
 
@@ -187,8 +271,20 @@ def one_value(
     return None
 
 
+def validate_span_time_order(span: dict[str, Any]) -> None:
+    start = unix_nano_int(span.get("startTimeUnixNano"))
+    end_raw = span.get("endTimeUnixNano")
+    if end_raw in (None, ""):
+        return
+    end = unix_nano_int(end_raw)
+    if end < start:
+        raise ValueError("OTLP span endTimeUnixNano must not precede startTimeUnixNano")
+
+
 def span_status(span: dict[str, Any], attrs: dict[str, Any]) -> str:
     status = span.get("status") or {}
+    if not isinstance(status, dict):
+        raise ValueError("OTLP span.status must be an object when supplied")
     code = status.get("code")
     if code == 2 or attrs.get("error.type") not in (None, ""):
         return "failed"
@@ -199,11 +295,16 @@ def span_status(span: dict[str, Any], attrs: dict[str, Any]) -> str:
 
 def event_operation(attrs: dict[str, Any], span: dict[str, Any]) -> str:
     op = attrs.get("gen_ai.operation.name")
-    if op == "execute_tool" and attrs.get("gen_ai.tool.name"):
-        return str(attrs["gen_ai.tool.name"])
-    if op:
-        return str(op)
-    return str(span.get("name") or "unknown")
+    if not isinstance(op, str) or not op:
+        raise ValueError("gen_ai.operation.name must be a non-empty string")
+    if op == "execute_tool":
+        tool_name = attrs.get("gen_ai.tool.name")
+        if not isinstance(tool_name, str) or not tool_name:
+            raise ValueError(
+                "execute_tool spans must provide non-empty gen_ai.tool.name"
+            )
+        return tool_name
+    return op
 
 
 def event_id(span: dict[str, Any]) -> str:
@@ -230,6 +331,10 @@ def build_record(otlp: dict[str, Any], context: dict[str, Any]) -> dict[str, Any
             f"found {sorted(trace_ids)!r}"
         )
     trace_id = next(iter(trace_ids))
+
+    span_ids = [normalize_span_id(item["span"].get("spanId")) for item in genai_spans]
+    if len(set(span_ids)) != len(span_ids):
+        raise ValueError("candidate adapter requires unique spanId values per trace")
 
     agent_id = one_value(
         [item["attributes"].get("gen_ai.agent.id") for item in genai_spans],
@@ -258,6 +363,16 @@ def build_record(otlp: dict[str, Any], context: dict[str, Any]) -> dict[str, Any
         explicit=context.get("model"),
     )
 
+    for label, value in (
+        ("agent_id", agent_id),
+        ("agent_version", agent_version),
+    ):
+        if not isinstance(value, str) or not value:
+            raise ValueError(f"{label} must resolve to a non-empty string")
+    for label, value in (("provider", provider), ("model", model)):
+        if value is not None and (not isinstance(value, str) or not value):
+            raise ValueError(f"{label} must resolve to a non-empty string when present")
+
     principal = context.get("principal")
     if not isinstance(principal, str) or not principal:
         raise ValueError("sidecar context must provide a non-empty principal")
@@ -269,42 +384,105 @@ def build_record(otlp: dict[str, Any], context: dict[str, Any]) -> dict[str, Any
         if required not in authority:
             raise ValueError(f"sidecar authority is missing {required!r}")
 
-    scope = authority.get("scope")
-    if not isinstance(scope, list) or not all(
-        isinstance(item, str) and item for item in scope
-    ):
-        raise ValueError("sidecar authority.scope must be a list of non-empty strings")
+    scope = require_string_list(authority.get("scope"), "sidecar authority.scope")
+    if not scope:
+        raise ValueError("sidecar authority.scope must not be empty")
 
-    prohibited = authority.get("prohibited") or []
-    if not isinstance(prohibited, list) or not all(
-        isinstance(item, str) and item for item in prohibited
-    ):
-        raise ValueError("sidecar authority.prohibited must be a list of strings")
+    prohibited = require_string_list(
+        authority.get("prohibited"), "sidecar authority.prohibited"
+    )
 
-    material_operations = set(context.get("material_operations") or [])
-    consequential_operations = set(context.get("consequential_operations") or [])
-    material_source_ids = set(context.get("material_source_ids") or [])
-    source_roles = context.get("source_roles") or {}
-    if not isinstance(source_roles, dict):
-        raise ValueError("source_roles must be an object when supplied")
+    material_operations = set(
+        require_string_list(
+            context.get("material_operations"), "material_operations"
+        )
+    )
+    consequential_operations = set(
+        require_string_list(
+            context.get("consequential_operations"),
+            "consequential_operations",
+        )
+    )
+    material_source_ids = set(
+        require_string_list(
+            context.get("material_source_ids"), "material_source_ids"
+        )
+    )
 
-    authorization_by_span_id = context.get("authorization_by_span_id") or {}
-    source_refs_by_span_id = context.get("source_refs_by_span_id") or {}
-    status_by_span_id = context.get("status_by_span_id") or {}
+    source_roles = require_mapping(context.get("source_roles"), "source_roles")
+    for source_id, role in source_roles.items():
+        if not isinstance(role, str) or not role:
+            raise ValueError(
+                f"source_roles[{source_id!r}] must be a non-empty string"
+            )
+
+    authorization_by_span_id = normalize_span_key_mapping(
+        context.get("authorization_by_span_id"),
+        "authorization_by_span_id",
+    )
+    source_refs_by_span_id = normalize_span_key_mapping(
+        context.get("source_refs_by_span_id"),
+        "source_refs_by_span_id",
+    )
+    status_by_span_id = normalize_span_key_mapping(
+        context.get("status_by_span_id"),
+        "status_by_span_id",
+    )
+
+    for span_id, info in authorization_by_span_id.items():
+        if not isinstance(info, dict):
+            raise ValueError(
+                "authorization_by_span_id values must be objects; "
+                f"span {span_id!r} is invalid"
+            )
+
+    for span_id, refs in source_refs_by_span_id.items():
+        if not isinstance(refs, list) or not all(
+            isinstance(ref, str) and ref for ref in refs
+        ):
+            raise ValueError(
+                "source_refs_by_span_id values must be lists of non-empty "
+                f"strings; span {span_id!r} is invalid"
+            )
 
     data_source_ids: set[str] = set()
     for item in genai_spans:
         source_id = item["attributes"].get("gen_ai.data_source.id")
-        if isinstance(source_id, str) and source_id:
+        if source_id is not None:
+            if not isinstance(source_id, str) or not source_id:
+                raise ValueError(
+                    "gen_ai.data_source.id must be a non-empty string when present"
+                )
             data_source_ids.add(source_id)
 
     for refs in source_refs_by_span_id.values():
-        if not isinstance(refs, list):
-            raise ValueError("source_refs_by_span_id values must be lists")
-        for ref in refs:
-            if not isinstance(ref, str) or not ref:
-                raise ValueError("source_refs_by_span_id entries must be non-empty strings")
-            data_source_ids.add(ref)
+        data_source_ids.update(refs)
+
+    observed_span_ids = set(span_ids)
+    for label, mapping in (
+        ("authorization_by_span_id", authorization_by_span_id),
+        ("source_refs_by_span_id", source_refs_by_span_id),
+        ("status_by_span_id", status_by_span_id),
+    ):
+        unknown = sorted(set(mapping) - observed_span_ids)
+        if unknown:
+            raise ValueError(
+                f"{label} contains unknown span id(s): {unknown!r}"
+            )
+
+    unknown_material_sources = sorted(material_source_ids - data_source_ids)
+    if unknown_material_sources:
+        raise ValueError(
+            "material_source_ids contains source id(s) not present in telemetry "
+            f"or source_refs_by_span_id: {unknown_material_sources!r}"
+        )
+
+    unknown_source_roles = sorted(set(source_roles) - data_source_ids)
+    if unknown_source_roles:
+        raise ValueError(
+            "source_roles contains source id(s) not present in telemetry or "
+            f"source_refs_by_span_id: {unknown_source_roles!r}"
+        )
 
     sources = [
         {
@@ -322,6 +500,7 @@ def build_record(otlp: dict[str, Any], context: dict[str, Any]) -> dict[str, Any
         span = item["span"]
         attrs = item["attributes"]
         span_id = normalize_span_id(span.get("spanId"))
+        validate_span_time_order(span)
 
         operation = event_operation(attrs, span)
         status = status_by_span_id.get(span_id) or span_status(span, attrs)
@@ -346,7 +525,11 @@ def build_record(otlp: dict[str, Any], context: dict[str, Any]) -> dict[str, Any
 
         refs = list(source_refs_by_span_id.get(span_id) or [])
         data_source_id = attrs.get("gen_ai.data_source.id")
-        if isinstance(data_source_id, str) and data_source_id and data_source_id not in refs:
+        if (
+            isinstance(data_source_id, str)
+            and data_source_id
+            and data_source_id not in refs
+        ):
             refs.append(data_source_id)
 
         event: dict[str, Any] = {
@@ -393,26 +576,32 @@ def build_record(otlp: dict[str, Any], context: dict[str, Any]) -> dict[str, Any
         )
 
     system: dict[str, Any] = {
-        "agent_id": str(agent_id),
-        "version": str(agent_version),
+        "agent_id": agent_id,
+        "version": agent_version,
     }
     if provider not in (None, ""):
-        system["provider"] = str(provider)
+        system["provider"] = provider
     if model not in (None, ""):
-        system["model"] = str(model)
+        system["model"] = model
+
+    record_id = context.get("record_id")
+    if record_id is None:
+        record_id = f"record-otel-{trace_id}"
+    if not isinstance(record_id, str) or not record_id:
+        raise ValueError("record_id must be a non-empty string when supplied")
 
     record: dict[str, Any] = {
-        "record_id": str(context.get("record_id") or f"record-otel-{trace_id}"),
+        "record_id": record_id,
         "record_schema_version": "candidate-record-v0.1",
         "trace_id": trace_id,
         "system": system,
         "actors": [
             {"actor_id": principal, "kind": "human", "role": "principal"},
-            {"actor_id": str(agent_id), "kind": "agent", "role": "delegate"},
+            {"actor_id": agent_id, "kind": "agent", "role": "delegate"},
         ],
         "authority": {
             "principal": principal,
-            "delegate": str(agent_id),
+            "delegate": agent_id,
             "scope": list(scope),
             "prohibited": list(prohibited),
             "valid_from": authority["valid_from"],
@@ -508,6 +697,77 @@ def run_self_test(
         assert "16-hex-character" in str(exc)
     else:
         raise AssertionError("short spanId was not rejected")
+
+    # Sidecar collections must have explicit list/object shapes.
+    malformed_sidecar = json.loads(json.dumps(context))
+    malformed_sidecar["material_operations"] = "send_email"
+    try:
+        build_record(otlp, malformed_sidecar)
+    except ValueError as exc:
+        assert "material_operations must be a list" in str(exc)
+    else:
+        raise AssertionError("string material_operations was not rejected")
+
+    # Stale sidecar evidence for an unknown span must fail closed.
+    dangling_auth = json.loads(json.dumps(context))
+    dangling_auth["authorization_by_span_id"]["3333333333333333"] = {
+        "authorization": "approved"
+    }
+    try:
+        build_record(otlp, dangling_auth)
+    except ValueError as exc:
+        assert "unknown span id" in str(exc)
+    else:
+        raise AssertionError("dangling authorization sidecar entry was not rejected")
+
+    # Duplicate semantic-convention attributes are ambiguous.
+    duplicate_attr = json.loads(json.dumps(otlp))
+    duplicate_attr["resourceSpans"][0]["scopeSpans"][0]["spans"][0][
+        "attributes"
+    ].append(
+        {
+            "key": "gen_ai.agent.id",
+            "value": {"stringValue": "other-agent"},
+        }
+    )
+    try:
+        build_record(duplicate_attr, context)
+    except ValueError as exc:
+        assert "duplicate attribute key" in str(exc)
+    else:
+        raise AssertionError("duplicate OTLP attribute key was not rejected")
+
+    # Span timing must be internally coherent.
+    inverted_time = json.loads(json.dumps(otlp))
+    inverted_time["resourceSpans"][0]["scopeSpans"][0]["spans"][1][
+        "endTimeUnixNano"
+    ] = "1789711499000000000"
+    try:
+        build_record(inverted_time, context)
+    except ValueError as exc:
+        assert "must not precede startTimeUnixNano" in str(exc)
+    else:
+        raise AssertionError("inverted OTLP span time was not rejected")
+
+    # Duplicate span IDs would collapse canonical event identity.
+    duplicate_span = json.loads(json.dumps(otlp))
+    duplicate_span["resourceSpans"][0]["scopeSpans"][0]["spans"][1]["spanId"] = (
+        duplicate_span["resourceSpans"][0]["scopeSpans"][0]["spans"][0]["spanId"]
+    )
+    try:
+        build_record(duplicate_span, context)
+    except ValueError as exc:
+        assert "unique spanId" in str(exc)
+    else:
+        raise AssertionError("duplicate spanId was not rejected")
+
+    # Unsupported timestamp magnitudes must fail as validation errors, not crash.
+    try:
+        unix_nano_to_iso("999999999999999999999999999999999999")
+    except ValueError as exc:
+        assert "outside supported range" in str(exc)
+    else:
+        raise AssertionError("out-of-range OTLP timestamp was not rejected")
 
     # Sensitive tool arguments/results are intentionally not copied.
     rendered = json.dumps(record)
