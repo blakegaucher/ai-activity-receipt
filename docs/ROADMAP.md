@@ -59,6 +59,7 @@ A technically informed reader should be able to understand what an Activity Rece
 - [x] Publish seeded balanced assignment generator and smoke test.
 - [x] Publish neutral reviewer-instructions draft.
 - [x] Publish SHA-256 freeze-manifest utility.
+- [x] Publish a development case-package schema/linter for file separation, path safety, exact leakage markers, and condition-symmetry checks.
 - [ ] Define target reviewer population.
 - [ ] Freeze primary endpoint(s) and meaningful effect/precision target.
 - [ ] Complete sample-size or precision analysis.
