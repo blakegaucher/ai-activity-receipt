@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -35,6 +36,9 @@ DEFAULT_OTLP_FIXTURE = ROOT / "examples" / "otel-genai-traces.json"
 DEFAULT_CONTEXT_FIXTURE = ROOT / "examples" / "otel-adapter-context.json"
 DEFAULT_EXPECTED_RECORD = ROOT / "examples" / "otel-derived-record.json"
 DEFAULT_EXPECTED_RECEIPT = ROOT / "examples" / "otel-derived-receipt.json"
+
+TRACE_ID_RE = re.compile(r"^[0-9a-fA-F]{32}$")
+SPAN_ID_RE = re.compile(r"^[0-9a-fA-F]{16}$")
 
 
 def load_json(path: Path) -> Any:
@@ -120,12 +124,37 @@ def unix_nano_to_iso(value: Any) -> str:
         raise ValueError("OTLP Unix-nanosecond timestamp must be non-negative")
 
     seconds, nanos = divmod(total, 1_000_000_000)
-    dt = datetime.fromtimestamp(seconds, tz=timezone.utc).replace(
-        microsecond=nanos // 1000
-    )
-    if dt.microsecond:
-        return dt.isoformat(timespec="microseconds").replace("+00:00", "Z")
-    return dt.isoformat(timespec="seconds").replace("+00:00", "Z")
+    dt = datetime.fromtimestamp(seconds, tz=timezone.utc)
+    base = dt.strftime("%Y-%m-%dT%H:%M:%S")
+    if nanos:
+        # OTLP timestamps are Unix nanoseconds. Preserve all significant
+        # fractional digits rather than truncating to Python datetime's
+        # microsecond precision.
+        fraction = f"{nanos:09d}".rstrip("0")
+        return f"{base}.{fraction}Z"
+    return f"{base}Z"
+
+
+def normalize_trace_id(value: Any) -> str:
+    if not isinstance(value, str) or not TRACE_ID_RE.fullmatch(value):
+        raise ValueError(
+            "OTLP traceId must be a 32-hex-character string"
+        )
+    normalized = value.lower()
+    if normalized == "0" * 32:
+        raise ValueError("OTLP traceId must contain at least one non-zero byte")
+    return normalized
+
+
+def normalize_span_id(value: Any) -> str:
+    if not isinstance(value, str) or not SPAN_ID_RE.fullmatch(value):
+        raise ValueError(
+            "OTLP spanId must be a 16-hex-character string"
+        )
+    normalized = value.lower()
+    if normalized == "0" * 16:
+        raise ValueError("OTLP spanId must contain at least one non-zero byte")
+    return normalized
 
 
 def one_value(
@@ -178,10 +207,7 @@ def event_operation(attrs: dict[str, Any], span: dict[str, Any]) -> str:
 
 
 def event_id(span: dict[str, Any]) -> str:
-    span_id = span.get("spanId")
-    if not isinstance(span_id, str) or not span_id:
-        raise ValueError("every adapted OTLP span must include spanId")
-    return f"otel-span:{span_id.lower()}"
+    return f"otel-span:{normalize_span_id(span.get('spanId'))}"
 
 
 def build_record(otlp: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
@@ -195,9 +221,8 @@ def build_record(otlp: dict[str, Any], context: dict[str, Any]) -> dict[str, Any
         raise ValueError("no spans with gen_ai.operation.name were found")
 
     trace_ids = {
-        str(item["span"].get("traceId")).lower()
+        normalize_trace_id(item["span"].get("traceId"))
         for item in genai_spans
-        if item["span"].get("traceId")
     }
     if len(trace_ids) != 1:
         raise ValueError(
@@ -296,9 +321,7 @@ def build_record(otlp: dict[str, Any], context: dict[str, Any]) -> dict[str, Any
     for item in genai_spans:
         span = item["span"]
         attrs = item["attributes"]
-        span_id = str(span.get("spanId") or "").lower()
-        if not span_id:
-            raise ValueError("every adapted GenAI span must include spanId")
+        span_id = normalize_span_id(span.get("spanId"))
 
         operation = event_operation(attrs, span)
         status = status_by_span_id.get(span_id) or span_status(span, attrs)
@@ -449,6 +472,42 @@ def run_self_test(
     assert consequential and consequential[0]["authorization"] == "unknown"
     missing_auth_receipt = derive_receipt(missing_auth_record)
     assert validate_derived_receipt(missing_auth_receipt, receipt_schema)
+
+    # Preserve OTLP nanosecond precision rather than truncating to microseconds.
+    assert unix_nano_to_iso("1789711500123456789") == (
+        "2026-09-18T06:05:00.123456789Z"
+    )
+    assert unix_nano_to_iso("1789711500123000000") == (
+        "2026-09-18T06:05:00.123Z"
+    )
+
+    # Trace/span identifiers must have the OpenTelemetry widths and be non-zero.
+    zero_trace = json.loads(json.dumps(otlp))
+    zero_trace["resourceSpans"][0]["scopeSpans"][0]["spans"][0]["traceId"] = "0" * 32
+    try:
+        build_record(zero_trace, context)
+    except ValueError as exc:
+        assert "traceId" in str(exc)
+    else:
+        raise AssertionError("all-zero traceId was not rejected")
+
+    zero_span = json.loads(json.dumps(otlp))
+    zero_span["resourceSpans"][0]["scopeSpans"][0]["spans"][0]["spanId"] = "0" * 16
+    try:
+        build_record(zero_span, context)
+    except ValueError as exc:
+        assert "spanId" in str(exc)
+    else:
+        raise AssertionError("all-zero spanId was not rejected")
+
+    short_span = json.loads(json.dumps(otlp))
+    short_span["resourceSpans"][0]["scopeSpans"][0]["spans"][0]["spanId"] = "abcd"
+    try:
+        build_record(short_span, context)
+    except ValueError as exc:
+        assert "16-hex-character" in str(exc)
+    else:
+        raise AssertionError("short spanId was not rejected")
 
     # Sensitive tool arguments/results are intentionally not copied.
     rendered = json.dumps(record)
