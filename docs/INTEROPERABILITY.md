@@ -201,7 +201,36 @@ Activity Receipt should store only the minimum authorization evidence needed for
 
 ---
 
-## 7. NIST AI-agent identity and authorization work
+## 7. OAuth 2.0 Token Exchange
+
+**Reference:** RFC 8693, *OAuth 2.0 Token Exchange*  
+https://www.rfc-editor.org/rfc/rfc8693.html
+
+RFC 8693 defines token-exchange semantics that explicitly distinguish delegation from impersonation and provides JWT claims such as `act` and `may_act`.
+
+### Candidate relationship
+
+A validated token-exchange result can contribute evidence for:
+
+- represented subject/principal identity;
+- the current acting party;
+- delegated scope;
+- token-validity time bounds;
+- delegation-history provenance.
+
+The current outermost `act` actor is especially relevant to current actor identity. Nested `act` claims can preserve prior delegation history.
+
+### Boundary
+
+Prior nested actors are historical delegation information rather than independent current access-control authority. The Activity Record should not reconstruct current authorization merely from the existence of a historical chain.
+
+Raw `subject_token`, `actor_token`, access tokens, refresh tokens, and other bearer credentials remain excluded from the Activity Record and Receipt.
+
+The current candidate-record-v0.1 direct-delegation profile has no field for a full nested delegation chain. The future chain semantics are defined in [MULTI-AGENT-DELEGATION.md](MULTI-AGENT-DELEGATION.md).
+
+---
+
+## 8. NIST AI-agent identity and authorization work
 
 **References:**
 
@@ -228,15 +257,15 @@ That separation makes later mapping to emerging standards easier than embedding 
 
 ---
 
-## 8. Candidate crosswalk summary
+## 9. Candidate crosswalk summary
 
 | Receipt field / concept | PROV | OpenTelemetry GenAI | C2PA | MCP / A2A / OAuth |
 | --- | --- | --- | --- | --- |
 | `trace_id` | activity/bundle identifier candidate | native trace correlation | external reference only | task/request correlation |
 | `system.agent_id` | `prov:Agent` | `gen_ai.agent.id` | disclosure metadata only | Agent Card / descriptive client-server info |
 | `authority.principal` | responsible `prov:Agent` | custom attribute/evidence | not primary purpose | authenticated principal |
-| `authority.delegate` | `prov:actedOnBehalfOf` candidate | agent identity + custom delegation evidence | not primary purpose | authenticated client/agent |
-| `authority.scope` | no complete native equivalent | custom policy/attribute evidence | not primary purpose | OAuth scopes / RAR authorization details |
+| `authority.delegate` | `prov:actedOnBehalfOf` candidate | agent identity + custom delegation evidence | not primary purpose | authenticated client/agent; RFC 8693 current `act` actor candidate |
+| `authority.scope` | no complete native equivalent | custom policy/attribute evidence | not primary purpose | OAuth scopes / RAR authorization details / validated token-exchange scope |
 | material source | `prov:Entity` | retrieval/document attributes | ingredient/content assertion where applicable | resource/tool evidence |
 | material action | `prov:Activity` | span/event/tool execution | content action where applicable | tool/task/message operation |
 | verification | qualified provenance/evidence links | evaluation or application events | validation status for C2PA assets | application-specific |
@@ -245,7 +274,7 @@ That separation makes later mapping to emerging standards easier than embedding 
 
 ---
 
-## 9. Research conclusions for candidate-v0.2
+## 10. Research conclusions for candidate-v0.2
 
 The interoperability review supports several concrete design rules:
 
@@ -257,10 +286,13 @@ The interoperability review supports several concrete design rules:
 6. **Do not copy secrets or private reasoning.** Auditability should rely on observable evidence and references.
 7. **Treat content provenance and operational provenance as related but distinct.** C2PA can complement an Activity Receipt without replacing it.
 8. **Version adapters and mappings.** OpenTelemetry GenAI, MCP, and A2A are evolving quickly enough that mappings must carry a version/date.
+9. **Treat direct delegation as a versioned profile, not a permanent assumption.** Multi-hop workflows need explicit chain semantics.
+10. **Intersect downstream scope/time rather than allowing authority amplification.** A delegate cannot silently grant more authority than it holds.
+11. **Do not collapse delegation history into current authority.** Historical PROV/RFC 8693 chain information is provenance; current authorization still requires valid current evidence.
 
 ---
 
-## 10. Machine-readable crosswalk
+## 11. Machine-readable crosswalk
 
 The repository now publishes `mappings/interoperability-v0.1.json` plus a JSON Schema and semantic validator.
 
