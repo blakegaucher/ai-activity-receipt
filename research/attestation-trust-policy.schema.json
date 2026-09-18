@@ -1,0 +1,288 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Activity Receipt Attestation Trust Policy",
+  "type": "object",
+  "required": [
+    "policy_version",
+    "environment",
+    "envelope_profile",
+    "payload_types",
+    "roles",
+    "trusted_signers",
+    "verification",
+    "key_management",
+    "revocation"
+  ],
+  "properties": {
+    "policy_version": {
+      "const": "candidate-attestation-trust-v0.1"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "research",
+        "production"
+      ]
+    },
+    "envelope_profile": {
+      "const": "DSSE-v1"
+    },
+    "payload_types": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "payload_type",
+          "record_schema_version",
+          "payload_semantics"
+        ],
+        "properties": {
+          "payload_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "record_schema_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "payload_semantics": {
+            "const": "exact_payload_bytes"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "roles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "role_id",
+          "description",
+          "may_attest_payload_types"
+        ],
+        "properties": {
+          "role_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "may_attest_payload_types": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "trusted_signers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "signer_id",
+          "role",
+          "identity_type",
+          "identity",
+          "key_id",
+          "verification_material",
+          "valid_from",
+          "valid_until",
+          "status"
+        ],
+        "properties": {
+          "signer_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "identity_type": {
+            "type": "string",
+            "enum": [
+              "spiffe_id",
+              "x509_subject",
+              "oidc_subject",
+              "public_key_fingerprint",
+              "test_identity"
+            ]
+          },
+          "identity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "key_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "verification_material": {
+            "type": "object",
+            "required": [
+              "type",
+              "uri"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "spiffe_bundle",
+                  "certificate",
+                  "public_key",
+                  "sigstore_bundle"
+                ]
+              },
+              "uri": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "additionalProperties": false
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "valid_until": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked",
+              "expired",
+              "test_only"
+            ]
+          },
+          "revocation_ref": {
+            "type": "string",
+            "format": "uri"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "required_roles",
+        "minimum_signatures",
+        "reject_unknown_payload_type",
+        "reject_untrusted_signers",
+        "reject_revoked_signers",
+        "require_record_schema_match",
+        "keyid_is_hint_only",
+        "signature_validity_is_not_authorization"
+      ],
+      "properties": {
+        "required_roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "minimum_signatures": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reject_unknown_payload_type": {
+          "const": true
+        },
+        "reject_untrusted_signers": {
+          "const": true
+        },
+        "reject_revoked_signers": {
+          "const": true
+        },
+        "require_record_schema_match": {
+          "const": true
+        },
+        "keyid_is_hint_only": {
+          "const": true
+        },
+        "signature_validity_is_not_authorization": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "key_management": {
+      "type": "object",
+      "required": [
+        "private_keys_must_not_be_stored_in_repository",
+        "rotation_required",
+        "compromise_response_required"
+      ],
+      "properties": {
+        "private_keys_must_not_be_stored_in_repository": {
+          "const": true
+        },
+        "rotation_required": {
+          "const": true
+        },
+        "compromise_response_required": {
+          "const": true
+        },
+        "preferred_identity_model": {
+          "type": "string",
+          "enum": [
+            "workload_identity",
+            "certificate_identity",
+            "external_identity_provider",
+            "deployment_specific"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "revocation": {
+      "type": "object",
+      "required": [
+        "unknown_status_behavior",
+        "evaluate_at_verification_time"
+      ],
+      "properties": {
+        "unknown_status_behavior": {
+          "type": "string",
+          "enum": [
+            "fail_closed",
+            "policy_specific"
+          ]
+        },
+        "evaluate_at_verification_time": {
+          "const": true
+        },
+        "historical_validation_policy": {
+          "type": "string",
+          "enum": [
+            "current_status",
+            "trusted_timestamp_required",
+            "deployment_specific"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
