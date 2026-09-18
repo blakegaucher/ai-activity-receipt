@@ -167,6 +167,20 @@ This establishes only deterministic behavior on the published synthetic capture.
 
 ---
 
+## Attestation trust-policy smoke test
+
+**Status:** Research policy validation; no cryptographic signing implemented
+
+The repository publishes a machine-readable candidate attestation trust-policy schema/example plus semantic validator.
+
+The policy defines a project-controlled Activity Record payload-type URI, exact-payload-byte DSSE semantics, record-emitter/verifier roles, trusted signer identity types, verification-material references, key lifecycle requirements, required roles/signature threshold, and production revocation behavior.
+
+The self-test requires one valid research policy and rejects duplicate signer/key identities, missing required-role signers, inverted validity windows, active test identities, test signers in production, production signers without revocation references, non-URI payload identifiers, unknown role/payload references, impossible signature thresholds, and attempted private-key fields.
+
+This establishes only that the trust policy is explicit and mechanically checkable. It does not verify any digital signature or deploy a production identity/key-management system.
+
+---
+
 ## External evidence-reference / C2PA smoke test
 
 **Status:** Standalone research prototype; not integrated into candidate-record-v0.1
