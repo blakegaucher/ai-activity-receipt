@@ -50,8 +50,8 @@ CHECKS: list[dict[str, Any]] = [
         "argv": ["adapters/otel_genai.py", "--self-test"],
         "artifacts": [
             "adapters/otel_genai.py",
-            "adapters/fixtures/otel-genai-trace.json",
-            "adapters/fixtures/otel-context.json",
+            "examples/otel-genai-traces.json",
+            "examples/otel-adapter-context.json",
         ],
     },
     {
@@ -59,8 +59,8 @@ CHECKS: list[dict[str, Any]] = [
         "argv": ["adapters/mcp_2026.py", "--self-test"],
         "artifacts": [
             "adapters/mcp_2026.py",
-            "adapters/fixtures/mcp-2026-capture.json",
-            "adapters/fixtures/mcp-2026-context.json",
+            "examples/mcp-2026-capture.json",
+            "examples/mcp-adapter-context.json",
         ],
     },
     {
