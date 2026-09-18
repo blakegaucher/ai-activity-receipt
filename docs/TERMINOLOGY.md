@@ -128,7 +128,7 @@ Candidate fields:
 - `authority.valid_from`;
 - `authority.valid_until`.
 
-The current public schema allows these timestamps, but the public semantic validator does not yet enforce action-time comparisons because material actions do not yet require their own timestamp.
+Candidate-v0.2 requires both authority-window timestamps and requires `material_actions[].occurred_at`. The public semantic validator rejects actions recorded before `valid_from` or after `valid_until`.
 
 ---
 
@@ -217,7 +217,19 @@ The candidate validator requires completed consequential actions to have approve
 
 Stable identifier for a material action/event when other records need to reference it.
 
-Incident and verification references should resolve to known evidence/event identifiers.
+Candidate-v0.2 requires an `event_id` for every material action and rejects duplicate event identifiers within one Receipt. Incident and verification references should resolve to known evidence/event identifiers.
+
+### `occurred_at`
+
+Timestamp for the material action.
+
+Candidate-v0.2 requires this field so the validator can compare action timing with the delegated authority window.
+
+### `authorization_decided_at`
+
+Timestamp for the authorization decision associated with an action.
+
+This field is optional in the general action structure, but the candidate-v0.2 semantic validator requires it for a completed consequential action and requires the decision not to occur after the action.
 
 ---
 
@@ -323,11 +335,12 @@ Because the invariant set is still developing, "semantically valid" means valid 
 
 A synthetic test Receipt with a prespecified expected outcome.
 
-The repository includes:
+The repository publishes a fixture expectation manifest with 17 current synthetic cases, including:
 
-- an illustrative sample Receipt;
-- a valid completed-authorized-action fixture;
-- an intentionally invalid completed-with-denied-authorization fixture.
+- valid Receipts;
+- structurally valid but semantically invalid Receipts;
+- structurally invalid Receipts;
+- expected invariant identifiers for negative semantic cases.
 
 ### Intentionally invalid fixture
 
