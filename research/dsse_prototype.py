@@ -100,13 +100,25 @@ def dsse_pae(payload_type: str, payload: bytes) -> bytes:
     )
 
 
-def strict_b64decode(value: Any, label: str) -> bytes:
+def dsse_b64decode(value: Any, label: str) -> bytes:
+    """Decode either standard or URL-safe base64, as required by DSSE."""
     if not isinstance(value, str) or not value:
         raise VerificationError(f"{label} must be a non-empty base64 string")
     try:
-        return base64.b64decode(value.encode("ascii"), validate=True)
-    except (UnicodeEncodeError, ValueError) as exc:
+        encoded = value.encode("ascii")
+    except UnicodeEncodeError as exc:
         raise VerificationError(f"{label} is not valid base64") from exc
+
+    for altchars in (None, b"-_"):
+        try:
+            return base64.b64decode(
+                encoded,
+                altchars=altchars,
+                validate=True,
+            )
+        except ValueError:
+            continue
+    raise VerificationError(f"{label} is not valid base64")
 
 
 def structural_errors(doc: Any, schema: dict[str, Any]) -> list[str]:
@@ -172,12 +184,12 @@ def signer_eligible(
 
 def verify_signatures(
     envelope: dict[str, Any],
+    payload: bytes,
     policy: dict[str, Any],
     verification_keys: Mapping[str, Ed25519PublicKey],
     verification_time: datetime,
 ) -> list[dict[str, str]]:
     payload_type = envelope["payloadType"]
-    payload = strict_b64decode(envelope["payload"], "envelope.payload")
     pae = dsse_pae(payload_type, payload)
 
     signer_by_key_id = {
@@ -233,7 +245,7 @@ def verify_signatures(
             )
             continue
 
-        signature = strict_b64decode(
+        signature = dsse_b64decode(
             signature_entry["sig"],
             f"signatures[{index}].sig",
         )
@@ -315,14 +327,19 @@ def verify_envelope(
             f"payload type {payload_type!r} is not trusted by this policy"
         )
 
+    # Decode the payload exactly once and pass these same bytes through
+    # cryptographic verification and then to the application parser. This
+    # follows the DSSE requirement that the verified SERIALIZED_BODY must be
+    # the same bytes delivered to the application layer.
+    payload = dsse_b64decode(envelope["payload"], "envelope.payload")
+
     verified_signers = verify_signatures(
         envelope,
+        payload,
         policy,
         verification_keys,
         verification_time,
     )
-
-    payload = strict_b64decode(envelope["payload"], "envelope.payload")
     try:
         record = json.loads(payload.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -479,6 +496,13 @@ def run_self_test() -> int:
 
     # PAE sanity: exact formula and byte-length behavior.
     assert dsse_pae("x", b"abc") == b"DSSEv1 1 x 3 abc"
+    assert (
+        dsse_pae(
+            "http://example.com/HelloWorld",
+            b"hello world",
+        )
+        == b"DSSEv1 29 http://example.com/HelloWorld 11 hello world"
+    )
     unicode_type = "https://example.invalid/μ"
     encoded_type = unicode_type.encode("utf-8")
     expected = (
@@ -555,6 +579,28 @@ def run_self_test() -> int:
         "cryptographic signature is invalid",
     )
 
+    # DSSE requires verifiers to accept both standard and URL-safe base64.
+    urlsafe_envelope = copy.deepcopy(envelope)
+    urlsafe_envelope["payload"] = base64.urlsafe_b64encode(payload).decode("ascii")
+    urlsafe_sig = dsse_b64decode(
+        urlsafe_envelope["signatures"][0]["sig"],
+        "self_test.urlsafe_sig",
+    )
+    urlsafe_envelope["signatures"][0]["sig"] = base64.urlsafe_b64encode(
+        urlsafe_sig
+    ).decode("ascii")
+    urlsafe_report = verify_envelope(
+        urlsafe_envelope,
+        policy=policy,
+        policy_schema=policy_schema,
+        envelope_schema=envelope_schema,
+        record_schema=record_schema,
+        receipt_schema=receipt_schema,
+        verification_keys=keyring,
+        verification_time=verification_time,
+    )
+    assert urlsafe_report["valid"] is True
+
     # Payload type is authenticated and policy constrained.
     type_mutated = copy.deepcopy(envelope)
     type_mutated["payloadType"] = "https://example.invalid/other-payload"
@@ -576,7 +622,7 @@ def run_self_test() -> int:
     # Signature bytes cannot be modified.
     signature_mutated = copy.deepcopy(envelope)
     raw_sig = bytearray(
-        strict_b64decode(
+        dsse_b64decode(
             signature_mutated["signatures"][0]["sig"],
             "self_test.signature",
         )
@@ -753,6 +799,7 @@ def run_self_test() -> int:
 
     print(
         "DSSE research prototype self-test passed: "
+        "standard + URL-safe base64, official PAE vector, "
         "1 valid exact-byte signed Activity Record + 11 adversarial cases."
     )
     return 0
