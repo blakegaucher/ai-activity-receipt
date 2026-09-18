@@ -33,6 +33,8 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Terminology and Field Semantics](docs/TERMINOLOGY.md)
 - [Fixture expectation manifest](examples/fixture-manifest.json)
 - [Validation Record](docs/VALIDATION.md)
+- [AR-P003 v0.2.3 Historical Frozen Baseline](docs/AR-P003-V0.2.3-HISTORICAL-BASELINE.md)
+- [Project Continuity Snapshot](docs/PROJECT-CONTINUITY-2026-09-18.md)
 - [One-Command Reproducibility Suite](docs/REPRODUCIBILITY.md)
 - [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)
 - [Machine-Readable Interoperability Crosswalk](docs/MACHINE-READABLE-MAPPINGS.md)
