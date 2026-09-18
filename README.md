@@ -21,6 +21,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Canonical Record Design and Derivation](docs/CANONICAL-RECORD.md)
 - [Integrity and Attestation Direction](docs/ATTESTATION.md)
 - [Attestation Trust Policy](docs/ATTESTATION-TRUST-POLICY.md)
+- [DSSE Research Prototype](docs/DSSE-PROTOTYPE.md)
 - [Project Payload Type Identifiers](docs/PAYLOAD-TYPES.md)
 - [Multi-Agent Delegation Design](docs/MULTI-AGENT-DELEGATION.md)
 - [Heterogeneous Workflow Pilot](docs/WORKFLOW-PILOT.md)
