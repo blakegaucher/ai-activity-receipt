@@ -6,6 +6,11 @@
 
 The repository now contains a narrow executable prototype for signing and verifying exact canonical Activity Record bytes with a DSSE v1 envelope and an Ed25519 test key generated only in process memory.
 
+The implementation was checked against the upstream **DSSE Protocol 1.0.2 (May 10, 2024)** and its published PAE test vector:
+
+- https://github.com/secure-systems-lab/dsse/blob/master/protocol.md
+- https://github.com/secure-systems-lab/dsse/blob/master/implementation/signing_spec.py
+
 Files:
 
 - `research/dsse-envelope.schema.json`
@@ -59,6 +64,8 @@ As a result, two JSON files with identical parsed content but different whitespa
 - different DSSE signatures.
 
 The self-test requires this distinction.
+
+The verifier also accepts both standard and URL-safe base64 encodings, matching the DSSE protocol requirement. The payload is decoded exactly once, and those same bytes are used first for signature verification and then for JSON parsing; the verifier does not re-read or re-decode a second payload after authentication.
 
 ## Key identity and `keyid`
 
@@ -114,7 +121,7 @@ The self-test requires one valid signed record and negative cases for:
 11. Receipt bound to a different Activity Record;
 12. signer outside its configured validity window.
 
-The PAE helper is also checked directly, including a non-ASCII payload-type byte-length case.
+The PAE helper is also checked directly, including the upstream `HelloWorld` PAE vector and a non-ASCII payload-type byte-length case. A separate positive test requires URL-safe base64 envelopes to verify successfully.
 
 Run:
 

@@ -90,6 +90,14 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### DSSE protocol-conformance hardening
+
+- check the prototype against upstream DSSE Protocol 1.0.2 and its published `HelloWorld` PAE vector;
+- accept both standard and URL-safe base64 encodings as required by DSSE;
+- decode the payload once and pass the same authenticated bytes to the application parser, avoiding a second payload extraction after verification;
+- keep the local requirement for `keyid` explicitly scoped as an application trust-policy profile rather than a claim that DSSE itself requires it;
+- extend CI/self-test coverage for the upstream PAE vector and URL-safe envelopes.
+
 ### DSSE research signing / verification prototype
 
 - add a constrained DSSE v1 envelope schema and exact PAE implementation;
