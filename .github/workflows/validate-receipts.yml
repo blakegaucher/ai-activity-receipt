@@ -115,6 +115,12 @@ jobs:
       - name: Run AR-P003 planning self-test
         run: python benchmark/arp003_v0_3/plan_sample_size.py --self-test
 
+      - name: Run AR-P003 offline-runner data self-test
+        run: python benchmark/arp003_v0_3/validate_runner_data.py --self-test
+
+      - name: Run AR-P003 runner merge self-test
+        run: python benchmark/arp003_v0_3/merge_runner_responses.py --self-test
+
       - name: Run AR-P003 freeze-manifest self-test
         run: python benchmark/arp003_v0_3/freeze_manifest.py --self-test
 
