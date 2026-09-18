@@ -90,6 +90,13 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### Cross-adapter normalization parity
+
+- add a synthetic OpenTelemetry/MCP parity harness that aligns identity/authority context and compares the derived substrate-independent governance/action projection;
+- require matching normalized operation, status, authorization, consequentiality, authority, identity, and verification semantics while preserving protocol-specific trace/time/provenance differences;
+- add a negative parity case proving that successful MCP execution without separate approval evidence remains `unknown` and breaks parity with an authorized OpenTelemetry action;
+- add CI coverage and interoperability/validation documentation without claiming general protocol conformance.
+
 ### Adapter integrity hardening
 
 - harden MCP capture parsing against duplicate case-insensitive routing headers, non-JSON-RPC-2.0 envelopes, malformed sidecar container shapes, dangling request-ID governance entries, and arbitrary-value identifier stringification;
