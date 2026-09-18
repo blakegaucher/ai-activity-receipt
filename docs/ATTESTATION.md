@@ -284,6 +284,27 @@ A verifier should not collapse all of these steps into one boolean.
 
 ---
 
+## Candidate trust policy now defined
+
+The repository now separately defines the research-level prerequisites that this document previously left open:
+
+- signer roles and identity mapping;
+- external verification material;
+- private-key/key-rotation/compromise rules;
+- a project-controlled Activity Record payload-type URI;
+- exact-payload-byte semantics for DSSE;
+- required signer roles and signature threshold;
+- production rejection of test-only identities;
+- fail-closed production behavior for unknown revocation status;
+- the rule that DSSE `keyid` is only a lookup hint, not authenticated identity;
+- the rule that signature validity does not replace action authorization.
+
+See [ATTESTATION-TRUST-POLICY.md](ATTESTATION-TRUST-POLICY.md) and [PAYLOAD-TYPES.md](PAYLOAD-TYPES.md).
+
+The machine-readable research policy is validated in CI. This clears the **design prerequisite** for a future test-only cryptographic prototype; it does not clear the operational prerequisites for production signing.
+
+---
+
 ## Required adversarial tests before any signing claim
 
 A future implementation should include at least:
@@ -317,6 +338,7 @@ For the present research stage:
 - **do not claim JCS**;
 - **do not add custom signature fields**;
 - **treat DSSE/in-toto-style external envelopes as the leading candidate for future authenticated records**;
-- **defer actual signing code until signer identity, key management, payload type, and verification policy are defined**.
+- **keep production signing deferred until real identity issuance, protected key storage, revocation/status infrastructure, and deployment trust roots exist**;
+- **permit a research-only DSSE signing/verification prototype now that the candidate signer/key/payload/trust policy is explicit and testable**.
 
 This is intentionally conservative. The next implementation should add cryptography only when the project can test the trust semantics around it, not merely because producing a signature is technically easy.

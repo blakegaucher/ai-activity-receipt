@@ -20,6 +20,8 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Candidate Canonical Activity Record Schema](activity-record.schema.json)
 - [Canonical Record Design and Derivation](docs/CANONICAL-RECORD.md)
 - [Integrity and Attestation Direction](docs/ATTESTATION.md)
+- [Attestation Trust Policy](docs/ATTESTATION-TRUST-POLICY.md)
+- [Project Payload Type Identifiers](docs/PAYLOAD-TYPES.md)
 - [Multi-Agent Delegation Design](docs/MULTI-AGENT-DELEGATION.md)
 - [Heterogeneous Workflow Pilot](docs/WORKFLOW-PILOT.md)
 - [C2PA Evidence-Reference Evaluation](docs/C2PA-EVIDENCE-REFERENCES.md)

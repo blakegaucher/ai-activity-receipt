@@ -1,0 +1,68 @@
+{
+  "policy_version": "candidate-attestation-trust-v0.1",
+  "environment": "research",
+  "envelope_profile": "DSSE-v1",
+  "payload_types": [
+    {
+      "payload_type": "https://github.com/blakegaucher/ai-activity-receipt/blob/main/docs/PAYLOAD-TYPES.md#activity-record-candidate-record-v01",
+      "record_schema_version": "candidate-record-v0.1",
+      "payload_semantics": "exact_payload_bytes"
+    }
+  ],
+  "roles": [
+    {
+      "role_id": "record_emitter",
+      "description": "Attests that the signer emitted the exact canonical Activity Record payload.",
+      "may_attest_payload_types": [
+        "https://github.com/blakegaucher/ai-activity-receipt/blob/main/docs/PAYLOAD-TYPES.md#activity-record-candidate-record-v01"
+      ]
+    },
+    {
+      "role_id": "independent_verifier",
+      "description": "Optional independent verifier role for a future additional signature or separate attestation.",
+      "may_attest_payload_types": [
+        "https://github.com/blakegaucher/ai-activity-receipt/blob/main/docs/PAYLOAD-TYPES.md#activity-record-candidate-record-v01"
+      ]
+    }
+  ],
+  "trusted_signers": [
+    {
+      "signer_id": "research-runtime-test-signer",
+      "role": "record_emitter",
+      "identity_type": "test_identity",
+      "identity": "test-only://ai-activity-receipt/runtime-emitter",
+      "key_id": "test-key-record-emitter-001",
+      "verification_material": {
+        "type": "public_key",
+        "uri": "https://example.invalid/ai-activity-receipt/test-keys/record-emitter-001.pub"
+      },
+      "valid_from": "2026-09-18T00:00:00Z",
+      "valid_until": "2027-09-18T00:00:00Z",
+      "status": "test_only",
+      "notes": "Research-only identity. It must never satisfy a production trust policy."
+    }
+  ],
+  "verification": {
+    "required_roles": [
+      "record_emitter"
+    ],
+    "minimum_signatures": 1,
+    "reject_unknown_payload_type": true,
+    "reject_untrusted_signers": true,
+    "reject_revoked_signers": true,
+    "require_record_schema_match": true,
+    "keyid_is_hint_only": true,
+    "signature_validity_is_not_authorization": true
+  },
+  "key_management": {
+    "private_keys_must_not_be_stored_in_repository": true,
+    "rotation_required": true,
+    "compromise_response_required": true,
+    "preferred_identity_model": "workload_identity"
+  },
+  "revocation": {
+    "unknown_status_behavior": "fail_closed",
+    "evaluate_at_verification_time": true,
+    "historical_validation_policy": "trusted_timestamp_required"
+  }
+}
