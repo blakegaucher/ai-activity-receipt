@@ -90,6 +90,13 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### Adapter integrity hardening
+
+- harden MCP capture parsing against duplicate case-insensitive routing headers, non-JSON-RPC-2.0 envelopes, malformed sidecar container shapes, dangling request-ID governance entries, and arbitrary-value identifier stringification;
+- harden OpenTelemetry ingestion against duplicate semantic attributes, duplicate span IDs, inverted span times, unsupported timestamp magnitudes, malformed sidecar containers, dangling span-keyed evidence, and unresolved material-source/source-role references;
+- fail closed on these malformed/stale capture states rather than silently ignoring or coercing them;
+- expand adapter self-tests and documentation while preserving the boundary that internal consistency is not authentication or source-truth verification.
+
 ### AR-P003 assignment hardening
 
 - replace the development-only greedy condition allocator after testing exposed possible reviewer-level 4/2 splits for six-case workloads;
