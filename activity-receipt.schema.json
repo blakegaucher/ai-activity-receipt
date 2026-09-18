@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AI Activity Receipt",
   "$id": "https://github.com/blakegaucher/ai-activity-receipt/blob/main/activity-receipt.schema.json",
+  "$comment": "Candidate non-normative schema profile: candidate-v0.2",
   "description": "Candidate, non-normative schema for a human-centered provenance record of consequential AI-agent activity.",
   "type": "object",
   "required": [
@@ -66,6 +67,7 @@
         "principal",
         "delegate",
         "scope",
+        "valid_from",
         "valid_until"
       ],
       "properties": {
@@ -138,7 +140,9 @@
         "required": [
           "operation",
           "status",
-          "authorization"
+          "authorization",
+          "event_id",
+          "occurred_at"
         ],
         "properties": {
           "operation": {
@@ -168,7 +172,16 @@
             "type": "boolean"
           },
           "event_id": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorization_decided_at": {
+            "type": "string",
+            "format": "date-time"
           },
           "source_refs": {
             "type": "array",
@@ -233,7 +246,8 @@
       "type": "object",
       "required": [
         "record_hash",
-        "derived_from_record_hash"
+        "derived_from_record_hash",
+        "generated_at"
       ],
       "properties": {
         "record_hash": {
