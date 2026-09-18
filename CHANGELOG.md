@@ -36,7 +36,10 @@ The project is pre-commercial research. Version labels below describe repository
 
 ### Research
 
-- add a dated interoperability research snapshot covering W3C PROV, OpenTelemetry GenAI, C2PA 2.4, MCP 2026-07-28, A2A, OAuth Rich Authorization Requests, and relevant NIST agent identity/authorization work.
+- add a dated interoperability research snapshot covering W3C PROV, OpenTelemetry GenAI, C2PA 2.4, MCP 2026-07-28, A2A, OAuth Rich Authorization Requests, and relevant NIST agent identity/authorization work;
+- add an AR-P003 v0.3 preregistration draft using a fresh sealed corpus, randomized balanced incomplete-block assignment, explicit stale/incomplete/conflicting Receipt strata, and claim gates;
+- add a deterministic component-level scorer with synthetic self-tests;
+- add a SHA-256 freeze-manifest utility for future preregistration/corpus/scorer freezing.
 
 ## candidate-v0.1 — 2026-09
 
