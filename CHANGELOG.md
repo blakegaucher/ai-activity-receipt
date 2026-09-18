@@ -90,6 +90,16 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### Attestation trust-policy definition
+
+- define the project-local Activity Record DSSE payload-type URI and exact-payload-byte semantics;
+- add machine-readable signer roles, trusted signer identities, verification-material references, key-lifecycle requirements, signature thresholds, and revocation behavior;
+- require DSSE `keyid` to remain a lookup hint rather than authenticated identity;
+- keep cryptographic signature validity separate from action authorization;
+- reject test-only identities in production policies and require active production signers to carry revocation/status references;
+- add one valid research policy plus ten adversarial policy mutations and CI coverage;
+- clear the research design prerequisites for a future DSSE prototype while keeping production signing gated on real identity/key/revocation infrastructure.
+
 ### External evidence-index record binding
 
 - add an explicit `record_binding` object to the standalone external evidence-reference profile;
