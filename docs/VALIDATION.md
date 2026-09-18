@@ -175,7 +175,7 @@ The repository signs the exact bytes of a synthetic candidate Activity Record in
 
 Verification separately checks the machine-readable trust policy, DSSE envelope structure, recognized payload type, DSSE pre-authentication encoding, Ed25519 signature, signer role/validity/threshold, Activity Record schema and semantics, deterministic Receipt derivation, Receipt invariants, and record-hash binding.
 
-The self-test includes a valid signed record and adversarial cases covering unknown key ID, wrong signing key, exact-byte payload mutation that preserves parsed JSON content, payload-type mutation, signature mutation, wrong verification key, malformed envelope, duplicate same-key signatures, signed schema-invalid record, signed semantic-invalid record, mismatched Receipt binding, and signer expiry.
+The self-test includes the upstream DSSE `HelloWorld` PAE vector, positive standard/URL-safe base64 verification, a valid signed record, and adversarial cases covering unknown key ID, wrong signing key, exact-byte payload mutation that preserves parsed JSON content, payload-type mutation, signature mutation, wrong verification key, malformed envelope, duplicate same-key signatures, signed schema-invalid record, signed semantic-invalid record, mismatched Receipt binding, and signer expiry. The verifier decodes the payload once and passes the same authenticated bytes to the JSON parser.
 
 Private keys are not stored in the repository. This test does not deploy production identity issuance, key custody, revocation/status infrastructure, trusted timestamps, or production trust roots.
 
