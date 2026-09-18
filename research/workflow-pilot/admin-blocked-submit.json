@@ -1,0 +1,85 @@
+{
+  "record_id": "workflow-admin-blocked-submit-001",
+  "record_schema_version": "candidate-record-v0.1",
+  "trace_id": "trace-workflow-admin-blocked-submit-001",
+  "system": {
+    "agent_id": "agent-admin-1",
+    "version": "pilot-1.0"
+  },
+  "actors": [
+    {
+      "actor_id": "user-pilot",
+      "kind": "human",
+      "role": "principal"
+    },
+    {
+      "actor_id": "agent-admin-1",
+      "kind": "agent",
+      "role": "delegate"
+    }
+  ],
+  "authority": {
+    "principal": "user-pilot",
+    "delegate": "agent-admin-1",
+    "scope": [
+      "read",
+      "submit_form"
+    ],
+    "prohibited": [
+      "delete_record"
+    ],
+    "valid_from": "2026-09-18T16:00:00Z",
+    "valid_until": "2026-09-18T17:00:00Z"
+  },
+  "sources": [
+    {
+      "source_id": "src-form",
+      "role": "form_input",
+      "material": true,
+      "uri": "synthetic://administrative-form"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "event-form-read",
+      "occurred_at": "2026-09-18T16:05:00Z",
+      "actor_id": "agent-admin-1",
+      "operation": "read",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": true,
+      "source_refs": [
+        "src-form"
+      ]
+    },
+    {
+      "event_id": "event-submit",
+      "occurred_at": "2026-09-18T16:15:00Z",
+      "actor_id": "agent-admin-1",
+      "operation": "submit_form",
+      "status": "blocked",
+      "authorization": "denied",
+      "authorization_decided_at": "2026-09-18T16:14:45Z",
+      "consequential": true,
+      "material": true,
+      "source_refs": [
+        "src-form"
+      ]
+    }
+  ],
+  "verification": {
+    "state": "pending"
+  },
+  "incidents": [
+    {
+      "type": "blocked_unauthorized_action",
+      "event_id": "event-submit",
+      "mitigation": "Synthetic policy gate prevented submission."
+    }
+  ],
+  "integrity": {
+    "generated_at": "2026-09-18T16:20:00Z"
+  },
+  "notes": "Synthetic administrative workflow with denied/blocked form submission."
+}
