@@ -80,6 +80,16 @@ The project is pre-commercial research. Version labels below describe repository
 - validate OpenTelemetry trace/span identifier widths and reject all-zero identifiers;
 - add CI coverage and a detailed adapter design note.
 
+### Machine-readable interoperability crosswalk
+
+- add a versioned JSON crosswalk for OpenTelemetry GenAI, MCP 2026-07-28, W3C PROV, OAuth RAR, C2PA 2.4, and A2A;
+- add a JSON Schema for mapping artifacts;
+- validate every canonical target path against the current Activity Record schema;
+- require implemented-adapter profiles to reference repository adapter files;
+- prevent self-reported descriptive identity such as MCP client/server metadata or an A2A Agent Card from being directly promoted into security-sensitive identity targets;
+- require selected tool payload/credential mappings to remain excluded;
+- add CI coverage and documentation for mapping-version semantics.
+
 ### Research
 
 - add a dated interoperability research snapshot covering W3C PROV, OpenTelemetry GenAI, C2PA 2.4, MCP 2026-07-28, A2A, OAuth Rich Authorization Requests, and relevant NIST agent identity/authorization work;
