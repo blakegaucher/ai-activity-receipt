@@ -19,8 +19,11 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Candidate JSON Schema](activity-receipt.schema.json)
 - [Candidate Invariants](docs/INVARIANTS.md)
 - [Terminology and Field Semantics](docs/TERMINOLOGY.md)
+- [Fixture expectation manifest](examples/fixture-manifest.json)
 - [Validation Record](docs/VALIDATION.md)
+- [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)
 - [Project Roadmap](docs/ROADMAP.md)
+- [Changelog](CHANGELOG.md)
 - [Executable validator](validate_receipts.py)
 ---
 ## The problem
@@ -81,14 +84,19 @@ The example below is **illustrative, not a frozen normative schema**.
 {
   "receipt_id": "AR-example-001",
   "trace_id": "trace-example-001",
+  "record_schema_version": "example-v0.2",
+  "receipt_version": "example-v0.2",
   "system": {
     "agent_id": "agent-4",
     "version": "example-version"
   },
   "authority": {
     "principal": "user-2",
+    "delegate": "agent-4",
     "scope": ["read", "analyze"],
-    "valid_until": "2026-09-12T12:31:59Z"
+    "prohibited": ["send_email"],
+    "valid_from": "2026-09-13T15:00:00Z",
+    "valid_until": "2026-09-13T16:00:00Z"
   },
   "material_sources": [
     {"source_id": "src-A", "role": "supports_result"}
@@ -97,17 +105,26 @@ The example below is **illustrative, not a frozen normative schema**.
     {
       "operation": "send_email",
       "status": "blocked",
-      "authorization": "denied"
+      "authorization": "denied",
+      "consequential": true,
+      "event_id": "event-blocked-1",
+      "occurred_at": "2026-09-13T15:15:00Z",
+      "source_refs": ["src-A"]
     }
   ],
   "verification": {
     "state": "pending"
   },
   "incidents": [
-    {"type": "blocked_unauthorized_action"}
+    {
+      "type": "blocked_unauthorized_action",
+      "event_id": "event-blocked-1"
+    }
   ],
   "integrity": {
-    "derived_from_record_hash": "sha256:example"
+    "record_hash": "sha256:example-record-hash",
+    "derived_from_record_hash": "sha256:example-record-hash",
+    "generated_at": "2026-09-13T15:30:00Z"
   }
 }
 ```
@@ -143,9 +160,9 @@ python -m pip install -r requirements.txt
 python validate_receipts.py
 ```
 
-The invalid fixture is intentionally expected to be **structurally valid but semantically rejected**. A passing test suite therefore means the validator correctly accepts the valid fixtures and rejects that governance-inconsistent fixture.
+The public fixture manifest currently covers **17 synthetic cases**. It includes valid Receipts, structurally valid but semantically invalid Receipts, and structurally invalid Receipts. Negative fixtures also record the invariant(s) expected to fire so a test cannot silently pass for the wrong reason.
 
-This public three-fixture check is a reproducible repository smoke test. It does **not** reproduce the complete historical AR-P001/AR-P002 fixture suites summarized below.
+A passing suite means the current candidate schema and executable invariant checker produced the prespecified outcomes for those 17 public fixtures. It does **not** reproduce the complete historical AR-P001/AR-P002 fixture suites summarized above and does not establish real-world effectiveness.
 
 ### AR-P003 — comparative audit reconstruction benchmark
 
@@ -182,14 +199,17 @@ The preferred next step is a new human-centered benchmark with:
 
 AI Activity Receipt is intended to **map to, not replace**, existing observability and provenance systems.
 
-Current research directions include compatibility or crosswalk work with:
+A dated [Interoperability Research Snapshot](docs/INTEROPERABILITY.md) now records candidate crosswalks and boundaries for:
 
-- **W3C PROV / PROV-O**
-- **OpenTelemetry**
-- content-provenance approaches such as **C2PA**
-- emerging AI-agent identity, authorization, incident-reporting, and evaluation practices.
+- **W3C PROV / PROV-O**;
+- **OpenTelemetry and the developing GenAI semantic conventions**;
+- **C2PA 2.4 / Content Credentials**;
+- **MCP 2026-07-28**;
+- **Agent2Agent (A2A)**;
+- **OAuth 2.0 Rich Authorization Requests (RFC 9396)**;
+- relevant **NIST AI-agent identity and authorization** work.
 
-No standards-conformance claim is made here.
+These are research mappings only. No standards-conformance, certification, endorsement, or interoperability-test claim is made here.
 
 ---
 
