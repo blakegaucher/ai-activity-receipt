@@ -293,6 +293,26 @@ Candidate-v0.2 uses closed objects (`additionalProperties: false`) for the publi
 
 ---
 
+## INV-15 — Generation time follows represented activity
+
+A Receipt must not claim to have been generated before the activity or authorization decision that it represents.
+
+### Candidate rules
+
+- `integrity.generated_at` must not precede a represented material action's `occurred_at`;
+- when `authorization_decided_at` is present, it must not occur after `integrity.generated_at`.
+
+This is a record-coherence rule. It does not prove that source clocks were synchronized or accurate.
+
+### Failure examples
+
+- a Receipt generated at 15:25 contains a material action recorded at 15:30;
+- a Receipt generated at 15:25 contains an authorization decision recorded at 15:26.
+
+**Executable in candidate-v0.2:** yes.
+
+---
+
 ## Candidate-v0.2 validator coverage
 
 The public validator now checks:
@@ -301,12 +321,13 @@ The public validator now checks:
 - **INV-03** approved, in-scope, prior authorization for completed consequential actions;
 - **INV-04** prohibited-action contradictions;
 - **INV-05** linked incident preservation for material blocked/failed actions;
-- **INV-06** action timing against the authority window;
+- **INV-06** authority-window coherence and action timing against that window;
 - **INV-07** confirmed verification evidence and resolvable verification references;
 - **INV-08** resolvable incident references;
 - **INV-09** direct-delegation consistency;
 - **INV-11** unique material-action event IDs;
-- **INV-14** private-reasoning exclusion.
+- **INV-14** private-reasoning exclusion;
+- **INV-15** generation-time coherence.
 
 The schema also enforces the structural parts of **INV-01**, required timing fields used by **INV-06**, required event identity for **INV-11**, and required integrity fields for **INV-10**.
 
