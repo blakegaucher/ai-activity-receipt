@@ -30,9 +30,12 @@ The project is pre-commercial research. Version labels below describe repository
 ### Reproducibility
 
 - replace the hard-coded three-fixture list with `examples/fixture-manifest.json`;
-- expand the public repository suite to 19 synthetic fixtures;
+- expand the public repository suite to 21 synthetic fixtures;
 - record expected invariant failures for negative fixtures;
 - validate the JSON Schema itself before running fixtures;
+- gate semantic invariant evaluation behind structural validity so malformed object shapes cannot crash the validator;
+- retain the private-reasoning scan as a defensive diagnostic even when structure is invalid;
+- add malformed-authority and offset-naive timestamp regression fixtures;
 - keep the GitHub Actions validation workflow as the public smoke test.
 
 ### Canonical Activity Record
