@@ -110,7 +110,8 @@ A positive result is **not** required for this phase to be successful.
 - [x] Publish deterministic record-to-Receipt derivation utility.
 - [x] Bind the derived Receipt to the exact canonical record with SHA-256 under a documented project-local serialization profile.
 - [x] Add an exact-match synthetic derivation self-test and Receipt re-validation.
-- [ ] Add richer evidence-substrate/ingestion references.
+- [ ] Add richer evidence-substrate/ingestion references beyond trace/span identity.
+- [x] Exercise the canonical record as the target of a synthetic OTLP/JSON GenAI adapter.
 - [ ] Define multi-agent and multi-hop delegation chains.
 - [ ] Define a signing/attestation envelope around record hashes.
 - [ ] Test derivation against heterogeneous realistic workflow traces.
@@ -170,7 +171,7 @@ The **synthetic candidate prototype** now demonstrates deterministic derivation 
 - [x] Cover C2PA 2.4 / Content Credentials.
 - [x] Cover MCP 2026-07-28, A2A, OAuth RAR, and current NIST agent identity/authorization work.
 - [ ] Publish machine-readable mappings after the canonical Activity Record stabilizes.
-- [ ] Prototype an OpenTelemetry-to-Receipt adapter.
+- [x] Prototype an OpenTelemetry GenAI -> canonical-record -> Receipt adapter on synthetic OTLP/JSON traces.
 - [ ] Prototype an MCP evidence adapter that separates descriptive identity from authenticated identity.
 - [ ] Evaluate optional C2PA attestation references for content-producing workflows.
 
