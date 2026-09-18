@@ -167,6 +167,26 @@ This establishes only deterministic behavior on the published synthetic capture.
 
 ---
 
+## Heterogeneous workflow derivation pilot
+
+**Status:** Development-only synthetic workflow diversity check
+
+The repository publishes four direct canonical-record workflow fixtures plus the existing OpenTelemetry GenAI and MCP adapter paths, for six total derivation cases.
+
+The pilot requires canonical-record structural/semantic validity, deterministic Receipt derivation, Receipt schema/invariant validity, expected material-operation/source/incident/verification behavior, and explicit non-material-event filtering.
+
+The six-case set must collectively exercise completed, failed, blocked, and pending execution; approved, denied, unknown, and not-required authorization; tool-failure and blocked-unauthorized-action incidents; confirmed, failed, pending, and uncertain verification; direct record ingestion; OpenTelemetry adaptation; and MCP adaptation.
+
+Run:
+
+```bash
+python research/workflow_pilot.py
+```
+
+This is synthetic engineering coverage. It does not complete the roadmap item for realistic heterogeneous workflow traces or establish real-world capture fidelity or human audit benefit.
+
+---
+
 ## Delegation-chain prototype smoke test
 
 **Status:** Standalone research prototype; not integrated into candidate-record-v0.1

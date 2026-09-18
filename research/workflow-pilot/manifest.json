@@ -1,0 +1,71 @@
+{
+  "pilot_version": "workflow-pilot-v0.1",
+  "description": "Synthetic heterogeneous workflow derivation pilot. These are development fixtures, not human-study cases or real-world evidence.",
+  "direct_records": [
+    {
+      "path": "research/workflow-pilot/research-email.json",
+      "expected_operations": [
+        "read",
+        "analyze",
+        "send_email"
+      ],
+      "expected_material_sources": [
+        "src-brief",
+        "src-search"
+      ],
+      "expected_incidents": [],
+      "expected_verification": "confirmed",
+      "excluded_event_ids": [
+        "event-cache"
+      ]
+    },
+    {
+      "path": "research/workflow-pilot/document-upload-failure.json",
+      "expected_operations": [
+        "read",
+        "analyze",
+        "upload_file"
+      ],
+      "expected_material_sources": [
+        "src-document"
+      ],
+      "expected_incidents": [
+        "tool_failure"
+      ],
+      "expected_verification": "failed",
+      "excluded_event_ids": []
+    },
+    {
+      "path": "research/workflow-pilot/admin-blocked-submit.json",
+      "expected_operations": [
+        "read",
+        "submit_form"
+      ],
+      "expected_material_sources": [
+        "src-form"
+      ],
+      "expected_incidents": [
+        "blocked_unauthorized_action"
+      ],
+      "expected_verification": "pending",
+      "excluded_event_ids": []
+    },
+    {
+      "path": "research/workflow-pilot/pending-publication.json",
+      "expected_operations": [
+        "create_report",
+        "publish_report"
+      ],
+      "expected_material_sources": [
+        "src-report-data"
+      ],
+      "expected_incidents": [],
+      "expected_verification": "uncertain",
+      "excluded_event_ids": []
+    }
+  ],
+  "adapter_cases": [
+    "opentelemetry-genai",
+    "mcp-2026-07-28"
+  ]
+}

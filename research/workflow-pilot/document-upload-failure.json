@@ -1,0 +1,101 @@
+{
+  "record_id": "workflow-document-upload-failure-001",
+  "record_schema_version": "candidate-record-v0.1",
+  "trace_id": "trace-workflow-document-upload-failure-001",
+  "system": {
+    "agent_id": "agent-doc-1",
+    "version": "pilot-1.0"
+  },
+  "actors": [
+    {
+      "actor_id": "user-pilot",
+      "kind": "human",
+      "role": "principal"
+    },
+    {
+      "actor_id": "agent-doc-1",
+      "kind": "agent",
+      "role": "delegate"
+    }
+  ],
+  "authority": {
+    "principal": "user-pilot",
+    "delegate": "agent-doc-1",
+    "scope": [
+      "read",
+      "analyze",
+      "upload_file"
+    ],
+    "prohibited": [],
+    "valid_from": "2026-09-18T15:00:00Z",
+    "valid_until": "2026-09-18T16:00:00Z"
+  },
+  "sources": [
+    {
+      "source_id": "src-document",
+      "role": "primary_document",
+      "material": true,
+      "uri": "synthetic://document.pdf",
+      "hash": "sha256:synthetic-document"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "event-doc-read",
+      "occurred_at": "2026-09-18T15:05:00Z",
+      "actor_id": "agent-doc-1",
+      "operation": "read",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": true,
+      "source_refs": [
+        "src-document"
+      ]
+    },
+    {
+      "event_id": "event-doc-analyze",
+      "occurred_at": "2026-09-18T15:12:00Z",
+      "actor_id": "agent-doc-1",
+      "operation": "analyze",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": true,
+      "source_refs": [
+        "src-document"
+      ]
+    },
+    {
+      "event_id": "event-upload",
+      "occurred_at": "2026-09-18T15:20:00Z",
+      "actor_id": "agent-doc-1",
+      "operation": "upload_file",
+      "status": "failed",
+      "authorization": "approved",
+      "authorization_decided_at": "2026-09-18T15:19:40Z",
+      "consequential": true,
+      "material": true,
+      "source_refs": [
+        "src-document"
+      ]
+    }
+  ],
+  "verification": {
+    "state": "failed",
+    "evidence_refs": [
+      "event-upload"
+    ]
+  },
+  "incidents": [
+    {
+      "type": "tool_failure",
+      "event_id": "event-upload",
+      "mitigation": "No retry performed in the synthetic pilot."
+    }
+  ],
+  "integrity": {
+    "generated_at": "2026-09-18T15:25:00Z"
+  },
+  "notes": "Synthetic document-analysis workflow with a failed consequential upload and linked incident."
+}

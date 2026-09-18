@@ -163,6 +163,14 @@ Deterministic derivation helps enforce a narrow technical form of evidence symme
 
 This does **not** prove that the canonical record itself faithfully captured every raw log or real-world event. Evidence-substrate ingestion and source-to-record fidelity remain separate problems.
 
+## Synthetic heterogeneous workflow pilot
+
+A development-only pilot now exercises this derivation model across six synthetic paths: four direct canonical records plus the OpenTelemetry GenAI and MCP adapters.
+
+See [WORKFLOW-PILOT.md](WORKFLOW-PILOT.md).
+
+The pilot broadens engineering coverage across success, failure, blocking, pending actions, incident handling, verification variants, materiality filtering, and multiple ingestion paths. It remains synthetic and does not replace realistic-workflow testing.
+
 ## What this establishes
 
 If the self-test and CI pass, the repository demonstrates that:

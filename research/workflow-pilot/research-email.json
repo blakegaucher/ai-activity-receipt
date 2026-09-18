@@ -1,0 +1,120 @@
+{
+  "record_id": "workflow-research-email-001",
+  "record_schema_version": "candidate-record-v0.1",
+  "trace_id": "trace-workflow-research-email-001",
+  "system": {
+    "agent_id": "agent-workflow-1",
+    "version": "pilot-1.0"
+  },
+  "actors": [
+    {
+      "actor_id": "user-pilot",
+      "kind": "human",
+      "role": "principal"
+    },
+    {
+      "actor_id": "agent-workflow-1",
+      "kind": "agent",
+      "role": "delegate"
+    }
+  ],
+  "authority": {
+    "principal": "user-pilot",
+    "delegate": "agent-workflow-1",
+    "scope": [
+      "read",
+      "analyze",
+      "send_email"
+    ],
+    "prohibited": [],
+    "valid_from": "2026-09-18T14:00:00Z",
+    "valid_until": "2026-09-18T15:00:00Z"
+  },
+  "sources": [
+    {
+      "source_id": "src-brief",
+      "role": "supports_result",
+      "material": true,
+      "uri": "synthetic://brief"
+    },
+    {
+      "source_id": "src-search",
+      "role": "supports_result",
+      "material": true,
+      "uri": "synthetic://search-results"
+    },
+    {
+      "source_id": "src-cache",
+      "role": "context_only",
+      "material": false
+    }
+  ],
+  "events": [
+    {
+      "event_id": "event-read",
+      "occurred_at": "2026-09-18T14:05:00Z",
+      "actor_id": "agent-workflow-1",
+      "operation": "read",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": true,
+      "source_refs": [
+        "src-brief"
+      ]
+    },
+    {
+      "event_id": "event-cache",
+      "occurred_at": "2026-09-18T14:07:00Z",
+      "actor_id": "agent-workflow-1",
+      "operation": "internal_cache_lookup",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": false,
+      "source_refs": [
+        "src-cache"
+      ]
+    },
+    {
+      "event_id": "event-analyze",
+      "occurred_at": "2026-09-18T14:10:00Z",
+      "actor_id": "agent-workflow-1",
+      "operation": "analyze",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": true,
+      "source_refs": [
+        "src-brief",
+        "src-search"
+      ]
+    },
+    {
+      "event_id": "event-send",
+      "occurred_at": "2026-09-18T14:20:00Z",
+      "actor_id": "agent-workflow-1",
+      "operation": "send_email",
+      "status": "completed",
+      "authorization": "approved",
+      "authorization_decided_at": "2026-09-18T14:19:30Z",
+      "consequential": true,
+      "material": true,
+      "source_refs": [
+        "src-brief",
+        "src-search"
+      ]
+    }
+  ],
+  "verification": {
+    "state": "confirmed",
+    "evidence_refs": [
+      "event-send"
+    ]
+  },
+  "incidents": [],
+  "integrity": {
+    "generated_at": "2026-09-18T14:25:00Z"
+  },
+  "notes": "Synthetic research-to-email workflow with material/non-material filtering."
+}

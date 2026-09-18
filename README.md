@@ -21,6 +21,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Canonical Record Design and Derivation](docs/CANONICAL-RECORD.md)
 - [Integrity and Attestation Direction](docs/ATTESTATION.md)
 - [Multi-Agent Delegation Design](docs/MULTI-AGENT-DELEGATION.md)
+- [Heterogeneous Workflow Pilot](docs/WORKFLOW-PILOT.md)
 - [Canonical Record Example](examples/canonical-record.json)
 - [Expected Derived Receipt](examples/derived-receipt.json)
 - [Candidate Invariants](docs/INVARIANTS.md)

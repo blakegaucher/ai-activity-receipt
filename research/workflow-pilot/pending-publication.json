@@ -1,0 +1,79 @@
+{
+  "record_id": "workflow-pending-publication-001",
+  "record_schema_version": "candidate-record-v0.1",
+  "trace_id": "trace-workflow-pending-publication-001",
+  "system": {
+    "agent_id": "agent-report-1",
+    "version": "pilot-1.0"
+  },
+  "actors": [
+    {
+      "actor_id": "user-pilot",
+      "kind": "human",
+      "role": "principal"
+    },
+    {
+      "actor_id": "agent-report-1",
+      "kind": "agent",
+      "role": "delegate"
+    }
+  ],
+  "authority": {
+    "principal": "user-pilot",
+    "delegate": "agent-report-1",
+    "scope": [
+      "create_report",
+      "publish_report"
+    ],
+    "prohibited": [],
+    "valid_from": "2026-09-18T17:00:00Z",
+    "valid_until": "2026-09-18T18:00:00Z"
+  },
+  "sources": [
+    {
+      "source_id": "src-report-data",
+      "role": "supports_result",
+      "material": true,
+      "uri": "synthetic://report-data"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "event-create-report",
+      "occurred_at": "2026-09-18T17:10:00Z",
+      "actor_id": "agent-report-1",
+      "operation": "create_report",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": true,
+      "source_refs": [
+        "src-report-data"
+      ]
+    },
+    {
+      "event_id": "event-publish-report",
+      "occurred_at": "2026-09-18T17:20:00Z",
+      "actor_id": "agent-report-1",
+      "operation": "publish_report",
+      "status": "pending",
+      "authorization": "unknown",
+      "consequential": true,
+      "material": true,
+      "source_refs": [
+        "src-report-data"
+      ]
+    }
+  ],
+  "verification": {
+    "state": "uncertain",
+    "evidence_refs": [
+      "event-create-report"
+    ]
+  },
+  "incidents": [],
+  "integrity": {
+    "generated_at": "2026-09-18T17:25:00Z"
+  },
+  "notes": "Synthetic report workflow where a consequential publication remains pending and authorization is unresolved."
+}
