@@ -35,7 +35,7 @@ The project currently has:
 - [x] Publish a candidate machine-readable schema.
 - [x] Publish invariant definitions.
 - [x] Add additional valid and invalid example Receipts.
-- [ ] Document terminology and field semantics.
+- [x] Document terminology and field semantics.
 - [x] Add deterministic validation examples.
 
 ### Exit condition
