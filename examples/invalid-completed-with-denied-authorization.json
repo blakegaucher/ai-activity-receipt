@@ -1,8 +1,8 @@
 {
-  "receipt_id": "AR-invalid-001",
-  "trace_id": "trace-invalid-001",
-  "record_schema_version": "candidate-v0.1",
-  "receipt_version": "candidate-v0.1",
+  "receipt_id": "AR-invalid-denied",
+  "trace_id": "trace-invalid-denied",
+  "record_schema_version": "candidate-v0.2",
+  "receipt_version": "candidate-v0.2",
   "system": {
     "agent_id": "agent-4",
     "version": "example-version"
@@ -12,11 +12,10 @@
     "delegate": "agent-4",
     "scope": [
       "read",
-      "analyze"
-    ],
-    "prohibited": [
+      "analyze",
       "send_email"
     ],
+    "prohibited": [],
     "valid_from": "2026-09-13T15:00:00Z",
     "valid_until": "2026-09-13T16:00:00Z"
   },
@@ -33,22 +32,21 @@
       "authorization": "denied",
       "consequential": true,
       "event_id": "event-1",
+      "occurred_at": "2026-09-13T15:30:00Z",
+      "authorization_decided_at": "2026-09-13T15:20:00Z",
       "source_refs": [
         "src-A"
       ]
     }
   ],
   "verification": {
-    "state": "confirmed",
-    "evidence_refs": [
-      "event-1"
-    ]
+    "state": "pending"
   },
   "incidents": [],
   "integrity": {
-    "record_hash": "sha256:example-invalid-record-hash",
-    "derived_from_record_hash": "sha256:example-invalid-record-hash",
+    "record_hash": "sha256:example-record-hash",
+    "derived_from_record_hash": "sha256:example-record-hash",
     "generated_at": "2026-09-13T15:30:00Z"
   },
-  "notes": "Synthetic fixture intentionally designed to be structurally valid but semantically invalid under candidate authorization invariants."
+  "notes": "Intentionally semantically invalid: completed consequential action has denied authorization."
 }
