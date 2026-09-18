@@ -6,6 +6,22 @@ This document summarizes the current validation state of the **AI Activity Recei
 
 ---
 
+## AR-P003 v0.3 offline runner smoke test
+
+**Status:** Development instrumentation only; not a frozen human-study instrument
+
+The repository now includes a self-contained browser runner, reviewer-bundle/response schemas, a hidden analysis schema, static offline/no-network checks, and an analysis-side response merge utility.
+
+The runner records wall and active case time, manual pause/resume, browser hidden/visible events, technical issues, and inserts an untimed intermission between submitted cases. Reviewers use structured response controls rather than editing raw JSON.
+
+Gold labels, hidden challenge strata, Receipt-state labels, and analysis-only metadata are excluded from reviewer-facing bundles and are joined only after response export. The merge utility requires an explicit `--timing active|wall` choice before scorer-compatible JSONL is produced.
+
+Current automated tests verify schema/semantic separation, duplicate IDs, timing consistency, static no-network markers, hidden-analysis joins, protocol mismatch rejection, and compatibility with the existing scoring-record schema.
+
+These checks do not establish browser/device compatibility, study validity, ethics approval, case realism, statistical power, or human benefit.
+
+---
+
 ## Historical AR-P003 v0.2.3 auxiliary baseline
 
 **Status:** Frozen historical synthetic benchmark; preserved separately from current v0.3 development

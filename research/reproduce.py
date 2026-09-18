@@ -172,6 +172,27 @@ CHECKS: list[dict[str, Any]] = [
         ],
     },
     {
+        "id": "arp003-offline-runner-data",
+        "argv": ["benchmark/arp003_v0_3/validate_runner_data.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/validate_runner_data.py",
+            "benchmark/arp003_v0_3/runner-bundle.schema.json",
+            "benchmark/arp003_v0_3/runner-response.schema.json",
+            "benchmark/arp003_v0_3/runner-bundle.example.json",
+            "benchmark/arp003_v0_3/offline_runner.html",
+        ],
+    },
+    {
+        "id": "arp003-runner-merge",
+        "argv": ["benchmark/arp003_v0_3/merge_runner_responses.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/merge_runner_responses.py",
+            "benchmark/arp003_v0_3/runner-analysis.schema.json",
+            "benchmark/arp003_v0_3/runner-response.schema.json",
+            "benchmark/arp003_v0_3/response-record.schema.json",
+        ],
+    },
+    {
         "id": "arp003-freeze-manifest",
         "argv": ["benchmark/arp003_v0_3/freeze_manifest.py", "--self-test"],
         "artifacts": ["benchmark/arp003_v0_3/freeze_manifest.py"],

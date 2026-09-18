@@ -15,6 +15,13 @@ This directory contains **development infrastructure** for the next human-center
 - `lint_case_packages.py` — file-separation, path-safety, stratum/state, leakage-marker, and hash-report linter for development case packages.
 - `plan_sample_size.py` — development-only sample-size/precision screening approximations.
 - `planning-scenarios.example.json` — illustrative sensitivity grid; not frozen study assumptions.
+- `offline_runner.html` — self-contained development-only reviewer interface with structured answers, pause/visibility timing, safe intermissions, and local response export.
+- `runner-bundle.schema.json` — reviewer-facing bundle schema; hidden gold/stratum data are excluded.
+- `runner-response.schema.json` — reviewer-side response/timing export schema.
+- `runner-analysis.schema.json` — hidden analysis-side gold/stratum schema.
+- `runner-bundle.example.json` — synthetic development-only runner bundle.
+- `validate_runner_data.py` — bundle/response validation plus static offline/no-network runner checks.
+- `merge_runner_responses.py` — analysis-side join from reviewer export + hidden gold bundle into scorer-compatible JSONL.
 
 The human-readable preregistration draft is in:
 
@@ -92,6 +99,8 @@ python benchmark/arp003_v0_3/score_responses.py --self-test
 python benchmark/arp003_v0_3/generate_assignment.py --self-test
 python benchmark/arp003_v0_3/lint_case_packages.py --self-test
 python benchmark/arp003_v0_3/plan_sample_size.py --self-test
+python benchmark/arp003_v0_3/validate_runner_data.py --self-test
+python benchmark/arp003_v0_3/merge_runner_responses.py --self-test
 python benchmark/arp003_v0_3/freeze_manifest.py --self-test
 ```
 
@@ -151,6 +160,18 @@ python benchmark/arp003_v0_3/freeze_manifest.py \
 ```
 
 Do not treat a development manifest as the final confirmatory freeze unless it also includes the final corpus, instructions, assignments, exclusions, and analysis artifacts required by the protocol.
+
+## Development offline runner
+
+The development runner removes several avoidable v0.2.3 interface/timing confounds without declaring the v0.3 instrument frozen.
+
+Reviewer-facing bundles contain only evidence, optional Receipt, pseudonymous IDs, and selectable response vocabularies. Gold labels and hidden challenge strata remain in a separate analysis bundle and are joined only after reviewer export.
+
+The browser runner is self-contained and offline, records wall and active time, supports manual and visibility pauses, inserts a safe intermission between cases, and uses structured controls rather than raw JSON editing.
+
+See `../../docs/AR-P003-V0.3-OFFLINE-RUNNER.md`.
+
+---
 
 ## Before human execution
 

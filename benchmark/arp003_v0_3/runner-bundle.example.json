@@ -1,0 +1,60 @@
+{
+  "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.1",
+  "protocol_version": "v0.3-development-only",
+  "reviewer_id": "dev-reviewer-001",
+  "cases": [
+    {
+      "case_id": "DEV-RUNNER-001",
+      "evidence": [
+        {
+          "label": "Synthetic event log",
+          "media_type": "application/json",
+          "content": "{\n  \"trace_id\": \"dev-trace-001\",\n  \"events\": [\n    {\n      \"event_id\": \"event-1\",\n      \"operation\": \"analyze\",\n      \"status\": \"completed\",\n      \"source_refs\": [\n        \"source-1\"\n      ]\n    },\n    {\n      \"event_id\": \"event-2\",\n      \"operation\": \"send_email\",\n      \"status\": \"blocked\",\n      \"authorization\": \"denied\"\n    }\n  ]\n}"
+        },
+        {
+          "label": "Synthetic authority note",
+          "media_type": "text/plain",
+          "content": "Delegated scope: read, analyze. Sending external email is outside scope."
+        }
+      ],
+      "receipt": null,
+      "answer_options": {
+        "material_actions": [
+          "analyze",
+          "send_email"
+        ],
+        "material_sources": [
+          "source-1"
+        ],
+        "incidents": [
+          "blocked_action",
+          "authorization_violation"
+        ]
+      }
+    },
+    {
+      "case_id": "DEV-RUNNER-002",
+      "evidence": [
+        {
+          "label": "Synthetic evidence",
+          "media_type": "text/plain",
+          "content": "A document-review agent analyzed source-A and produced a draft. No external action was attempted."
+        }
+      ],
+      "receipt": {
+        "label": "Activity Receipt",
+        "media_type": "application/json",
+        "content": "{\n  \"receipt_id\": \"AR-dev-runner-002\",\n  \"material_actions\": [\n    {\n      \"operation\": \"analyze\",\n      \"status\": \"completed\",\n      \"authorization\": \"approved\"\n    }\n  ],\n  \"verification\": {\n    \"state\": \"not_required\"\n  }\n}"
+      },
+      "answer_options": {
+        "material_actions": [
+          "analyze"
+        ],
+        "material_sources": [
+          "source-A"
+        ],
+        "incidents": []
+      }
+    }
+  ]
+}

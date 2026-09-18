@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Development Offline Runner Bundle",
+  "description": "Reviewer-facing development bundle only. Gold labels, hidden strata, and analysis-only files are prohibited.",
+  "type": "object",
+  "required": [
+    "bundle_version",
+    "protocol_version",
+    "reviewer_id",
+    "cases"
+  ],
+  "properties": {
+    "bundle_version": {
+      "const": "AR-P003-v0.3-dev-runner-bundle-v0.1"
+    },
+    "protocol_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "evidence",
+          "receipt",
+          "answer_options"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/artifact"
+            }
+          },
+          "receipt": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/$defs/artifact"
+              }
+            ]
+          },
+          "answer_options": {
+            "type": "object",
+            "required": [
+              "material_actions",
+              "material_sources",
+              "incidents"
+            ],
+            "properties": {
+              "material_actions": {
+                "$ref": "#/$defs/stringSet"
+              },
+              "material_sources": {
+                "$ref": "#/$defs/stringSet"
+              },
+              "incidents": {
+                "$ref": "#/$defs/stringSet"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": [
+        "label",
+        "media_type",
+        "content"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "media_type": {
+          "type": "string",
+          "enum": [
+            "text/plain",
+            "text/markdown",
+            "application/json"
+          ]
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}

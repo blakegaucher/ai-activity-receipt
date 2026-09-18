@@ -27,6 +27,18 @@ The project is pre-commercial research. Version labels below describe repository
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
 - preserve private-reasoning exclusion diagnostics.
 
+### AR-P003 v0.3 development offline runner
+
+- add a self-contained offline reviewer interface with no external scripts, hosted APIs, telemetry, or network calls;
+- replace raw JSON answer editing with structured action/source/incident/authorization/verification/missing-evidence/confidence controls;
+- record both wall and active timing plus manual pause, page visibility, and technical-interruption state;
+- insert a safe intermission between cases so breaks do not contaminate the next case timer;
+- keep gold labels, challenge strata, Receipt-state labels, and analysis-only metadata outside the reviewer-facing bundle;
+- add separate reviewer-bundle, response-export, and hidden-analysis schemas plus an analysis-side merge utility;
+- require explicit active-vs-wall timing choice when preparing scorer input rather than silently choosing after outcomes;
+- add static offline/no-network checks, bundle/response validation, merge tests, CI coverage, and aggregate reproducibility coverage;
+- keep the runner explicitly development-only until browser/device testing, endpoint/timing rules, ethics determination, corpus, assignment, and analysis are frozen.
+
 ### Continuity synchronization
 
 - add a dated cross-source project continuity snapshot covering frozen benchmark history, current engineering profiles, claim gates, cross-project boundaries, and open external/human gates;
