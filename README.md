@@ -33,6 +33,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Terminology and Field Semantics](docs/TERMINOLOGY.md)
 - [Fixture expectation manifest](examples/fixture-manifest.json)
 - [Validation Record](docs/VALIDATION.md)
+- [One-Command Reproducibility Suite](docs/REPRODUCIBILITY.md)
 - [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)
 - [Machine-Readable Interoperability Crosswalk](docs/MACHINE-READABLE-MAPPINGS.md)
 - [OpenTelemetry GenAI Adapter Prototype](docs/OTEL-ADAPTER.md)
