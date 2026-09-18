@@ -90,6 +90,14 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### External evidence-index record binding
+
+- add an explicit `record_binding` object to the standalone external evidence-reference profile;
+- bind the index to the exact canonical Activity Record with the same project-local deterministic JSON + SHA-256 profile used by Receipt derivation;
+- require validator-side recomputation rather than trusting the stored digest;
+- add adversarial tests for a forged digest and a canonical record changed after the index was created;
+- keep this as a standalone research artifact rather than silently changing candidate-record-v0.1.
+
 ### C2PA and external evidence-reference evaluation
 
 - evaluate C2PA 2.4 content provenance, `c2pa.ai-disclosure`, and `c2pa.repository-receipt` as optional external evidence rather than fields to copy into candidate-record-v0.1;
