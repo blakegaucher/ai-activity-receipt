@@ -83,5 +83,8 @@ jobs:
       - name: Run AR-P003 assignment-generator self-test
         run: python benchmark/arp003_v0_3/generate_assignment.py --self-test
 
+      - name: Run AR-P003 case-package linter self-test
+        run: python benchmark/arp003_v0_3/lint_case_packages.py --self-test
+
       - name: Run AR-P003 freeze-manifest self-test
         run: python benchmark/arp003_v0_3/freeze_manifest.py --self-test
