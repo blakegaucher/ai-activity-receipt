@@ -131,7 +131,9 @@ The self-test checks that:
 - deterministic Receipt derivation exactly matches the published expected Receipt;
 - the derived Receipt passes the Receipt schema and executable invariants;
 - a successful consequential tool span without separate authorization evidence remains `unknown` and is rejected by the Receipt authorization invariant;
-- opt-in tool arguments/results in the synthetic telemetry are not copied into the canonical record.
+- opt-in tool arguments/results in the synthetic telemetry are not copied into the canonical record;
+- nanosecond timestamp fractions survive OTLP-to-record conversion without microsecond truncation;
+- malformed or all-zero OpenTelemetry trace/span identifiers are rejected.
 
 This establishes only deterministic behavior on the published synthetic trace. It does not establish OpenTelemetry conformance, production telemetry completeness, authorization correctness, real-world interoperability, or human audit benefit.
 
