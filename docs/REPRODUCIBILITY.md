@@ -1,0 +1,123 @@
+# One-Command Reproducibility Suite
+
+> **Status:** Public engineering/research reproducibility helper.  
+> **Snapshot:** 2026-09-18  
+> Passing this suite does not convert synthetic or development evidence into a human-study result, standards certificate, production security audit, or proof of real-world benefit.
+
+The repository now exposes one command that runs the current deterministic and synthetic checks in a fixed order and emits a machine-readable report:
+
+```bash
+python research/reproduce.py --output reproducibility-report.json
+```
+
+The runner is intended to make it easier for another developer, reviewer, competition judge, or collaborator to reproduce the repository-local claims without first reconstructing the GitHub Actions workflow by hand.
+
+## What it runs
+
+The suite currently executes:
+
+- public Receipt fixture validation;
+- canonical-record derivation self-test;
+- OpenTelemetry GenAI adapter self-test;
+- MCP 2026-07-28 adapter self-test;
+- cross-adapter normalization parity;
+- machine-readable interoperability mapping validation;
+- standalone delegation-chain prototype;
+- candidate-record-v0.2 multi-hop migration/derivation tests;
+- heterogeneous synthetic workflow pilot;
+- external evidence-reference / C2PA reference checks;
+- attestation trust-policy validation;
+- research-only DSSE signing/verification checks;
+- AR-P003 scorer tests;
+- AR-P003 assignment balance tests;
+- AR-P003 case-package linting;
+- AR-P003 sample-size/precision planning tests;
+- AR-P003 freeze-manifest tests.
+
+The AR-P003 protocol JSON is also parsed explicitly before the suite runs.
+
+## Machine-readable report
+
+The JSON report records:
+
+- suite version;
+- Python implementation/version;
+- check ID;
+- command arguments;
+- exit code;
+- pass/fail state;
+- captured stdout/stderr;
+- SHA-256 and byte size for the scripts, schemas, fixtures, protocol files, requirements, and CI workflow used by the suite;
+- the explicit evidence boundary.
+
+This gives a reviewer both the execution result and a content manifest of the important artifacts that were actually used.
+
+## Why the artifact manifest matters
+
+A statement such as:
+
+```text
+17/17 checks passed
+```
+
+is incomplete if the reader cannot tell which versions of the validators and schemas were used.
+
+The reproducibility report therefore binds the result to a deterministic set of repository artifacts through SHA-256 file hashes.
+
+It is still not a signed release manifest or trusted timestamp. It is a reproducibility aid.
+
+## Failure behavior
+
+Every check runs as a separate child Python process.
+
+The suite:
+
+- continues through all checks so one failure does not hide later failures;
+- records stdout and stderr for each check;
+- exits non-zero when any check fails;
+- exits with setup error when required artifacts/protocol files are missing or malformed.
+
+GitHub Actions runs this aggregate suite in addition to the individually named CI steps. The duplication is deliberate during this research phase: the individual steps remain easy to diagnose, while the aggregate runner tests the exact workflow an external reviewer can use.
+
+## Reproduce locally
+
+From the repository root:
+
+```bash
+python -m pip install -r requirements.txt
+python research/reproduce.py --output reproducibility-report.json
+```
+
+A successful run prints a concise per-check summary.
+
+For JSON-only output to standard output:
+
+```bash
+python research/reproduce.py --quiet
+```
+
+## What this does not establish
+
+A green report does not establish:
+
+- human audit benefit;
+- statistical significance;
+- external standards conformance;
+- complete real-world telemetry capture;
+- production authorization correctness;
+- production cryptographic trust;
+- legal/regulatory compliance;
+- independent external reproduction.
+
+The last item matters: a project-authored reproducibility harness is preparation for external evaluation, not external evaluation itself.
+
+## External-evaluation next step
+
+The practical next step is to give an independent person or organization:
+
+1. a clean repository checkout;
+2. the one-command instructions above;
+3. no undocumented setup help beyond ordinary dependency installation;
+4. a place to record any mismatch, ambiguity, or missing assumption.
+
+Phase 6 should only be marked complete after at least one independent party actually performs that work.
