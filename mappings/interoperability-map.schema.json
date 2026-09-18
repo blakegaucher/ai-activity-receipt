@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Activity Receipt Interoperability Mapping",
+  "$id": "https://github.com/blakegaucher/ai-activity-receipt/blob/main/mappings/interoperability-map.schema.json",
+  "type": "object",
+  "required": [
+    "mapping_version",
+    "record_schema_profile",
+    "research_snapshot",
+    "profiles"
+  ],
+  "properties": {
+    "mapping_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "record_schema_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "research_snapshot": {
+      "type": "string",
+      "format": "date"
+    },
+    "description": {
+      "type": "string"
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "profile_id",
+          "source_name",
+          "source_version",
+          "status",
+          "reference_uris",
+          "mappings"
+        ],
+        "properties": {
+          "profile_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]*$"
+          },
+          "source_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "implemented_adapter",
+              "research_mapping",
+              "reference_only"
+            ]
+          },
+          "adapter_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reference_uris": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "notes": {
+            "type": "string"
+          },
+          "mappings": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "mapping_id",
+                "source_expression",
+                "decision",
+                "evidence_class",
+                "notes"
+              ],
+              "properties": {
+                "mapping_id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9._-]*$"
+                },
+                "source_expression": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "decision": {
+                  "type": "string",
+                  "enum": [
+                    "map",
+                    "support",
+                    "exclude",
+                    "no_equivalent"
+                  ]
+                },
+                "evidence_class": {
+                  "type": "string",
+                  "enum": [
+                    "correlation",
+                    "observed_execution",
+                    "descriptive_identity",
+                    "authenticated_identity",
+                    "authorization",
+                    "provenance",
+                    "source_evidence",
+                    "verification",
+                    "incident",
+                    "integrity",
+                    "content_provenance",
+                    "sensitive_content"
+                  ]
+                },
+                "target_path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "transform": {
+                  "type": "string"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "decision": {
+                        "enum": [
+                          "map",
+                          "support"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "decision"
+                    ]
+                  },
+                  "then": {
+                    "required": [
+                      "target_path"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "decision": {
+                        "enum": [
+                          "exclude",
+                          "no_equivalent"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "decision"
+                    ]
+                  },
+                  "then": {
+                    "not": {
+                      "required": [
+                        "target_path"
+                      ]
+                    }
+                  }
+                }
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "implemented_adapter"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "adapter_path"
+              ]
+            }
+          }
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

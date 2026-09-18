@@ -1,0 +1,404 @@
+{
+  "mapping_version": "candidate-crosswalk-v0.1",
+  "record_schema_profile": "candidate-record-v0.1",
+  "research_snapshot": "2026-09-18",
+  "description": "Machine-readable candidate field/concept crosswalks. These mappings are non-normative and do not claim standards conformance, certification, or authenticated identity unless separately evidenced.",
+  "profiles": [
+    {
+      "profile_id": "opentelemetry-genai",
+      "source_name": "OpenTelemetry OTLP + GenAI semantic conventions",
+      "source_version": "OTLP current; GenAI conventions development snapshot 2026-09-18",
+      "status": "implemented_adapter",
+      "adapter_path": "adapters/otel_genai.py",
+      "reference_uris": [
+        "https://opentelemetry.io/docs/specs/otlp/",
+        "https://github.com/open-telemetry/semantic-conventions-genai/blob/main/docs/gen-ai/gen-ai-agent-spans.md",
+        "https://github.com/open-telemetry/semantic-conventions-genai/blob/main/docs/gen-ai/gen-ai-spans.md"
+      ],
+      "notes": "Telemetry is observed execution evidence. Authorization, materiality, and principal identity remain separate evidence.",
+      "mappings": [
+        {
+          "mapping_id": "otel.trace-id",
+          "source_expression": "OTLP span.traceId",
+          "decision": "map",
+          "evidence_class": "correlation",
+          "target_path": "trace_id",
+          "transform": "Validate 32 hexadecimal characters, reject all-zero value, normalize lowercase.",
+          "notes": "One logical GenAI trace is adapted per candidate record."
+        },
+        {
+          "mapping_id": "otel.span-id",
+          "source_expression": "OTLP span.spanId",
+          "decision": "map",
+          "evidence_class": "correlation",
+          "target_path": "events[].event_id",
+          "transform": "Validate 16 hexadecimal characters, reject all-zero value, normalize lowercase, prefix with 'otel-span:'.",
+          "notes": "Provides stable event identity within the adapted trace."
+        },
+        {
+          "mapping_id": "otel.start-time",
+          "source_expression": "OTLP span.startTimeUnixNano",
+          "decision": "map",
+          "evidence_class": "observed_execution",
+          "target_path": "events[].occurred_at",
+          "transform": "Convert Unix nanoseconds to RFC 3339 UTC while preserving significant nanosecond digits.",
+          "notes": "This preserves source timestamp precision but does not prove source clock accuracy."
+        },
+        {
+          "mapping_id": "otel.agent-id",
+          "source_expression": "gen_ai.agent.id",
+          "decision": "map",
+          "evidence_class": "descriptive_identity",
+          "target_path": "system.agent_id",
+          "transform": "Require one unambiguous value across the adapted trace unless explicitly overridden by sidecar context.",
+          "notes": "OpenTelemetry describes the instrumented agent identity; deployments still need separate authentication/trust policy for security identity."
+        },
+        {
+          "mapping_id": "otel.agent-version",
+          "source_expression": "gen_ai.agent.version or resource service.version",
+          "decision": "map",
+          "evidence_class": "descriptive_identity",
+          "target_path": "system.version",
+          "transform": "Use gen_ai.agent.version when uniquely available; otherwise allow service.version or explicit sidecar override.",
+          "notes": "Version metadata is descriptive evidence."
+        },
+        {
+          "mapping_id": "otel.provider",
+          "source_expression": "gen_ai.provider.name",
+          "decision": "map",
+          "evidence_class": "provenance",
+          "target_path": "system.provider",
+          "notes": "Provider semantic-convention value is preserved when present and unambiguous."
+        },
+        {
+          "mapping_id": "otel.model",
+          "source_expression": "gen_ai.request.model",
+          "decision": "map",
+          "evidence_class": "provenance",
+          "target_path": "system.model",
+          "notes": "Request model metadata is preserved when present and unambiguous."
+        },
+        {
+          "mapping_id": "otel.operation",
+          "source_expression": "gen_ai.operation.name plus gen_ai.tool.name for execute_tool",
+          "decision": "map",
+          "evidence_class": "observed_execution",
+          "target_path": "events[].operation",
+          "transform": "For execute_tool spans use gen_ai.tool.name; otherwise preserve gen_ai.operation.name.",
+          "notes": "This yields an operation value that can be compared with delegated authority scope."
+        },
+        {
+          "mapping_id": "otel.status",
+          "source_expression": "OTLP span status, endTimeUnixNano, and error.type",
+          "decision": "map",
+          "evidence_class": "observed_execution",
+          "target_path": "events[].status",
+          "transform": "Error -> failed; missing end time -> pending; otherwise completed, unless stronger sidecar evidence supplies an override.",
+          "notes": "Execution status is not authorization status."
+        },
+        {
+          "mapping_id": "otel.data-source",
+          "source_expression": "gen_ai.data_source.id",
+          "decision": "map",
+          "evidence_class": "source_evidence",
+          "target_path": "sources[].source_id",
+          "notes": "Materiality and source role are supplied separately; presence in telemetry does not make a source material."
+        },
+        {
+          "mapping_id": "otel.tool-arguments",
+          "source_expression": "gen_ai.tool.call.arguments",
+          "decision": "exclude",
+          "evidence_class": "sensitive_content",
+          "notes": "Tool arguments may contain sensitive content and are intentionally not copied into the canonical record."
+        },
+        {
+          "mapping_id": "otel.tool-result",
+          "source_expression": "gen_ai.tool.call.result",
+          "decision": "exclude",
+          "evidence_class": "sensitive_content",
+          "notes": "Tool results may contain sensitive content and are intentionally not copied into the canonical record."
+        }
+      ]
+    },
+    {
+      "profile_id": "mcp-2026-07-28",
+      "source_name": "Model Context Protocol",
+      "source_version": "2026-07-28",
+      "status": "implemented_adapter",
+      "adapter_path": "adapters/mcp_2026.py",
+      "reference_uris": [
+        "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2026-07-28/basic/index.mdx",
+        "https://blog.modelcontextprotocol.io/posts/2026-07-28/"
+      ],
+      "notes": "MCP protocol metadata is observed/descriptive evidence. Authenticated identity and authorization come from a separate control-plane sidecar in the current adapter.",
+      "mappings": [
+        {
+          "mapping_id": "mcp.request-id",
+          "source_expression": "JSON-RPC request id for tools/call",
+          "decision": "map",
+          "evidence_class": "correlation",
+          "target_path": "events[].event_id",
+          "transform": "Prefix with 'mcp-request:'.",
+          "notes": "The adapter also requires the response id to match."
+        },
+        {
+          "mapping_id": "mcp.tool-name",
+          "source_expression": "tools/call params.name",
+          "decision": "map",
+          "evidence_class": "observed_execution",
+          "target_path": "events[].operation",
+          "notes": "Mcp-Name is checked against params.name when the routing header is present."
+        },
+        {
+          "mapping_id": "mcp.observed-time",
+          "source_expression": "capture request_observed_at",
+          "decision": "map",
+          "evidence_class": "observed_execution",
+          "target_path": "events[].occurred_at",
+          "notes": "This timestamp belongs to the capture substrate, not to the MCP wire schema itself."
+        },
+        {
+          "mapping_id": "mcp.response-status",
+          "source_expression": "JSON-RPC error or tools/call result state",
+          "decision": "map",
+          "evidence_class": "observed_execution",
+          "target_path": "events[].status",
+          "transform": "JSON-RPC error or isError -> failed; input_required -> pending; otherwise completed, unless stronger sidecar evidence overrides.",
+          "notes": "Successful protocol execution is not proof of authorization."
+        },
+        {
+          "mapping_id": "mcp.client-info",
+          "source_expression": "_meta['io.modelcontextprotocol/clientInfo']",
+          "decision": "exclude",
+          "evidence_class": "descriptive_identity",
+          "notes": "The MCP specification describes clientInfo as self-reported and not verified by the protocol; it is not used as authenticated system/delegate identity."
+        },
+        {
+          "mapping_id": "mcp.server-info",
+          "source_expression": "result._meta['io.modelcontextprotocol/serverInfo']",
+          "decision": "exclude",
+          "evidence_class": "descriptive_identity",
+          "notes": "Self-reported server implementation metadata is not used as authenticated identity or authorization evidence."
+        },
+        {
+          "mapping_id": "mcp.authenticated-agent",
+          "source_expression": "external authenticated control-plane identity",
+          "decision": "support",
+          "evidence_class": "authenticated_identity",
+          "target_path": "system.agent_id",
+          "notes": "Current adapter sidecar supplies the authenticated agent identity because MCP clientInfo is not security identity."
+        },
+        {
+          "mapping_id": "mcp.delegated-scope",
+          "source_expression": "external authorization/control-plane evidence",
+          "decision": "support",
+          "evidence_class": "authorization",
+          "target_path": "authority.scope",
+          "notes": "MCP tool execution alone does not establish delegated scope."
+        },
+        {
+          "mapping_id": "mcp.authorization-decision",
+          "source_expression": "external authorization decision associated with request id",
+          "decision": "support",
+          "evidence_class": "authorization",
+          "target_path": "events[].authorization",
+          "notes": "Approval/denial remains separate from protocol success/failure."
+        },
+        {
+          "mapping_id": "mcp.authorization-time",
+          "source_expression": "external authorization decision timestamp associated with request id",
+          "decision": "support",
+          "evidence_class": "authorization",
+          "target_path": "events[].authorization_decided_at",
+          "notes": "Required to test whether approval preceded consequential execution."
+        },
+        {
+          "mapping_id": "mcp.tool-arguments",
+          "source_expression": "tools/call params.arguments",
+          "decision": "exclude",
+          "evidence_class": "sensitive_content",
+          "notes": "Arguments are deliberately omitted from the current canonical record."
+        },
+        {
+          "mapping_id": "mcp.result-content",
+          "source_expression": "tools/call response result.content",
+          "decision": "exclude",
+          "evidence_class": "sensitive_content",
+          "notes": "Result bodies are deliberately omitted from the current canonical record."
+        }
+      ]
+    },
+    {
+      "profile_id": "w3c-prov-o",
+      "source_name": "W3C PROV / PROV-O",
+      "source_version": "W3C Recommendation 2013-04-30",
+      "status": "research_mapping",
+      "reference_uris": [
+        "https://www.w3.org/TR/prov-o/"
+      ],
+      "notes": "PROV supplies provenance semantics, not a complete authorization policy model.",
+      "mappings": [
+        {
+          "mapping_id": "prov.agent",
+          "source_expression": "prov:Agent identifier",
+          "decision": "support",
+          "evidence_class": "provenance",
+          "target_path": "actors[].actor_id",
+          "notes": "Candidate fit for represented human/software/organization actors."
+        },
+        {
+          "mapping_id": "prov.activity",
+          "source_expression": "prov:Activity identifier",
+          "decision": "support",
+          "evidence_class": "provenance",
+          "target_path": "events[].event_id",
+          "notes": "Candidate fit for consequential or otherwise material activity identity."
+        },
+        {
+          "mapping_id": "prov.entity",
+          "source_expression": "prov:Entity identifier",
+          "decision": "support",
+          "evidence_class": "source_evidence",
+          "target_path": "sources[].source_id",
+          "notes": "Candidate fit for source/evidence entities."
+        },
+        {
+          "mapping_id": "prov.used",
+          "source_expression": "prov:used relationship",
+          "decision": "support",
+          "evidence_class": "provenance",
+          "target_path": "events[].source_refs",
+          "notes": "Can support an event-to-source provenance edge."
+        },
+        {
+          "mapping_id": "prov.acted-on-behalf-of",
+          "source_expression": "prov:actedOnBehalfOf",
+          "decision": "support",
+          "evidence_class": "provenance",
+          "target_path": "authority.delegate",
+          "notes": "Useful delegation provenance, but not sufficient evidence that a specific operation was authorized for a scope or time window."
+        }
+      ]
+    },
+    {
+      "profile_id": "oauth-rar-rfc9396",
+      "source_name": "OAuth 2.0 Rich Authorization Requests",
+      "source_version": "RFC 9396",
+      "status": "research_mapping",
+      "reference_uris": [
+        "https://www.rfc-editor.org/rfc/rfc9396.html"
+      ],
+      "notes": "Fine-grained authorization_details can support normalized scope evidence; bearer credentials themselves are excluded.",
+      "mappings": [
+        {
+          "mapping_id": "rar.authorization-details",
+          "source_expression": "authorization_details",
+          "decision": "support",
+          "evidence_class": "authorization",
+          "target_path": "authority.scope",
+          "notes": "Application-specific authorization detail types require an explicit normalization profile."
+        },
+        {
+          "mapping_id": "rar.decision-evidence",
+          "source_expression": "authorization server decision record tied to authorization_details",
+          "decision": "support",
+          "evidence_class": "authorization",
+          "target_path": "events[].authorization",
+          "notes": "RFC 9396 structures requested/granted authorization details; deployments still need auditable decision evidence for individual actions."
+        },
+        {
+          "mapping_id": "rar.tokens",
+          "source_expression": "access token / refresh token / client secret",
+          "decision": "exclude",
+          "evidence_class": "sensitive_content",
+          "notes": "Bearer credentials and secrets do not belong in the Activity Record or Receipt."
+        }
+      ]
+    },
+    {
+      "profile_id": "c2pa-2.4",
+      "source_name": "C2PA Content Credentials",
+      "source_version": "2.4 (April 2026)",
+      "status": "research_mapping",
+      "reference_uris": [
+        "https://spec.c2pa.org/specifications/specifications/2.4/specs/C2PA_Specification.html"
+      ],
+      "notes": "C2PA content provenance can complement operational provenance for produced/consumed assets.",
+      "mappings": [
+        {
+          "mapping_id": "c2pa.asset-reference",
+          "source_expression": "C2PA manifest/ingredient or asset reference",
+          "decision": "support",
+          "evidence_class": "content_provenance",
+          "target_path": "sources[].uri",
+          "notes": "A canonical source can carry an external content-provenance reference without claiming C2PA conformance."
+        },
+        {
+          "mapping_id": "c2pa.asset-hash",
+          "source_expression": "validated content/manifest digest reference",
+          "decision": "support",
+          "evidence_class": "integrity",
+          "target_path": "sources[].hash",
+          "notes": "Digest evidence may be referenced when produced by a valid C2PA workflow."
+        },
+        {
+          "mapping_id": "c2pa.ai-disclosure",
+          "source_expression": "c2pa.ai-disclosure assertion",
+          "decision": "no_equivalent",
+          "evidence_class": "content_provenance",
+          "notes": "The current canonical record has no dedicated AI disclosure assertion field; future content-asset evidence may reference it externally."
+        },
+        {
+          "mapping_id": "c2pa.repository-receipt",
+          "source_expression": "c2pa.repository-receipt assertion",
+          "decision": "no_equivalent",
+          "evidence_class": "integrity",
+          "notes": "A future attestation/evidence-reference layer may point to repository-ingestion proofs; current record v0.1 has no dedicated field."
+        }
+      ]
+    },
+    {
+      "profile_id": "a2a-current-dev",
+      "source_name": "Agent2Agent Protocol",
+      "source_version": "current development specification snapshot 2026-09-18",
+      "status": "research_mapping",
+      "reference_uris": [
+        "https://a2aproject.github.io/A2A/latest/specification/"
+      ],
+      "notes": "Agent discovery and task/message evidence are useful, but discovery metadata is not automatically authenticated actor identity.",
+      "mappings": [
+        {
+          "mapping_id": "a2a.task-id",
+          "source_expression": "A2A task identifier",
+          "decision": "support",
+          "evidence_class": "correlation",
+          "target_path": "trace_id",
+          "notes": "Candidate workflow/run correlation input; exact normalization remains profile-specific."
+        },
+        {
+          "mapping_id": "a2a.agent-card",
+          "source_expression": "Agent Card identity/capability metadata",
+          "decision": "exclude",
+          "evidence_class": "descriptive_identity",
+          "notes": "Discovery metadata alone is not used as authenticated system or delegate identity."
+        },
+        {
+          "mapping_id": "a2a.authenticated-agent",
+          "source_expression": "authenticated transport/application identity associated with the A2A interaction",
+          "decision": "support",
+          "evidence_class": "authenticated_identity",
+          "target_path": "system.agent_id",
+          "notes": "Security identity must come from authenticated context, not from discovery metadata alone."
+        },
+        {
+          "mapping_id": "a2a.task-state",
+          "source_expression": "A2A task/message lifecycle state",
+          "decision": "support",
+          "evidence_class": "observed_execution",
+          "target_path": "events[].status",
+          "notes": "Requires an explicit state-normalization profile before implementation."
+        }
+      ]
+    }
+  ]
+}

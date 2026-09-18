@@ -171,7 +171,7 @@ The **synthetic candidate prototype** now demonstrates deterministic derivation 
 - [x] Cover OpenTelemetry traces and developing GenAI conventions.
 - [x] Cover C2PA 2.4 / Content Credentials.
 - [x] Cover MCP 2026-07-28, A2A, OAuth RAR, and current NIST agent identity/authorization work.
-- [ ] Publish machine-readable mappings after the canonical Activity Record stabilizes.
+- [x] Publish a versioned machine-readable candidate mapping artifact with schema/CI validation against the current canonical Activity Record.
 - [x] Prototype an OpenTelemetry GenAI -> canonical-record -> Receipt adapter on synthetic OTLP/JSON traces.
 - [x] Prototype an MCP 2026-07-28 evidence adapter that separates self-reported client/server metadata from authenticated identity and authority.
 - [ ] Evaluate optional C2PA attestation references for content-producing workflows.
