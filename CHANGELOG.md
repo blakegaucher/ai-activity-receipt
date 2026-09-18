@@ -27,6 +27,15 @@ The project is pre-commercial research. Version labels below describe repository
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
 - preserve private-reasoning exclusion diagnostics.
 
+### Aggregate reproducibility runner
+
+- add a one-command runner for the current public deterministic/synthetic validation stack;
+- continue through all checks and return non-zero if any fail;
+- emit a machine-readable JSON report with per-check command, exit status, stdout/stderr, Python version, and explicit evidence boundary;
+- hash the important scripts, schemas, fixtures, protocol artifacts, requirements, and CI workflow with SHA-256 so the report identifies the artifact set actually exercised;
+- run the aggregate reproduction path in CI in addition to the individually named steps;
+- document that this prepares for, but does not itself satisfy, independent external reproduction.
+
 ### Reproducibility
 
 - replace the hard-coded three-fixture list with `examples/fixture-manifest.json`;
