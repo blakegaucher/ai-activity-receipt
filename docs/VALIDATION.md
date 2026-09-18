@@ -130,6 +130,27 @@ This establishes only deterministic behavior on the published synthetic trace. I
 
 ---
 
+## MCP 2026-07-28 adapter smoke test
+
+**Status:** Public synthetic interoperability engineering check
+
+The repository includes a candidate adapter that consumes captured MCP `tools/call` request/response interactions plus separate authenticated authority context and produces a canonical Activity Record.
+
+The self-test checks that:
+
+- the synthetic MCP capture maps exactly to the published expected canonical record;
+- the canonical record passes the record schema and semantic checks;
+- deterministic Receipt derivation exactly matches the published expected Receipt;
+- the derived Receipt passes the Receipt schema and executable invariants;
+- changing self-reported `clientInfo` does not alter the authenticated canonical system identity;
+- a successful consequential tool call without separate approval evidence remains `unknown` and is rejected by the Receipt authorization invariant;
+- a mismatched `Mcp-Name` routing header is rejected;
+- tool arguments/results and self-reported client/server names are not copied into the canonical record.
+
+This establishes only deterministic behavior on the published synthetic capture. It does not establish MCP conformance, OAuth/OIDC correctness, authenticated identity verification, real-world interoperability, production security, or human audit benefit.
+
+---
+
 ## AR-P003 — Comparative Audit Reconstruction Benchmark
 
 **Status:** Benchmark development and auxiliary reviewer testing  
