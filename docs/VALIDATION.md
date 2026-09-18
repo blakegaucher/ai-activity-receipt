@@ -29,7 +29,7 @@ The pilot checked that:
 
 ### Public-repository reproduction note
 
-AR-P001 and AR-P002 summarize earlier internal synthetic engineering suites and may use vocabulary from earlier schema iterations. The current public repository publishes a separate **19-fixture candidate-v0.2 reproducibility suite** using the present `system`, `authority.principal`, `authority.delegate`, provenance, action timing, authorization-decision timing, verification, incident, and integrity fields. The public workflow should not be described as a reproduction of all 12 AR-P001 or 24 AR-P002 historical cases unless those historical fixtures are separately published.
+AR-P001 and AR-P002 summarize earlier internal synthetic engineering suites and may use vocabulary from earlier schema iterations. The current public repository publishes a separate **21-fixture candidate-v0.2 reproducibility suite** using the present `system`, `authority.principal`, `authority.delegate`, provenance, action timing, authorization-decision timing, verification, incident, and integrity fields. The public workflow should not be described as a reproduction of all 12 AR-P001 or 24 AR-P002 historical cases unless those historical fixtures are separately published.
 
 ### Interpretation
 
@@ -67,9 +67,11 @@ It remains an **internal engineering result**, not evidence of real-world effect
 
 **Status:** Public repository engineering smoke test  
 **Manifest:** `examples/fixture-manifest.json`  
-**Current cases:** 19 synthetic fixtures
+**Current cases:** 21 synthetic fixtures
 
 The public suite tests both JSON Schema outcomes and semantic-invariant outcomes. Negative fixtures specify the invariant(s) expected to fire so the suite can detect a case that is rejected for the wrong reason.
+
+Semantic invariants are evaluated only after structural validation succeeds because those checks assume schema-defined object shapes. This avoids turning malformed input such as a non-object `authority` value into an implementation exception. The private-reasoning exclusion scan still runs defensively on structurally invalid JSON values.
 
 The current public cases exercise:
 
@@ -85,7 +87,9 @@ The current public cases exercise:
 - direct-delegation consistency;
 - duplicate material-action event identifiers;
 - private-reasoning-field rejection;
-- generation timestamps that precede represented activity.
+- generation timestamps that precede represented activity;
+- malformed object shapes that must be rejected without crashing semantic validation;
+- RFC 3339 date-time values missing a timezone offset.
 
 The suite is intentionally a **repository reproducibility check**, not a measurement of human audit benefit, safety, compliance, or commercial performance.
 
