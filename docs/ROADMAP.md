@@ -19,7 +19,7 @@ The project currently has:
 - AR-P003 comparative-audit benchmark development;
 - documented benchmark defects and evidence boundaries;
 - a human-centered next-test direction;
-- a public candidate-v0.2 schema/validator with a 17-fixture reproducibility manifest;
+- a public candidate-v0.2 schema/validator with a 19-fixture reproducibility manifest;
 - a dated interoperability research snapshot covering provenance, telemetry, content credentials, agent protocols, and authorization.
 
 ---
