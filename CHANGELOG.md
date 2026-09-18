@@ -27,6 +27,17 @@ The project is pre-commercial research. Version labels below describe repository
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
 - preserve private-reasoning exclusion diagnostics.
 
+### AR-P003 v0.3 reviewer-bundle build pipeline
+
+- connect seeded reviewer/case assignments and linted case-package manifests to the development offline runner;
+- require assignment hidden-stratum metadata to agree with each case manifest before packaging;
+- emit control bundles with shared evidence only and Receipt bundles with the same evidence plus the Receipt;
+- keep gold reconstruction and hidden strata in a separate analysis bundle that is never reviewer-facing;
+- require configured gold files to already be declared analysis-only in the case package;
+- emit a SHA-256 build manifest for assignment/config inputs and generated reviewer/analysis artifacts;
+- refuse silent output-directory overwrite and fail on non-UTF-8 evidence in the current text-only runner profile;
+- add deterministic self-test, CI, and aggregate reproducibility coverage.
+
 ### AR-P003 v0.3 development offline runner
 
 - add a self-contained offline reviewer interface with no external scripts, hosted APIs, telemetry, or network calls;
