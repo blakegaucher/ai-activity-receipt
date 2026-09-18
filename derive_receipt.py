@@ -139,6 +139,8 @@ def record_semantic_errors(record: dict[str, Any]) -> list[str]:
     valid_from = parse_datetime(authority.get("valid_from"))
     valid_until = parse_datetime(authority.get("valid_until"))
     generated_at = parse_datetime((record.get("integrity") or {}).get("generated_at"))
+    scope = set(authority.get("scope") or [])
+    prohibited = set(authority.get("prohibited") or [])
 
     if valid_from and valid_until and valid_from > valid_until:
         errors.append("authority.valid_from occurs after authority.valid_until")
@@ -173,6 +175,84 @@ def record_semantic_errors(record: dict[str, Any]) -> list[str]:
             )
 
         occurred_at = parse_datetime(event.get("occurred_at"))
+
+        if event.get("material") is True:
+            if occurred_at and valid_from and occurred_at < valid_from:
+                errors.append(
+                    f"events[{index}].occurred_at occurs before authority.valid_from"
+                )
+            if occurred_at and valid_until and occurred_at > valid_until:
+                errors.append(
+                    f"events[{index}].occurred_at occurs after authority.valid_until"
+                )
+
+            operation = event.get("operation")
+            authorization = event.get("authorization")
+
+            if (
+                event.get("consequential") is True
+                and event.get("status") == "completed"
+            ):
+                if authorization != "approved":
+                    errors.append(
+                        f"events[{index}] completed consequential action "
+                        "does not have approved authorization"
+                    )
+
+                if operation and operation not in scope:
+                    errors.append(
+                        f"events[{index}].operation {operation!r} is outside "
+                        "authority.scope"
+                    )
+
+                decision_raw = event.get("authorization_decided_at")
+                if not decision_raw:
+                    errors.append(
+                        f"events[{index}] completed consequential action has no "
+                        "authorization_decided_at"
+                    )
+                else:
+                    decision_time = parse_datetime(decision_raw)
+                    if (
+                        decision_time
+                        and occurred_at
+                        and decision_time > occurred_at
+                    ):
+                        errors.append(
+                            f"events[{index}].authorization_decided_at occurs "
+                            "after the consequential action"
+                        )
+
+            if (
+                operation in prohibited
+                and event.get("status") == "completed"
+                and authorization == "approved"
+            ):
+                errors.append(
+                    f"events[{index}] operation {operation!r} is prohibited but "
+                    "recorded as approved and completed"
+                )
+
+            materially_failed = (
+                event.get("status") in {"blocked", "failed"}
+                and (
+                    event.get("consequential") is True
+                    or authorization == "denied"
+                )
+            )
+            if materially_failed:
+                event_id = event.get("event_id")
+                linked = any(
+                    isinstance(incident, dict)
+                    and incident.get("event_id") == event_id
+                    for incident in (record.get("incidents") or [])
+                )
+                if not linked:
+                    errors.append(
+                        f"events[{index}] materially blocked/failed activity "
+                        "has no linked incident record"
+                    )
+
         if occurred_at and generated_at and occurred_at > generated_at:
             errors.append(
                 f"events[{index}].occurred_at occurs after integrity.generated_at"
@@ -201,7 +281,12 @@ def record_semantic_errors(record: dict[str, Any]) -> list[str]:
 
     verification = record.get("verification") or {}
     material_evidence_ids = material_source_ids | material_event_ids
-    for evidence_ref in verification.get("evidence_refs") or []:
+    verification_refs = verification.get("evidence_refs") or []
+    if verification.get("state") == "confirmed" and not verification_refs:
+        errors.append(
+            "verification.state is confirmed but evidence_refs is empty"
+        )
+    for evidence_ref in verification_refs:
         if evidence_ref not in source_ids | event_ids:
             errors.append(
                 f"verification.evidence_refs contains unknown evidence {evidence_ref!r}"
@@ -372,6 +457,71 @@ def run_self_test(
         derived["integrity"]["record_hash"]
     )
     assert material_receipt["material_actions"] != derived["material_actions"]
+
+    denied_completion = copy.deepcopy(record)
+    denied_completion["events"][1]["authorization"] = "denied"
+    denied_errors = record_semantic_errors(denied_completion)
+    assert any(
+        "does not have approved authorization" in error
+        for error in denied_errors
+    )
+
+    out_of_scope = copy.deepcopy(record)
+    out_of_scope["events"][1]["operation"] = "delete_account"
+    scope_errors = record_semantic_errors(out_of_scope)
+    assert any("outside authority.scope" in error for error in scope_errors)
+
+    late_decision = copy.deepcopy(record)
+    late_decision["events"][1]["authorization_decided_at"] = (
+        "2026-09-18T04:31:00Z"
+    )
+    late_decision_errors = record_semantic_errors(late_decision)
+    assert any(
+        "occurs after the consequential action" in error
+        for error in late_decision_errors
+    )
+
+    missing_decision = copy.deepcopy(record)
+    missing_decision["events"][1].pop("authorization_decided_at")
+    missing_decision_errors = record_semantic_errors(missing_decision)
+    assert any(
+        "has no authorization_decided_at" in error
+        for error in missing_decision_errors
+    )
+
+    prohibited = copy.deepcopy(record)
+    prohibited["authority"]["prohibited"] = ["send_email"]
+    prohibited_errors = record_semantic_errors(prohibited)
+    assert any(
+        "is prohibited but recorded as approved and completed" in error
+        for error in prohibited_errors
+    )
+
+    missing_incident = copy.deepcopy(record)
+    missing_incident["events"][1]["status"] = "blocked"
+    missing_incident["events"][1]["authorization"] = "denied"
+    missing_incident["incidents"] = []
+    incident_errors = record_semantic_errors(missing_incident)
+    assert any(
+        "has no linked incident record" in error
+        for error in incident_errors
+    )
+
+    before_window = copy.deepcopy(record)
+    before_window["events"][1]["occurred_at"] = "2026-09-18T03:59:00Z"
+    before_window_errors = record_semantic_errors(before_window)
+    assert any(
+        "occurs before authority.valid_from" in error
+        for error in before_window_errors
+    )
+
+    confirmed_without_evidence = copy.deepcopy(record)
+    confirmed_without_evidence["verification"]["evidence_refs"] = []
+    confirmed_errors = record_semantic_errors(confirmed_without_evidence)
+    assert any(
+        "confirmed but evidence_refs is empty" in error
+        for error in confirmed_errors
+    )
 
     inverted = copy.deepcopy(record)
     inverted["authority"]["valid_from"] = "2026-09-18T05:01:00Z"
