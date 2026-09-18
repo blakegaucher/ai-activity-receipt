@@ -90,6 +90,17 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### candidate-record-v0.2 multi-hop profile
+
+- add a versioned future canonical-record research schema with ordered delegation hops;
+- add candidate-receipt-v0.3 with compact delegation path and evidence-state fields;
+- compute effective scope by intersection, prohibitions by union, and time window by intersection;
+- require complete native chains to preserve hop decision/evidence data and active state;
+- add loss-aware migration from candidate-record-v0.1 that explicitly marks missing historical delegation-decision time instead of inventing it;
+- require migrated Receipts to preserve the prior human-visible core;
+- add ten adversarial multi-hop/migration tests and CI coverage;
+- leave promotion of v0.2 into the public canonical schema path as a separate decision.
+
 ### DSSE protocol-conformance hardening
 
 - check the prototype against upstream DSSE Protocol 1.0.2 and its published `HelloWorld` PAE vector;
