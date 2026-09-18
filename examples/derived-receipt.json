@@ -27,13 +27,13 @@
   ],
   "material_actions": [
     {
+      "event_id": "event-1",
+      "occurred_at": "2026-09-18T04:30:00Z",
       "operation": "send_email",
       "status": "completed",
       "authorization": "approved",
-      "consequential": true,
-      "event_id": "event-1",
-      "occurred_at": "2026-09-18T04:30:00Z",
       "authorization_decided_at": "2026-09-18T04:20:00Z",
+      "consequential": true,
       "source_refs": [
         "src-A"
       ]
@@ -47,8 +47,8 @@
   },
   "incidents": [],
   "integrity": {
-    "record_hash": "sha256:b60d8e6aada04a641cf402a8bca684d01c92a83fcf56cda7273f6de74cc42b65",
-    "derived_from_record_hash": "sha256:b60d8e6aada04a641cf402a8bca684d01c92a83fcf56cda7273f6de74cc42b65",
+    "record_hash": "sha256:ade688ba6ecfb64f6ded458ba114b6d029f81e03df0757994fc91ab1f5e571be",
+    "derived_from_record_hash": "sha256:ade688ba6ecfb64f6ded458ba114b6d029f81e03df0757994fc91ab1f5e571be",
     "generated_at": "2026-09-18T04:35:00Z"
   }
 }
