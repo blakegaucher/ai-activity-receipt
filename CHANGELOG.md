@@ -90,6 +90,16 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### AR-P003 assignment hardening
+
+- replace the development-only greedy condition allocator after testing exposed possible reviewer-level 4/2 splits for six-case workloads;
+- use deterministic balanced bipartite edge coloring after case selection;
+- guarantee control-vs-Receipt condition imbalance of at most one for every reviewer and every case;
+- preserve exact 50/50 splits for even-degree reviewers/cases;
+- add reviewer-, case-, and stratum-level condition diagnostics;
+- add mixed-strata, even-degree, odd-degree, and deterministic-repeat self-tests;
+- record that no confirmatory human assignment or dataset was frozen under the superseded development allocator.
+
 ### AR-P003 sample-size / precision planning
 
 - add a development-only planner for two-group binary endpoints, standardized continuous endpoints, and confidence-interval precision;
