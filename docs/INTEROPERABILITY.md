@@ -111,6 +111,16 @@ AI Activity Receipt should not claim C2PA conformance merely because it stores h
 
 ---
 
+### C2PA external-reference evaluation
+
+C2PA 2.4 adds `c2pa.repository-receipt` for repository-ingestion proof and `c2pa.ai-disclosure` for machine-readable AI transparency information. The project evaluated these against the current canonical model and chose not to add C2PA-specific fields to candidate-record-v0.1.
+
+The preferred direction is a separately validated external evidence-reference layer: canonical sources may retain URI/hash bindings, while richer C2PA manifest/assertion/repository-receipt evidence remains externally referenced with an explicit validation state.
+
+See [C2PA-EVIDENCE-REFERENCES.md](C2PA-EVIDENCE-REFERENCES.md).
+
+---
+
 ## 4. Model Context Protocol (MCP)
 
 **References:**
@@ -334,7 +344,7 @@ This is evidence of normalization consistency on one synthetic paired scenario, 
 
 - extend the machine-readable crosswalk when external specifications or adapter semantics change;
 - add richer evidence-substrate references beyond the current trace/event/source fields;
-- evaluate whether C2PA attestation references should be optional evidence objects for produced content;
+- decide whether the standalone external evidence-reference index becomes part of a future canonical-record version or remains a separately content-bound artifact;
 - prototype an A2A evidence adapter only after the task/identity mapping and authenticated-context boundary are sufficiently clear;
 - monitor NIST AI-agent identity/authorization work and emerging industry standards;
 - avoid any standards-conformance claim until an explicit conformance target and test method exist.

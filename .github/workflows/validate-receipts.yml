@@ -88,6 +88,9 @@ jobs:
       - name: Run heterogeneous workflow derivation pilot
         run: python research/workflow_pilot.py
 
+      - name: Run external evidence-reference self-test
+        run: python research/validate_external_evidence.py --self-test
+
       - name: Run AR-P003 scorer self-test
         run: python benchmark/arp003_v0_3/score_responses.py --self-test
 

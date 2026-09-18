@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Activity Receipt External Evidence Reference Index",
+  "description": "Standalone research profile for linking a canonical Activity Record to external evidence artifacts without embedding credentials or full payloads.",
+  "type": "object",
+  "required": [
+    "evidence_reference_version",
+    "record_id",
+    "references"
+  ],
+  "properties": {
+    "evidence_reference_version": {
+      "const": "external-evidence-ref-v0.1"
+    },
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "references": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "evidence_id",
+          "kind",
+          "subject",
+          "locator",
+          "validation"
+        ],
+        "properties": {
+          "evidence_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "telemetry",
+              "authorization_decision",
+              "source_artifact",
+              "provenance",
+              "content_provenance",
+              "attestation",
+              "repository_receipt",
+              "verification"
+            ]
+          },
+          "subject": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "record",
+                  "authority",
+                  "event",
+                  "source",
+                  "verification"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "record",
+                        "authority",
+                        "verification"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "required": [
+                      "id"
+                    ]
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "event",
+                        "source"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            ],
+            "additionalProperties": false
+          },
+          "standard": {
+            "type": "string",
+            "minLength": 1
+          },
+          "profile": {
+            "type": "string",
+            "minLength": 1
+          },
+          "external_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "locator": {
+            "type": "object",
+            "properties": {
+              "uri": {
+                "type": "string",
+                "format": "uri"
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              }
+            },
+            "anyOf": [
+              {
+                "required": [
+                  "uri"
+                ]
+              },
+              {
+                "required": [
+                  "digest"
+                ]
+              }
+            ],
+            "additionalProperties": false
+          },
+          "validation": {
+            "type": "object",
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "not_checked",
+                  "valid",
+                  "invalid",
+                  "unavailable",
+                  "uncertain"
+                ]
+              },
+              "validated_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "validator": {
+                "type": "string",
+                "minLength": 1
+              },
+              "trust_profile": {
+                "type": "string",
+                "minLength": 1
+              },
+              "details_ref": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "additionalProperties": false
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

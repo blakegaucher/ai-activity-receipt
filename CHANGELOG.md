@@ -90,6 +90,15 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### C2PA and external evidence-reference evaluation
+
+- evaluate C2PA 2.4 content provenance, `c2pa.ai-disclosure`, and `c2pa.repository-receipt` as optional external evidence rather than fields to copy into candidate-record-v0.1;
+- add a standalone generic external evidence-reference JSON Schema, synthetic C2PA-oriented example, semantic validator, and adversarial self-tests;
+- require evidence references to identify the canonical subject they support and separate location/binding from explicit validation state;
+- require `state = valid` to name a validator and validation time rather than treating a URI as proof of successful validation;
+- keep repository-specific C2PA proof bodies outside the candidate index;
+- mark the C2PA evaluation milestone complete while leaving future canonical-schema/evidence-index integration versioned and open.
+
 ### Heterogeneous workflow derivation pilot
 
 - add four synthetic direct canonical-record workflows covering research/email success, document upload failure, blocked administrative submission, and pending publication;

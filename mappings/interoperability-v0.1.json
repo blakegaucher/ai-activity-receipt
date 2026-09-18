@@ -323,7 +323,7 @@
       "reference_uris": [
         "https://spec.c2pa.org/specifications/specifications/2.4/specs/C2PA_Specification.html"
       ],
-      "notes": "C2PA content provenance can complement operational provenance for produced/consumed assets.",
+      "notes": "C2PA content provenance can complement operational provenance for produced/consumed assets. Candidate-record-v0.1 retains only URI/hash support; richer manifest, AI-disclosure, and repository-receipt evidence is evaluated through the standalone external evidence-reference research profile.",
       "mappings": [
         {
           "mapping_id": "c2pa.asset-reference",
@@ -346,14 +346,14 @@
           "source_expression": "c2pa.ai-disclosure assertion",
           "decision": "no_equivalent",
           "evidence_class": "content_provenance",
-          "notes": "The current canonical record has no dedicated AI disclosure assertion field; future content-asset evidence may reference it externally."
+          "notes": "The current canonical record has no dedicated AI disclosure field. Evaluation favors an external content-provenance evidence reference with explicit validation state rather than copying the assertion into candidate-record-v0.1."
         },
         {
           "mapping_id": "c2pa.repository-receipt",
           "source_expression": "c2pa.repository-receipt assertion",
           "decision": "no_equivalent",
           "evidence_class": "integrity",
-          "notes": "A future attestation/evidence-reference layer may point to repository-ingestion proofs; current record v0.1 has no dedicated field."
+          "notes": "C2PA 2.4 repository-ingestion proofs are evaluated as externally referenced evidence. Candidate-record-v0.1 has no dedicated field and the repository-specific proof body is not copied into the Activity Record/Receipt."
         }
       ]
     },
