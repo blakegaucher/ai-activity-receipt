@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Development Runner Analysis Bundle",
+  "description": "Analysis-side hidden case metadata. This file must never be reviewer-facing.",
+  "type": "object",
+  "required": [
+    "analysis_bundle_version",
+    "protocol_version",
+    "cases"
+  ],
+  "properties": {
+    "analysis_bundle_version": {
+      "const": "AR-P003-v0.3-dev-runner-analysis-v0.1"
+    },
+    "protocol_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "stratum",
+          "gold"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "stratum": {
+            "type": "string",
+            "enum": [
+              "ordinary",
+              "stale_receipt",
+              "incomplete_receipt",
+              "conflicting_receipt"
+            ]
+          },
+          "gold": {
+            "$ref": "#/$defs/reconstruction"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "stringSet": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "verificationState": {
+      "type": "string",
+      "enum": [
+        "not_required",
+        "pending",
+        "confirmed",
+        "failed",
+        "uncertain"
+      ]
+    },
+    "reconstruction": {
+      "type": "object",
+      "required": [
+        "material_actions",
+        "authorization_violation",
+        "material_sources",
+        "incidents",
+        "verification_state",
+        "missing_evidence"
+      ],
+      "properties": {
+        "material_actions": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "authorization_violation": {
+          "type": "boolean"
+        },
+        "material_sources": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "incidents": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "verification_state": {
+          "$ref": "#/$defs/verificationState"
+        },
+        "missing_evidence": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
