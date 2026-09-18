@@ -160,6 +160,28 @@ This establishes only deterministic behavior on the published synthetic capture.
 
 ---
 
+## Machine-readable interoperability mapping smoke test
+
+**Status:** Public synthetic/research consistency check
+
+The repository publishes a versioned machine-readable crosswalk covering OpenTelemetry GenAI, MCP 2026-07-28, W3C PROV, OAuth RAR, C2PA 2.4, and A2A.
+
+The mapping validator checks that:
+
+- the crosswalk conforms to its JSON Schema;
+- each mapped canonical target path still resolves against `activity-record.schema.json`;
+- profile and mapping identifiers are unique;
+- implemented-adapter profiles point to existing adapter files;
+- self-reported descriptive identity cannot directly populate `system.agent_id`, `authority.principal`, or `authority.delegate`;
+- selected sensitive tool payloads and bearer credentials remain excluded;
+- the mapping artifact declares the same canonical record profile as the record schema.
+
+The self-test mutates these rules and requires the validator to reject the unsafe or stale mapping.
+
+This is a consistency tool for research mappings. It does not establish conformance or interoperability certification with any referenced standard.
+
+---
+
 ## AR-P003 — Comparative Audit Reconstruction Benchmark
 
 **Status:** Benchmark development and auxiliary reviewer testing  
