@@ -45,6 +45,17 @@ The project is pre-commercial research. Version labels below describe repository
 - add synthetic canonical-record and exact expected derived-Receipt fixtures;
 - revalidate the derived Receipt against the public Receipt schema and semantic invariants in CI.
 
+### MCP adapter
+
+- add a candidate MCP 2026-07-28 `tools/call` capture -> Canonical Activity Record adapter;
+- validate basic protocol/header/body capture consistency;
+- keep self-reported `clientInfo` / `serverInfo` out of authenticated identity decisions;
+- keep authorization, materiality, and consequentiality in a separate sidecar;
+- add exact synthetic MCP capture -> canonical-record -> Receipt fixtures;
+- verify that successful execution without separate approval evidence remains `unknown` and fails the consequential-action Receipt invariant;
+- verify that tool arguments/results and self-reported implementation names are not copied into the canonical record;
+- add CI coverage and an adapter design note.
+
 ### OpenTelemetry adapter
 
 - add a candidate OTLP/JSON GenAI -> Canonical Activity Record adapter;

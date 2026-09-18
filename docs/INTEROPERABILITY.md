@@ -145,6 +145,16 @@ The Receipt should distinguish:
 
 A tool call must not be marked authorized solely because an MCP client declared a name/version.
 
+### Implemented prototype
+
+The repository now includes a revision-specific `mcp-2026-v0.1` adapter for captured `tools/call` request/response pairs.
+
+The adapter validates basic capture consistency such as protocol version, `Mcp-Method`, `Mcp-Name`, and JSON-RPC request/response IDs. It maps the MCP tool name into the canonical Activity Record while taking principal identity, authenticated agent identity, delegated authority, materiality, and approval evidence from a separate sidecar.
+
+The synthetic test deliberately changes self-reported `clientInfo` and requires the authenticated canonical identity to remain unchanged. It also verifies that a successful tool response without separate authorization evidence remains `unknown` and fails the existing consequential-action Receipt invariant.
+
+See [MCP-ADAPTER.md](MCP-ADAPTER.md).
+
 ---
 
 ## 5. Agent2Agent (A2A)

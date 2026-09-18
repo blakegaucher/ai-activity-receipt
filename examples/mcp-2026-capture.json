@@ -1,0 +1,54 @@
+{
+  "capture_version": "1",
+  "interactions": [
+    {
+      "request_observed_at": "2026-09-18T07:05:00Z",
+      "response_observed_at": "2026-09-18T07:05:03Z",
+      "request": {
+        "headers": {
+          "MCP-Protocol-Version": "2026-07-28",
+          "Mcp-Method": "tools/call",
+          "Mcp-Name": "send_email"
+        },
+        "body": {
+          "jsonrpc": "2.0",
+          "id": "req-1",
+          "method": "tools/call",
+          "params": {
+            "name": "send_email",
+            "arguments": {
+              "to": "recipient@example.invalid",
+              "body": "synthetic-secret-body"
+            },
+            "_meta": {
+              "io.modelcontextprotocol/clientInfo": {
+                "name": "claimed-client",
+                "version": "99.0"
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "body": {
+          "jsonrpc": "2.0",
+          "id": "req-1",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "synthetic message sent"
+              }
+            ],
+            "_meta": {
+              "io.modelcontextprotocol/serverInfo": {
+                "name": "mail-server",
+                "version": "1.2.3"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
