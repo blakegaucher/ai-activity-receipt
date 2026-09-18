@@ -120,6 +120,7 @@ A positive result is **not** required for this phase to be successful.
 - [ ] Implement multi-hop delegation in a versioned future record/Receipt schema with migration tests from the direct-delegation profile.
 - [x] Publish an integrity/attestation design direction and evaluate established envelope approaches.
 - [ ] Implement signing/attestation only after signer identity, key management, payload type, and trust/revocation policy are defined.
+- [x] Add a heterogeneous synthetic workflow derivation pilot spanning direct records, OpenTelemetry, MCP, success/failure/blocked/pending states, incidents, and verification variants.
 - [ ] Test derivation against heterogeneous realistic workflow traces.
 
 ### Candidate architecture
