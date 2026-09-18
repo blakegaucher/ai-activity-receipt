@@ -1,0 +1,75 @@
+{
+  "protocol_id": "AR-P003",
+  "version": "v0.3-draft-2026-09-18",
+  "status": "candidate_preregistration_draft",
+  "frozen": false,
+  "research_question": "Does adding a standardized AI Activity Receipt to the same underlying evidence change independent human reconstruction accuracy, reliability, or time?",
+  "conditions": {
+    "control": "heterogeneous underlying evidence only",
+    "receipt": "same underlying evidence plus standardized Activity Receipt"
+  },
+  "ordinary_case_rule": "Receipt material facts must be derivable from the same underlying evidence available in control.",
+  "challenge_strata": [
+    "stale_receipt",
+    "incomplete_receipt",
+    "conflicting_receipt"
+  ],
+  "assignment": {
+    "design": "randomized_balanced_incomplete_block",
+    "same_case_both_conditions_per_reviewer": false,
+    "independently_randomize_case_order": true,
+    "balance_each_ordinary_case_across_conditions": true
+  },
+  "primary_targets": [
+    "material_actions",
+    "authorization_violation",
+    "material_sources",
+    "incidents",
+    "verification_state",
+    "missing_evidence",
+    "elapsed_seconds"
+  ],
+  "secondary_targets": [
+    "confidence",
+    "reviewer_agreement",
+    "false_incident_flags",
+    "omission_patterns",
+    "challenge_detection"
+  ],
+  "scoring": {
+    "material_actions": "set_precision_recall_f1",
+    "material_sources": "set_precision_recall_f1",
+    "incidents": "set_precision_recall_f1",
+    "authorization_violation": "exact_accuracy",
+    "verification_state": "exact_accuracy",
+    "missing_evidence": "exact_accuracy",
+    "elapsed_seconds": "report_valid_active_wall_clock_time",
+    "composite_primary_score": false
+  },
+  "timing": {
+    "system_instrumented": true,
+    "speed_claim_requires_reliable_timing": true,
+    "automatic_slow_response_exclusion": false
+  },
+  "confirmatory_requirements": [
+    "fresh_sealed_corpus",
+    "target_reviewer_population_frozen",
+    "primary_endpoints_frozen",
+    "sample_size_or_precision_analysis_frozen",
+    "reviewer_instructions_frozen",
+    "assignment_and_randomization_frozen",
+    "scoring_code_frozen",
+    "analysis_plan_frozen",
+    "exclusion_rules_frozen",
+    "ethics_determination_as_applicable",
+    "sha256_freeze_manifest"
+  ],
+  "claim_gates": {
+    "human_audit_benefit_requires_prespecified_human_endpoint_support": true,
+    "speed_claim_requires_reliable_timing_and_prespecified_support": true,
+    "safety_or_compliance_claim_from_arp003": false,
+    "challenge_case_results_must_be_reported_with_ordinary_results": true
+  },
+  "private_chain_of_thought_collected": false,
+  "repository_smoke_data_is_confirmatory": false
+}
