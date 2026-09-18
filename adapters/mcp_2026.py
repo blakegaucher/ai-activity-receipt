@@ -42,13 +42,47 @@ def load_json(path: Path) -> Any:
 
 
 def lower_headers(headers: Any) -> dict[str, str]:
-    if not isinstance(headers, dict):
+    if headers is None:
         return {}
-    return {
-        str(key).lower(): str(value)
-        for key, value in headers.items()
-        if key is not None and value is not None
-    }
+    if not isinstance(headers, dict):
+        raise ValueError("request.headers must be an object when supplied")
+
+    result: dict[str, str] = {}
+    for key, value in headers.items():
+        if key is None or value is None:
+            continue
+        normalized = str(key).lower()
+        if normalized in result:
+            raise ValueError(
+                f"duplicate case-insensitive MCP header {normalized!r}"
+            )
+        result[normalized] = str(value)
+    return result
+
+
+def require_string_list(value: Any, label: str) -> list[str]:
+    if value is None:
+        return []
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item for item in value
+    ):
+        raise ValueError(f"{label} must be a list of non-empty strings")
+    return list(value)
+
+
+def require_mapping(value: Any, label: str) -> dict[str, Any]:
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be an object")
+    if not all(isinstance(key, str) and key for key in value):
+        raise ValueError(f"{label} keys must be non-empty strings")
+    return value
+
+
+def validate_jsonrpc_envelope(body: dict[str, Any], label: str) -> None:
+    if body.get("jsonrpc") != "2.0":
+        raise ValueError(f"{label}.jsonrpc must equal '2.0'")
 
 
 def request_id_text(value: Any) -> str:
@@ -96,22 +130,37 @@ def build_record(capture: dict[str, Any], context: dict[str, Any]) -> dict[str, 
         if required not in authority:
             raise ValueError(f"sidecar authority is missing {required!r}")
 
-    scope = authority.get("scope")
-    if not isinstance(scope, list) or not all(
-        isinstance(item, str) and item for item in scope
-    ):
-        raise ValueError("sidecar authority.scope must be a list of non-empty strings")
+    scope = require_string_list(authority.get("scope"), "sidecar authority.scope")
+    if not scope:
+        raise ValueError("sidecar authority.scope must not be empty")
 
-    prohibited = authority.get("prohibited") or []
-    if not isinstance(prohibited, list) or not all(
-        isinstance(item, str) and item for item in prohibited
-    ):
-        raise ValueError("sidecar authority.prohibited must be a list of strings")
+    prohibited = require_string_list(
+        authority.get("prohibited"), "sidecar authority.prohibited"
+    )
 
-    material_tools = set(context.get("material_tools") or [])
-    consequential_tools = set(context.get("consequential_tools") or [])
-    authorization_by_request_id = context.get("authorization_by_request_id") or {}
-    status_by_request_id = context.get("status_by_request_id") or {}
+    material_tools = set(
+        require_string_list(context.get("material_tools"), "material_tools")
+    )
+    consequential_tools = set(
+        require_string_list(
+            context.get("consequential_tools"), "consequential_tools"
+        )
+    )
+    authorization_by_request_id = require_mapping(
+        context.get("authorization_by_request_id"),
+        "authorization_by_request_id",
+    )
+    status_by_request_id = require_mapping(
+        context.get("status_by_request_id"),
+        "status_by_request_id",
+    )
+
+    for request_id, info in authorization_by_request_id.items():
+        if not isinstance(info, dict):
+            raise ValueError(
+                "authorization_by_request_id values must be objects; "
+                f"request {request_id!r} is invalid"
+            )
 
     events: list[dict[str, Any]] = []
     incidents: list[dict[str, Any]] = []
@@ -123,6 +172,9 @@ def build_record(capture: dict[str, Any], context: dict[str, Any]) -> dict[str, 
 
         request = interaction.get("request") or {}
         response = interaction.get("response") or {}
+        if not isinstance(request, dict) or not isinstance(response, dict):
+            raise ValueError("request and response must be JSON objects")
+
         request_body = request.get("body") or {}
         response_body = response.get("body") or {}
 
@@ -132,6 +184,9 @@ def build_record(capture: dict[str, Any], context: dict[str, Any]) -> dict[str, 
         method = request_body.get("method")
         if method != "tools/call":
             continue
+
+        validate_jsonrpc_envelope(request_body, "request.body")
+        validate_jsonrpc_envelope(response_body, "response.body")
 
         headers = lower_headers(request.get("headers"))
         protocol_version = headers.get("mcp-protocol-version")
@@ -172,8 +227,16 @@ def build_record(capture: dict[str, Any], context: dict[str, Any]) -> dict[str, 
                 f"interaction {req_id!r} must provide request_observed_at"
             )
 
-        status = status_by_request_id.get(req_id) or response_status(response_body)
-        if status not in {"completed", "blocked", "failed", "pending", "unknown"}:
+        status = status_by_request_id.get(req_id)
+        if status is None:
+            status = response_status(response_body)
+        if not isinstance(status, str) or status not in {
+            "completed",
+            "blocked",
+            "failed",
+            "pending",
+            "unknown",
+        }:
             raise ValueError(
                 f"unsupported status override for request {req_id!r}: {status!r}"
             )
@@ -188,7 +251,12 @@ def build_record(capture: dict[str, Any], context: dict[str, Any]) -> dict[str, 
         authorization = auth_info.get("authorization")
         if authorization is None:
             authorization = "unknown" if consequential else "not_required"
-        if authorization not in {"approved", "denied", "not_required", "unknown"}:
+        if not isinstance(authorization, str) or authorization not in {
+            "approved",
+            "denied",
+            "not_required",
+            "unknown",
+        }:
             raise ValueError(
                 f"unsupported authorization state for request {req_id!r}: "
                 f"{authorization!r}"
@@ -227,17 +295,42 @@ def build_record(capture: dict[str, Any], context: dict[str, Any]) -> dict[str, 
     if not events:
         raise ValueError("no MCP tools/call interactions were found")
 
-    verification = context.get("verification") or {"state": "pending"}
-    if not isinstance(verification, dict):
+    unknown_auth_ids = sorted(set(authorization_by_request_id) - seen_request_ids)
+    if unknown_auth_ids:
+        raise ValueError(
+            "authorization_by_request_id contains unknown request id(s): "
+            f"{unknown_auth_ids!r}"
+        )
+
+    unknown_status_ids = sorted(set(status_by_request_id) - seen_request_ids)
+    if unknown_status_ids:
+        raise ValueError(
+            "status_by_request_id contains unknown request id(s): "
+            f"{unknown_status_ids!r}"
+        )
+
+    verification = context.get("verification")
+    if verification is None:
+        verification = {"state": "pending"}
+    elif not isinstance(verification, dict):
         raise ValueError("verification must be an object when supplied")
 
+    record_id = context.get("record_id")
+    if record_id is None:
+        record_id = f"record-mcp-{events[0]['event_id'].replace(':', '-')}"
+    if not isinstance(record_id, str) or not record_id:
+        raise ValueError("record_id must be a non-empty string when supplied")
+
+    trace_id = context.get("trace_id")
+    if trace_id is None:
+        trace_id = events[0]["event_id"]
+    if not isinstance(trace_id, str) or not trace_id:
+        raise ValueError("trace_id must be a non-empty string when supplied")
+
     return {
-        "record_id": str(
-            context.get("record_id")
-            or f"record-mcp-{events[0]['event_id'].replace(':', '-')}"
-        ),
+        "record_id": record_id,
         "record_schema_version": "candidate-record-v0.1",
-        "trace_id": str(context.get("trace_id") or events[0]["event_id"]),
+        "trace_id": trace_id,
         "system": {
             "agent_id": agent_id,
             "version": agent_version,
@@ -323,6 +416,78 @@ def run_self_test(
         assert "Mcp-Name" in str(exc)
     else:
         raise AssertionError("Mcp-Name mismatch was not rejected")
+
+    # Duplicate case-insensitive routing headers are ambiguous and must fail.
+    duplicate_header = json.loads(json.dumps(capture))
+    duplicate_header["interactions"][0]["request"]["headers"]["mcp-name"] = "send_email"
+    try:
+        build_record(duplicate_header, context)
+    except ValueError as exc:
+        assert "duplicate case-insensitive MCP header" in str(exc)
+    else:
+        raise AssertionError("duplicate case-insensitive MCP header was not rejected")
+
+    # JSON-RPC version must be explicit and correct on request and response.
+    bad_jsonrpc = json.loads(json.dumps(capture))
+    bad_jsonrpc["interactions"][0]["request"]["body"]["jsonrpc"] = "1.0"
+    try:
+        build_record(bad_jsonrpc, context)
+    except ValueError as exc:
+        assert "jsonrpc must equal '2.0'" in str(exc)
+    else:
+        raise AssertionError("invalid JSON-RPC version was not rejected")
+
+    # Sidecar collections must have explicit object/list shapes.
+    malformed_sidecar = json.loads(json.dumps(context))
+    malformed_sidecar["material_tools"] = "send_email"
+    try:
+        build_record(capture, malformed_sidecar)
+    except ValueError as exc:
+        assert "material_tools must be a list" in str(exc)
+    else:
+        raise AssertionError("string material_tools was not rejected")
+
+    # Sidecar status values must be explicit strings rather than arbitrary JSON.
+    malformed_status = json.loads(json.dumps(context))
+    malformed_status["status_by_request_id"] = {"req-1": {"status": "completed"}}
+    try:
+        build_record(capture, malformed_status)
+    except ValueError as exc:
+        assert "unsupported status override" in str(exc)
+    else:
+        raise AssertionError("non-string MCP status override was not rejected")
+
+    # An explicitly supplied malformed verification value must not become pending.
+    malformed_verification = json.loads(json.dumps(context))
+    malformed_verification["verification"] = []
+    try:
+        build_record(capture, malformed_verification)
+    except ValueError as exc:
+        assert "verification must be an object" in str(exc)
+    else:
+        raise AssertionError("malformed MCP verification was not rejected")
+
+    # Stale sidecar evidence for an unknown request must fail closed.
+    dangling_auth = json.loads(json.dumps(context))
+    dangling_auth["authorization_by_request_id"]["no-such-request"] = {
+        "authorization": "approved"
+    }
+    try:
+        build_record(capture, dangling_auth)
+    except ValueError as exc:
+        assert "unknown request id" in str(exc)
+    else:
+        raise AssertionError("dangling authorization sidecar entry was not rejected")
+
+    # Record/correlation IDs must not be stringified from arbitrary JSON values.
+    bad_trace_id = json.loads(json.dumps(context))
+    bad_trace_id["trace_id"] = {"unexpected": "object"}
+    try:
+        build_record(capture, bad_trace_id)
+    except ValueError as exc:
+        assert "trace_id must be a non-empty string" in str(exc)
+    else:
+        raise AssertionError("non-string trace_id was not rejected")
 
     # Arguments and response content are deliberately excluded from the record.
     rendered = json.dumps(record)

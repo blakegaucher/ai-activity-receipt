@@ -133,7 +133,10 @@ The self-test checks that:
 - a successful consequential tool span without separate authorization evidence remains `unknown` and is rejected by the Receipt authorization invariant;
 - opt-in tool arguments/results in the synthetic telemetry are not copied into the canonical record;
 - nanosecond timestamp fractions survive OTLP-to-record conversion without microsecond truncation;
-- malformed or all-zero OpenTelemetry trace/span identifiers are rejected.
+- malformed, duplicate, or all-zero OpenTelemetry trace/span identifiers are rejected;
+- duplicate OTLP attribute keys and inverted span times are rejected;
+- unsupported timestamp magnitudes fail as validation errors rather than escaping as runtime exceptions;
+- malformed sidecar containers, dangling span-keyed governance entries, and unresolved material-source/source-role references are rejected.
 
 This establishes only deterministic behavior on the published synthetic trace. It does not establish OpenTelemetry conformance, production telemetry completeness, authorization correctness, real-world interoperability, or human audit benefit.
 
@@ -154,6 +157,9 @@ The self-test checks that:
 - changing self-reported `clientInfo` does not alter the authenticated canonical system identity;
 - a successful consequential tool call without separate approval evidence remains `unknown` and is rejected by the Receipt authorization invariant;
 - a mismatched `Mcp-Name` routing header is rejected;
+- duplicate case-insensitive MCP headers and non-JSON-RPC-2.0 envelopes are rejected;
+- malformed sidecar list/object fields and dangling request-ID authorization/status evidence are rejected;
+- sidecar record/trace IDs are not silently stringified from arbitrary JSON values;
 - tool arguments/results and self-reported client/server names are not copied into the canonical record.
 
 This establishes only deterministic behavior on the published synthetic capture. It does not establish MCP conformance, OAuth/OIDC correctness, authenticated identity verification, real-world interoperability, production security, or human audit benefit.

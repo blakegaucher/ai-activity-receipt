@@ -130,6 +130,12 @@ The sidecar is a placeholder for evidence that would eventually come from an aut
 
 The adapter does not claim that a plain JSON sidecar is cryptographically trustworthy.
 
+### Sidecar reference integrity
+
+Candidate v0.1 now fails closed on malformed or stale sidecar structures that could otherwise be silently ignored. Authorization/status maps must be JSON objects keyed by observed request IDs, list-valued policy fields must actually be lists of non-empty strings, and unknown request IDs are rejected.
+
+These checks improve internal consistency only. They do not authenticate the sidecar or prove that the policy evidence is correct.
+
 ## Content minimization
 
 The synthetic capture includes:
@@ -180,7 +186,12 @@ The self-test confirms:
 5. changing self-reported `clientInfo` does not change authenticated system identity;
 6. removing separate authorization evidence leaves the consequential action `unknown` and causes the Receipt authorization check to fail;
 7. a mismatched `Mcp-Name` routing header is rejected;
-8. tool arguments/results and self-reported client/server names are not copied into the record.
+8. duplicate case-insensitive MCP routing headers are rejected as ambiguous;
+9. request/response envelopes must explicitly use JSON-RPC 2.0;
+10. sidecar list/object fields reject malformed scalar shapes instead of being silently coerced;
+11. sidecar authorization/status entries for unknown request IDs are rejected;
+12. record/trace identifiers supplied by the sidecar must already be non-empty strings rather than being stringified from arbitrary JSON values;
+13. tool arguments/results and self-reported client/server names are not copied into the record.
 
 ## Manual use
 

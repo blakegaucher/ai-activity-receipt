@@ -163,6 +163,12 @@ Current fields include:
 
 The sidecar may also explicitly override agent/provider/model metadata if telemetry is absent or contains conflicting values.
 
+### Sidecar reference integrity
+
+Candidate v0.1 now validates sidecar container shapes and cross-references before deriving a record. Span-keyed authorization, source-reference, and status maps are normalized to valid OpenTelemetry span IDs and must point to spans actually present in the adapted trace. Material-source and source-role entries must resolve to a telemetry-discovered or explicitly referenced source.
+
+This prevents stale sidecar entries from being silently dropped. It does not authenticate the sidecar or prove that the referenced governance evidence is true.
+
 ## Authorization behavior
 
 For a consequential operation:
@@ -199,7 +205,12 @@ The test confirms that:
 5. missing authorization evidence is preserved as `unknown` and causes the consequential-action Receipt check to fail;
 6. sensitive tool arguments/results are not copied into the record;
 7. OTLP nanosecond timestamp precision is preserved;
-8. malformed, short, or all-zero trace/span identifiers are rejected.
+8. malformed, short, duplicate, or all-zero trace/span identifiers are rejected;
+9. duplicate OTLP attribute keys are rejected instead of silently overwriting one another;
+10. span end time may not precede span start time, and unsupported timestamp magnitudes fail as validation errors;
+11. sidecar list/object fields reject malformed scalar shapes;
+12. authorization/source/status sidecar maps may reference only observed span IDs;
+13. material-source and source-role sidecar entries may reference only sources present in telemetry or explicit source references.
 
 ## Manual use
 
