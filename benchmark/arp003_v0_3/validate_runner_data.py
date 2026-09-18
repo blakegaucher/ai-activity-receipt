@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BUNDLE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-bundle.schema.json"
 RESPONSE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-response.schema.json"
 EXAMPLE_BUNDLE = ROOT / "benchmark" / "arp003_v0_3" / "runner-bundle.example.json"
+RUNNER_HTML = ROOT / "benchmark" / "arp003_v0_3" / "offline_runner.html"
 
 PROHIBITED_REVIEWER_KEYS = {
     "gold",
@@ -128,11 +129,50 @@ def validate_response(doc: Any, schema: dict[str, Any]) -> list[str]:
     return errors
 
 
+def runner_static_errors() -> list[str]:
+    try:
+        html = RUNNER_HTML.read_text(encoding="utf-8")
+    except OSError as exc:
+        return [f"unable to read offline runner: {exc}"]
+
+    errors: list[str] = []
+    required = [
+        "connect-src 'none'",
+        'id="pauseBtn"',
+        'id="downloadFinalBtn"',
+        "visibilitychange",
+        "beforeunload",
+        "URL.createObjectURL",
+        "textContent = artifact.content",
+    ]
+    for marker in required:
+        if marker not in html:
+            errors.append(f"offline runner missing required marker: {marker}")
+
+    forbidden = [
+        "<script src=",
+        "fetch(",
+        "XMLHttpRequest",
+        "WebSocket",
+        "sendBeacon",
+        "https://",
+        "http://",
+    ]
+    for marker in forbidden:
+        if marker in html:
+            errors.append(f"offline runner contains network/external marker: {marker}")
+
+    return errors
+
+
 def run_self_test() -> int:
     bundle_schema = load_json(BUNDLE_SCHEMA)
     response_schema = load_json(RESPONSE_SCHEMA)
     Draft202012Validator.check_schema(bundle_schema)
     Draft202012Validator.check_schema(response_schema)
+
+    runner_errors = runner_static_errors()
+    assert not runner_errors, runner_errors
 
     bundle = load_json(EXAMPLE_BUNDLE)
     errors = validate_bundle(bundle, bundle_schema)
@@ -219,7 +259,8 @@ def run_self_test() -> int:
 
     print(
         "AR-P003 offline runner validation self-test passed: "
-        "reviewer-bundle separation and response timing checks."
+        "offline/no-network static checks, reviewer-bundle separation, "
+        "and response timing checks."
     )
     return 0
 
