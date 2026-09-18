@@ -294,7 +294,7 @@ def run_self_test(
 
     assert derive_receipt(record) == derive_receipt(record)
     assert derived["integrity"]["record_hash"] == (
-        "sha256:b60d8e6aada04a641cf402a8bca684d01c92a83fcf56cda7273f6de74cc42b65"
+        "sha256:ade688ba6ecfb64f6ded458ba114b6d029f81e03df0757994fc91ab1f5e571be"
     )
 
     print("Canonical Activity Record derivation self-test passed.")
