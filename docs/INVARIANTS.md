@@ -8,6 +8,8 @@ The JSON Schema defines whether a Receipt has an acceptable **structure**.
 
 These invariants address relationships and governance rules that ordinary JSON Schema validation may not be able to establish on its own.
 
+The current public validator implements an executable subset of the rules below. Candidate-v0.2 strengthens that subset with explicit action timing, authorization-decision timing, direct-delegation consistency, stable event identity, linked incident evidence, and stronger verification checks.
+
 ---
 
 ## Why invariants are separate from the schema
@@ -19,12 +21,11 @@ For example, a Receipt might contain:
 - a completed consequential action with denied authorization;
 - a source reference that was never registered;
 - an incident referring to a nonexistent event;
-- an authorization that expired before an action occurred;
-- a verification claim unsupported by evidence.
+- an action that occurred outside its authority window;
+- a verification claim unsupported by evidence;
+- duplicate event identifiers that make later references ambiguous.
 
 The candidate invariants below are intended to detect those conditions.
-
-The current `validate_receipts.py` checker implements an executable subset: **INV-02, INV-03, INV-04, INV-05, INV-07, INV-08, and INV-14**. Structural parts of INV-01 are also enforced by the JSON Schema. Other invariants remain documented research requirements until executable checks are added.
 
 ---
 
@@ -41,40 +42,37 @@ Every Receipt must identify:
 
 Identifiers should remain stable enough to connect the Receipt to its supporting record and evidence.
 
-### Failure examples
+### Current enforcement
 
-- missing `receipt_id`;
-- missing `trace_id`;
-- unknown acting agent;
-- Receipt version omitted.
+The candidate JSON Schema requires the core identity/version fields. The semantic validator assumes those structural requirements have been checked.
 
 ---
 
-## INV-02 — Registered material sources
+## INV-02 — Registered and unambiguous material sources
 
-Every source referenced by a material action, result, verification record, or other material claim must correspond to a registered source in the underlying evidence model.
+Every source referenced by a material action, result, verification record, or other material claim must correspond to a registered source in the supporting evidence model.
 
 A Receipt must not create provenance by merely naming a source that does not exist in the supporting evidence.
 
-### Candidate rule
+### Candidate rules
 
-If an identifier occurs in `source_refs`, it must resolve to a known source record.
+- Every identifier in `material_actions[].source_refs` must resolve to a registered `material_sources[].source_id`.
+- A `source_id` must not be duplicated within one Receipt.
 
-### Failure example
+### Failure examples
 
-```text
-material_action.source_refs = ["src-99"]
-```
+- `source_refs = ["src-99"]` when no `src-99` exists.
+- Two different material-source objects both use `source_id = "src-A"`.
 
-when no material source with `source_id = "src-99"` exists.
+**Executable in candidate-v0.2:** yes.
 
 ---
 
 ## INV-03 — Authorized consequential completion
 
-A consequential action may be recorded as `completed` only when the Receipt preserves evidence that the action was authorized and within delegated scope.
+A consequential action may be recorded as `completed` only when the Receipt preserves evidence that the action was authorized, within delegated scope, and authorized before execution.
 
-### Candidate rule
+### Candidate rules
 
 For any material action where:
 
@@ -85,13 +83,18 @@ status = "completed"
 
 the action must have:
 
-- `authorization = "approved"`; and
-- an `operation` included in `authority.scope`.
+- `authorization = "approved"`;
+- an `operation` included in `authority.scope`;
+- `authorization_decided_at` recorded;
+- an authorization-decision time that is not later than `occurred_at`.
 
 ### Failure examples
 
 - completed email send with `authorization = "denied"`;
-- completed payment when `payment` is not in the delegated scope.
+- completed payment when `payment` is outside delegated scope;
+- approval timestamp that occurs after the action.
+
+**Executable in candidate-v0.2:** yes.
 
 ---
 
@@ -108,66 +111,76 @@ authorization = "approved"
 status = "completed"
 ```
 
+**Executable in candidate-v0.2:** yes.
+
 ---
 
-## INV-05 — Material failures preserve incident evidence
+## INV-05 — Material failures preserve linked incident evidence
 
 Blocked or failed activity that is materially relevant to the run should remain visible rather than being silently dropped.
 
 ### Candidate rule
 
-A blocked or failed action that is consequential, or that was denied authorization, should be accompanied by at least one incident record.
+A blocked or failed action that is consequential, or that was denied authorization, must have a corresponding incident record. When the action has an `event_id`, the incident should link to that event.
 
 ### Failure examples
 
-- consequential tool execution failed but `incidents` is empty;
-- unauthorized action was blocked but no incident was preserved.
+- consequential tool execution failed but no incident is preserved;
+- unauthorized action was blocked but no incident links to the blocked event.
+
+**Executable in candidate-v0.2:** yes.
 
 ---
 
 ## INV-06 — Authority timing is respected
 
-A delegated action must occur within the authority window that applies to it.
+A material action must occur inside the recorded authority window.
 
-### Candidate rule
+### Candidate rules
 
-Where timestamps are available:
+- `occurred_at` must not precede `authority.valid_from`;
+- `occurred_at` must not occur after `authority.valid_until`.
 
-- an action must not precede `authority.valid_from`;
-- an action must not occur after `authority.valid_until`;
-- expired authority must not be treated as active approval.
+Candidate-v0.2 requires `valid_from`, `valid_until`, and an `occurred_at` timestamp for every material action, which makes this invariant directly testable.
 
-This rule is currently documented but not yet automated by the repository validator because the candidate action object does not yet require an action timestamp.
+### Failure examples
+
+- an action occurs before delegation begins;
+- an action occurs after authority expires.
+
+**Executable in candidate-v0.2:** yes.
 
 ---
 
-## INV-07 — Verification evidence resolves
+## INV-07 — Verification evidence exists and resolves
 
 A verification claim must point to evidence that can actually be resolved.
 
-### Candidate rule
+### Candidate rules
 
-Every identifier in `verification.evidence_refs` must resolve to known evidence represented by the Receipt or its supporting record.
+- `verification.state = "confirmed"` requires at least one `evidence_ref`;
+- every identifier in `verification.evidence_refs` must resolve to evidence represented by the Receipt or supporting record.
 
-The current validator accepts registered material source IDs and material-action event IDs as resolvable candidate evidence.
+The current public validator accepts registered material-source IDs and material-action event IDs as candidate resolvable evidence.
 
-### Failure example
+### Failure examples
 
-```text
-verification.evidence_refs = ["event-missing"]
-```
+- verification is `confirmed` with no evidence reference;
+- verification cites `event-missing` when no such event exists.
 
-when no corresponding evidence exists.
+**Executable in candidate-v0.2:** yes.
 
 ---
 
 ## INV-08 — Incident references resolve
 
-When an incident names an `event_id`, that identifier must resolve to a material action or event in the supporting record.
+When an incident names an `event_id`, that identifier must resolve to a material action/event in the supporting record.
 
 ### Failure example
 
 An incident cites `event-44` but no such event exists.
+
+**Executable in candidate-v0.2:** yes.
 
 ---
 
@@ -175,13 +188,17 @@ An incident cites `event-44` but no such event exists.
 
 The authority record should identify who delegated authority and to whom it was delegated, and those identities should be consistent with the acting system represented by the Receipt.
 
-### Candidate rule
+### Candidate-v0.2 direct-delegation profile
 
-- `authority.principal` identifies the delegating principal;
-- `authority.delegate` identifies the delegated actor;
-- the acting system should be compatible with the recorded delegate or with an explicitly documented delegation chain.
+The current public schema represents one acting system and one direct delegate. Under that simplified profile:
 
-This is currently a documented requirement pending a richer actor/delegation model.
+```text
+authority.delegate == system.agent_id
+```
+
+Richer delegation chains, subagents, organizations, service accounts, and on-behalf-of relationships remain future work and should receive an explicit representation rather than silently overloading this rule.
+
+**Executable in candidate-v0.2:** yes, for the direct-delegation profile.
 
 ---
 
@@ -189,25 +206,35 @@ This is currently a documented requirement pending a richer actor/delegation mod
 
 A derived Receipt should preserve integrity links sufficient to determine which canonical record it was derived from.
 
-### Candidate rule
+### Candidate fields
 
-- `integrity.record_hash` identifies the relevant record state;
-- `integrity.derived_from_record_hash` binds the Receipt to its source record;
-- where sequential record versions exist, `previous_record_hash` should preserve lineage.
+- `integrity.record_hash`;
+- `integrity.previous_record_hash`;
+- `integrity.derived_from_record_hash`;
+- `integrity.generated_at`.
 
-Hash fields support tamper detection and traceability; they do not by themselves prove that the underlying facts are true.
+### Boundary
+
+The current validator checks structural presence/format for required integrity fields. It does **not** recompute a canonical-record hash because the public Receipt fixture does not include the full canonical record bytes needed for cryptographic verification.
+
+**Executable in candidate-v0.2:** structural only.
 
 ---
 
 ## INV-11 — Material event identity is stable
 
-Material events should have stable identifiers when other records depend on them.
+Material events should have stable and unambiguous identifiers when other records depend on them.
 
-### Candidate rule
+### Candidate rules
 
-If an action is referenced by verification, incident, or other evidence, its `event_id` should be unique within the relevant trace and should not be silently reassigned to a different event.
+- candidate-v0.2 requires `event_id` for each material action;
+- duplicate material-action `event_id` values are invalid within one Receipt.
 
-This requirement is documented but not yet fully automated.
+### Failure example
+
+Two actions both use `event_id = "event-7"`.
+
+**Executable in candidate-v0.2:** yes.
 
 ---
 
@@ -218,6 +245,12 @@ A normal Receipt must not contain material facts that cannot be derived from the
 The Receipt may summarize, normalize, or index evidence. It must not invent new evidence merely to make the run easier to audit.
 
 This invariant is especially important for comparative evaluation such as AR-P003.
+
+### Boundary
+
+Evidence symmetry cannot be established from one Receipt in isolation; it requires comparing the Receipt with its source evidence/canonical record.
+
+**Executable in candidate-v0.2:** not from the standalone Receipt.
 
 ---
 
@@ -232,6 +265,10 @@ A Receipt should not convert incomplete evidence into unwarranted certainty.
 - use `verification.state = "pending"` when verification has not completed;
 - preserve an unresolved incident rather than silently treating it as cleared;
 - do not infer approval solely from the fact that an action completed.
+
+The confirmed-verification evidence requirement in INV-07 provides one executable guard against unwarranted certainty, but the broader INV-13 rule requires contextual evidence.
+
+**Executable in candidate-v0.2:** partial.
 
 ---
 
@@ -250,34 +287,30 @@ The Receipt must not include fields such as:
 - `reasoning_trace`;
 - `scratchpad`.
 
-Auditability should come from observable actions, authority, evidence, verification, and incident records rather than hidden reasoning.
+Candidate-v0.2 uses closed objects (`additionalProperties: false`) for the published schema, so an unexpected private-reasoning field is structurally rejected. The semantic validator also scans recursively as a defense-in-depth diagnostic.
+
+**Executable in candidate-v0.2:** yes as structural rejection, plus semantic diagnostic.
 
 ---
 
-## Validator scope
+## Candidate-v0.2 validator coverage
 
-The repository validator deliberately separates:
+The public validator now checks:
 
-1. **JSON Schema validation** — structural requirements; and
-2. **semantic invariant checking** — relationships that require logic beyond ordinary schema validation.
+- **INV-02** registered and unique material-source IDs;
+- **INV-03** approved, in-scope, prior authorization for completed consequential actions;
+- **INV-04** prohibited-action contradictions;
+- **INV-05** linked incident preservation for material blocked/failed actions;
+- **INV-06** action timing against the authority window;
+- **INV-07** confirmed verification evidence and resolvable verification references;
+- **INV-08** resolvable incident references;
+- **INV-09** direct-delegation consistency;
+- **INV-11** unique material-action event IDs;
+- **INV-14** private-reasoning exclusion.
 
-Current executable semantic checks cover:
+The schema also enforces the structural parts of **INV-01**, required timing fields used by **INV-06**, required event identity for **INV-11**, and required integrity fields for **INV-10**.
 
-- registered source references;
-- approved/in-scope consequential completion;
-- prohibited-action contradictions;
-- incident preservation for material failures;
-- resolvable verification references;
-- resolvable incident references;
-- private-reasoning exclusion.
-
-A fixture can therefore be:
-
-- structurally valid and semantically valid;
-- structurally valid and intentionally semantically invalid; or
-- structurally invalid.
-
-The repository's invalid authorization fixture is intentionally in the second category so the semantic checker can demonstrate rejection of a structurally valid but governance-inconsistent Receipt.
+The repository fixture manifest records expected structural/semantic outcomes and expected invariant failures so a fixture cannot silently pass for the wrong reason.
 
 ---
 

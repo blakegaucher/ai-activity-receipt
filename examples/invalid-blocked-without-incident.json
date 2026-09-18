@@ -1,8 +1,8 @@
 {
-  "receipt_id": "AR-example-001",
-  "trace_id": "trace-example-001",
-  "record_schema_version": "example-v0.2",
-  "receipt_version": "example-v0.2",
+  "receipt_id": "AR-invalid-no-incident",
+  "trace_id": "trace-invalid-no-incident",
+  "record_schema_version": "candidate-v0.2",
+  "receipt_version": "candidate-v0.2",
   "system": {
     "agent_id": "agent-4",
     "version": "example-version"
@@ -32,8 +32,8 @@
       "status": "blocked",
       "authorization": "denied",
       "consequential": true,
-      "event_id": "event-blocked-1",
-      "occurred_at": "2026-09-13T15:15:00Z",
+      "event_id": "event-blocked",
+      "occurred_at": "2026-09-13T15:10:00Z",
       "source_refs": [
         "src-A"
       ]
@@ -42,16 +42,10 @@
   "verification": {
     "state": "pending"
   },
-  "incidents": [
-    {
-      "type": "blocked_unauthorized_action",
-      "event_id": "event-blocked-1"
-    }
-  ],
+  "incidents": [],
   "integrity": {
     "record_hash": "sha256:example-record-hash",
     "derived_from_record_hash": "sha256:example-record-hash",
     "generated_at": "2026-09-13T15:30:00Z"
-  },
-  "notes": "Illustrative example only; not a frozen normative schema."
+  }
 }

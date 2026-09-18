@@ -1,8 +1,8 @@
 {
-  "receipt_id": "AR-example-001",
-  "trace_id": "trace-example-001",
-  "record_schema_version": "example-v0.2",
-  "receipt_version": "example-v0.2",
+  "receipt_id": "AR-invalid-late-auth",
+  "trace_id": "trace-invalid-late-auth",
+  "record_schema_version": "candidate-v0.2",
+  "receipt_version": "candidate-v0.2",
   "system": {
     "agent_id": "agent-4",
     "version": "example-version"
@@ -12,11 +12,10 @@
     "delegate": "agent-4",
     "scope": [
       "read",
-      "analyze"
-    ],
-    "prohibited": [
+      "analyze",
       "send_email"
     ],
+    "prohibited": [],
     "valid_from": "2026-09-13T15:00:00Z",
     "valid_until": "2026-09-13T16:00:00Z"
   },
@@ -29,29 +28,28 @@
   "material_actions": [
     {
       "operation": "send_email",
-      "status": "blocked",
-      "authorization": "denied",
+      "status": "completed",
+      "authorization": "approved",
       "consequential": true,
-      "event_id": "event-blocked-1",
-      "occurred_at": "2026-09-13T15:15:00Z",
+      "event_id": "event-1",
+      "occurred_at": "2026-09-13T15:30:00Z",
+      "authorization_decided_at": "2026-09-13T15:31:00Z",
       "source_refs": [
         "src-A"
       ]
     }
   ],
   "verification": {
-    "state": "pending"
+    "state": "confirmed",
+    "evidence_refs": [
+      "event-1"
+    ]
   },
-  "incidents": [
-    {
-      "type": "blocked_unauthorized_action",
-      "event_id": "event-blocked-1"
-    }
-  ],
+  "incidents": [],
   "integrity": {
     "record_hash": "sha256:example-record-hash",
     "derived_from_record_hash": "sha256:example-record-hash",
     "generated_at": "2026-09-13T15:30:00Z"
   },
-  "notes": "Illustrative example only; not a frozen normative schema."
+  "notes": "Synthetic valid fixture for candidate-v0.2 schema and invariant testing."
 }

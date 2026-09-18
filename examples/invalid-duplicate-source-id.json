@@ -1,6 +1,6 @@
 {
-  "receipt_id": "AR-valid-001",
-  "trace_id": "trace-valid-001",
+  "receipt_id": "AR-invalid-duplicate-source",
+  "trace_id": "trace-invalid-duplicate-source",
   "record_schema_version": "candidate-v0.2",
   "receipt_version": "candidate-v0.2",
   "system": {
@@ -23,33 +23,20 @@
     {
       "source_id": "src-A",
       "role": "supports_result"
-    }
-  ],
-  "material_actions": [
+    },
     {
-      "operation": "send_email",
-      "status": "completed",
-      "authorization": "approved",
-      "consequential": true,
-      "event_id": "event-1",
-      "occurred_at": "2026-09-13T15:30:00Z",
-      "authorization_decided_at": "2026-09-13T15:20:00Z",
-      "source_refs": [
-        "src-A"
-      ]
+      "source_id": "src-A",
+      "role": "duplicate"
     }
   ],
+  "material_actions": [],
   "verification": {
-    "state": "confirmed",
-    "evidence_refs": [
-      "event-1"
-    ]
+    "state": "pending"
   },
   "incidents": [],
   "integrity": {
     "record_hash": "sha256:example-record-hash",
     "derived_from_record_hash": "sha256:example-record-hash",
     "generated_at": "2026-09-13T15:30:00Z"
-  },
-  "notes": "Synthetic valid fixture for candidate-v0.2 schema and invariant testing."
+  }
 }

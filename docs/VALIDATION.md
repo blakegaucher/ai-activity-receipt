@@ -29,7 +29,7 @@ The pilot checked that:
 
 ### Public-repository reproduction note
 
-AR-P001 and AR-P002 summarize earlier internal synthetic engineering suites and may use vocabulary from earlier schema iterations. The current public repository publishes a smaller reproducible fixture set and candidate schema using the present `system`, `authority.principal`, `authority.delegate`, provenance, action, verification, incident, and integrity fields. The public workflow should not be described as a reproduction of all 12 AR-P001 or 24 AR-P002 cases unless those historical fixtures are separately published.
+AR-P001 and AR-P002 summarize earlier internal synthetic engineering suites and may use vocabulary from earlier schema iterations. The current public repository publishes a separate **17-fixture candidate-v0.2 reproducibility suite** using the present `system`, `authority.principal`, `authority.delegate`, provenance, action timing, authorization-decision timing, verification, incident, and integrity fields. The public workflow should not be described as a reproduction of all 12 AR-P001 or 24 AR-P002 historical cases unless those historical fixtures are separately published.
 
 ### Interpretation
 
@@ -42,7 +42,7 @@ It does **not** establish that the Receipt improves human auditing, incident rec
 ## AR-P002 — Expanded Engineering Validation
 
 **Status:** Completed synthetic engineering checks  
-**Result:** 24 / 24 new v0.2 fixtures behaved as expected.
+**Result:** 24 / 24 historical internal v0.2 engineering fixtures behaved as expected.
 
 The expanded fixture set covered areas including:
 
@@ -60,6 +60,33 @@ The expanded fixture set covered areas including:
 AR-P002 provides additional internal engineering evidence that the v0.2 design behaves as intended across a broader synthetic test set.
 
 It remains an **internal engineering result**, not evidence of real-world effectiveness.
+
+---
+
+## Current public candidate-v0.2 reproducibility suite
+
+**Status:** Public repository engineering smoke test  
+**Manifest:** `examples/fixture-manifest.json`  
+**Current cases:** 17 synthetic fixtures
+
+The public suite tests both JSON Schema outcomes and semantic-invariant outcomes. Negative fixtures specify the invariant(s) expected to fire so the suite can detect a case that is rejected for the wrong reason.
+
+The current public cases exercise:
+
+- required structural identity fields;
+- registered and unique material-source identifiers;
+- approved, in-scope, prior authorization for consequential completion;
+- explicit prohibited-action contradictions;
+- linked incident preservation for materially blocked/failed activity;
+- action timing before/after the authority window;
+- confirmed-verification evidence requirements;
+- unresolved verification references;
+- unresolved incident references;
+- direct-delegation consistency;
+- duplicate material-action event identifiers;
+- private-reasoning-field rejection.
+
+The suite is intentionally a **repository reproducibility check**, not a measurement of human audit benefit, safety, compliance, or commercial performance.
 
 ---
 
