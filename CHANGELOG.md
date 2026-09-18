@@ -90,6 +90,15 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### AR-P003 sample-size / precision planning
+
+- add a development-only planner for two-group binary endpoints, standardized continuous endpoints, and confidence-interval precision;
+- support explicit design-effect and unusable-observation inflation rather than silently treating reviewer-case observations as independent;
+- add rough reviewer-equivalent workload translation while labeling it as non-power arithmetic;
+- publish an illustrative sensitivity grid showing how required observations change with assumed effect size;
+- add deterministic self-tests and CI coverage;
+- keep the final sample-size/precision milestone open until the reviewer population, primary endpoint/effect target, variance/clustering assumptions, allocation, and stopping rule are frozen.
+
 ### AR-P003 corpus-preparation tooling
 
 - add a development case-package JSON Schema that structurally encodes the same-evidence-plus-Receipt condition contract;

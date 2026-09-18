@@ -182,6 +182,25 @@ This is a consistency tool for research mappings. It does not establish conforma
 
 ---
 
+## AR-P003 sample-size / precision planner smoke test
+
+**Status:** Development planning/tooling check
+
+The AR-P003 workspace includes a deterministic screening utility for:
+
+- two-group binary accuracy differences;
+- standardized continuous effect sizes;
+- single-proportion precision;
+- difference-in-proportions precision.
+
+The utility supports explicit design-effect and unusable-observation inflation and can translate total case-observations into a rough reviewer-equivalent workload when cases/reviewer is supplied.
+
+The self-test checks stable outputs for representative scenarios and rejects invalid planning inputs.
+
+These formulas treat observations as independent before the explicit design-effect multiplier. Because AR-P003 is crossed by reviewer and case, this tool does **not** complete or freeze the confirmatory sample-size analysis. A final design must use frozen endpoint/effect targets plus justified reviewer/case variance assumptions or a crossed-design simulation/analysis.
+
+---
+
 ## AR-P003 case-package linter smoke test
 
 **Status:** Development governance/tooling check

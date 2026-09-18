@@ -13,6 +13,8 @@ This directory contains **development infrastructure** for the next human-center
 - `freeze_manifest.py` — SHA-256 manifest utility for protocol/corpus/scorer freeze artifacts.
 - `case-package.schema.json` — development manifest schema for reviewer-facing evidence, Receipt, and analysis-only files.
 - `lint_case_packages.py` — file-separation, path-safety, stratum/state, leakage-marker, and hash-report linter for development case packages.
+- `plan_sample_size.py` — development-only sample-size/precision screening approximations.
+- `planning-scenarios.example.json` — illustrative sensitivity grid; not frozen study assumptions.
 
 The human-readable preregistration draft is in:
 
@@ -73,6 +75,7 @@ Run the development self-tests:
 python benchmark/arp003_v0_3/score_responses.py --self-test
 python benchmark/arp003_v0_3/generate_assignment.py --self-test
 python benchmark/arp003_v0_3/lint_case_packages.py --self-test
+python benchmark/arp003_v0_3/plan_sample_size.py --self-test
 python benchmark/arp003_v0_3/freeze_manifest.py --self-test
 ```
 
@@ -90,6 +93,21 @@ The scorer intentionally reports endpoint components separately:
 - confidence as a descriptive measure.
 
 It does **not** generate a post-hoc weighted primary composite.
+
+## Sample-size / precision development planning
+
+The workspace includes a screening planner for binary accuracy endpoints, standardized continuous endpoints, and confidence-interval precision targets.
+
+Run the bundled sensitivity grid:
+
+```bash
+python benchmark/arp003_v0_3/plan_sample_size.py \
+  benchmark/arp003_v0_3/planning-scenarios.example.json
+```
+
+The calculations are independent-observation approximations with optional design-effect and unusable-observation inflation. They do **not** freeze the confirmatory sample size because AR-P003 observations are crossed by reviewer and case.
+
+See `../../docs/AR-P003-V0.3-PLANNING.md`.
 
 ## Development case-package linting
 

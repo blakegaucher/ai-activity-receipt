@@ -80,5 +80,13 @@
     "path_traversal_rejected": true,
     "forbidden_marker_scan_required_before_freeze": true,
     "challenge_state_must_match_stratum": true
+  },
+  "sample_size_planning": {
+    "status": "development_not_frozen",
+    "tool": "benchmark/arp003_v0_3/plan_sample_size.py",
+    "example_scenarios": "benchmark/arp003_v0_3/planning-scenarios.example.json",
+    "independent_observation_approximations_only": true,
+    "crossed_reviewer_case_adjustment_required_before_freeze": true,
+    "development_scenarios_are_confirmatory": false
   }
 }
