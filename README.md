@@ -23,6 +23,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Validation Record](docs/VALIDATION.md)
 - [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)
 - [AR-P003 v0.3 Preregistration Draft](docs/AR-P003-V0.3-PROTOCOL.md)
+- [AR-P003 v0.3 Reviewer Instructions Draft](docs/AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md)
 - [AR-P003 v0.3 Benchmark Workspace](benchmark/arp003_v0_3/README.md)
 - [Project Roadmap](docs/ROADMAP.md)
 - [Changelog](CHANGELOG.md)
@@ -182,6 +183,8 @@ A candidate **AR-P003 v0.3 preregistration draft and scoring workspace are now p
 - system-captured timing and prespecified timing failure rules;
 - explicit stale/incomplete/conflicting-Receipt challenge strata;
 - component-level endpoints rather than a post-hoc composite;
+- a schema-validated scoring-record format;
+- seeded reviewer/case assignment tooling;
 - freeze hashes for protocol/corpus/scorer artifacts;
 - independent human reviewers as the evidence arm required for any human-benefit claim.
 

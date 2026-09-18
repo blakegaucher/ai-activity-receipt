@@ -55,13 +55,16 @@ A technically informed reader should be able to understand what an Activity Rece
 - [x] Publish candidate v0.3 preregistration draft.
 - [x] Publish machine-readable protocol scaffold.
 - [x] Publish deterministic component-level scoring utility and smoke test.
+- [x] Publish scoring-record JSON Schema.
+- [x] Publish seeded balanced assignment generator and smoke test.
+- [x] Publish neutral reviewer-instructions draft.
 - [x] Publish SHA-256 freeze-manifest utility.
 - [ ] Define target reviewer population.
 - [ ] Freeze primary endpoint(s) and meaningful effect/precision target.
 - [ ] Complete sample-size or precision analysis.
 - [ ] Create fresh sealed synthetic corpus.
-- [ ] Finalize independent human reviewer instructions.
-- [ ] Freeze randomized balanced assignment and case order.
+- [ ] Finalize independent human reviewer instructions from the published draft.
+- [ ] Freeze randomized balanced assignment and case order using the published generator or a documented replacement.
 - [ ] Validate realistic heterogeneous logs and remove answer leakage before freeze.
 - [ ] Include stale/incomplete/conflicting Receipt challenge strata.
 - [ ] Freeze scorer, exclusions, and statistical analysis plan.

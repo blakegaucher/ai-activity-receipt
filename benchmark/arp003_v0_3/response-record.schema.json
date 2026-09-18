@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Scoring Record",
+  "description": "Development schema for one pseudonymous reviewer-case scoring record. Gold labels are analysis-side data and are not reviewer-facing.",
+  "type": "object",
+  "required": [
+    "reviewer_id",
+    "case_id",
+    "condition",
+    "stratum",
+    "elapsed_seconds",
+    "gold",
+    "answer"
+  ],
+  "properties": {
+    "reviewer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "control",
+        "receipt"
+      ]
+    },
+    "stratum": {
+      "type": "string",
+      "minLength": 1
+    },
+    "elapsed_seconds": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "gold": {
+      "$ref": "#/$defs/reconstruction"
+    },
+    "answer": {
+      "$ref": "#/$defs/reviewerAnswer"
+    }
+  },
+  "$defs": {
+    "stringSet": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "verificationState": {
+      "type": "string",
+      "enum": [
+        "not_required",
+        "pending",
+        "confirmed",
+        "failed",
+        "uncertain"
+      ]
+    },
+    "reconstruction": {
+      "type": "object",
+      "properties": {
+        "material_actions": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "authorization_violation": {
+          "type": "boolean"
+        },
+        "material_sources": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "incidents": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "verification_state": {
+          "$ref": "#/$defs/verificationState"
+        },
+        "missing_evidence": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "material_actions",
+        "authorization_violation",
+        "material_sources",
+        "incidents",
+        "verification_state",
+        "missing_evidence"
+      ],
+      "additionalProperties": false
+    },
+    "reviewerAnswer": {
+      "type": "object",
+      "properties": {
+        "material_actions": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "authorization_violation": {
+          "type": "boolean"
+        },
+        "material_sources": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "incidents": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "verification_state": {
+          "$ref": "#/$defs/verificationState"
+        },
+        "missing_evidence": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        }
+      },
+      "required": [
+        "material_actions",
+        "authorization_violation",
+        "material_sources",
+        "incidents",
+        "verification_state",
+        "missing_evidence"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
