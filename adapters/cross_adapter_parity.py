@@ -22,7 +22,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from derive_receipt import derive_receipt, validate_derived_receipt  # noqa: E402
+from derive_receipt import (  # noqa: E402
+    derive_receipt,
+    record_semantic_errors,
+    validate_derived_receipt,
+)
 from mcp_2026 import (  # noqa: E402
     DEFAULT_CAPTURE_FIXTURE,
     DEFAULT_CONTEXT_FIXTURE as DEFAULT_MCP_CONTEXT_FIXTURE,
@@ -149,17 +153,22 @@ def run_self_test() -> int:
     missing_auth_context = copy.deepcopy(mcp_context)
     missing_auth_context["authorization_by_request_id"] = {}
     missing_auth_record = build_mcp_record(mcp_capture, missing_auth_context)
-    missing_auth_receipt = derive_receipt(missing_auth_record)
+    assert missing_auth_record["events"][0]["authorization"] == "unknown"
 
-    errors = validate_derived_receipt(missing_auth_receipt, receipt_schema)
-    assert errors
-    assert (
-        governance_projection(missing_auth_receipt)["material_actions"][0][
-            "authorization"
-        ]
-        == "unknown"
+    semantic_errors = record_semantic_errors(missing_auth_record)
+    assert any(
+        "does not have approved authorization" in error
+        for error in semantic_errors
     )
-    assert governance_projection(missing_auth_receipt) != otel_projection
+
+    try:
+        derive_receipt(missing_auth_record)
+    except ValueError as exc:
+        assert "does not have approved authorization" in str(exc)
+    else:
+        raise AssertionError(
+            "missing authorization evidence was not rejected before Receipt derivation"
+        )
 
     print(
         "Cross-adapter normalization parity self-test passed: "
