@@ -56,7 +56,7 @@ A technically informed reader should be able to understand what an Activity Rece
 - [x] Publish machine-readable protocol scaffold.
 - [x] Publish deterministic component-level scoring utility and smoke test.
 - [x] Publish scoring-record JSON Schema.
-- [x] Publish seeded balanced assignment generator and smoke test.
+- [x] Publish seeded balanced assignment generator with per-reviewer/per-case condition-balance guarantees, diagnostics, and smoke tests.
 - [x] Publish neutral reviewer-instructions draft.
 - [x] Publish SHA-256 freeze-manifest utility.
 - [x] Publish a development case-package schema/linter for file separation, path safety, exact leakage markers, and condition-symmetry checks.
