@@ -167,6 +167,20 @@ This establishes only deterministic behavior on the published synthetic capture.
 
 ---
 
+## DSSE research signing / verification smoke test
+
+**Status:** Test-only cryptographic prototype; no production keys or trust roots
+
+The repository signs the exact bytes of a synthetic candidate Activity Record in a DSSE v1 envelope using an ephemeral Ed25519 private key created only in process memory.
+
+Verification separately checks the machine-readable trust policy, DSSE envelope structure, recognized payload type, DSSE pre-authentication encoding, Ed25519 signature, signer role/validity/threshold, Activity Record schema and semantics, deterministic Receipt derivation, Receipt invariants, and record-hash binding.
+
+The self-test includes a valid signed record and adversarial cases covering unknown key ID, wrong signing key, exact-byte payload mutation that preserves parsed JSON content, payload-type mutation, signature mutation, wrong verification key, malformed envelope, duplicate same-key signatures, signed schema-invalid record, signed semantic-invalid record, mismatched Receipt binding, and signer expiry.
+
+Private keys are not stored in the repository. This test does not deploy production identity issuance, key custody, revocation/status infrastructure, trusted timestamps, or production trust roots.
+
+---
+
 ## Attestation trust-policy smoke test
 
 **Status:** Research policy validation; no cryptographic signing implemented

@@ -30,3 +30,12 @@ Changing pretty-printing or JSON member order can therefore change a DSSE signat
 A schema/profile change that alters how a verifier interprets the signed payload requires a new payload-type identifier.
 
 Do not reuse this identifier for a future `candidate-record-v0.2` or production profile.
+
+
+## Research implementation
+
+The payload type above is exercised by `research/dsse_prototype.py`.
+
+The prototype signs the exact bytes of a candidate-record-v0.1 JSON artifact using DSSE v1 PAE and an ephemeral Ed25519 test key, then independently validates the parsed record and deterministic Receipt.
+
+See [DSSE-PROTOTYPE.md](DSSE-PROTOTYPE.md).

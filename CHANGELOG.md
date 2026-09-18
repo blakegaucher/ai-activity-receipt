@@ -90,6 +90,16 @@ The project is pre-commercial research. Version labels below describe repository
 - require selected tool payload/credential mappings to remain excluded;
 - add CI coverage and documentation for mapping-version semantics.
 
+### DSSE research signing / verification prototype
+
+- add a constrained DSSE v1 envelope schema and exact PAE implementation;
+- add Ed25519 signing and verification using ephemeral in-memory test keys only;
+- enforce the machine-readable signer/trust policy separately from signature mathematics;
+- verify Activity Record schema/semantics, deterministic Receipt derivation, and exact record/Receipt binding after signature verification;
+- demonstrate that JSON formatting changes can preserve the project-local parsed-record digest while invalidating the exact-byte DSSE signature;
+- reject unknown key IDs, wrong keys, payload/signature/type mutation, malformed envelopes, duplicate same-key signatures, signed invalid records, mismatched Receipts, and expired signers;
+- add CI coverage and keep production signing separately gated on real identity/key/revocation infrastructure.
+
 ### Attestation trust-policy definition
 
 - define the project-local Activity Record DSSE payload-type URI and exact-payload-byte semantics;

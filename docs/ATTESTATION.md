@@ -339,6 +339,20 @@ For the present research stage:
 - **do not add custom signature fields**;
 - **treat DSSE/in-toto-style external envelopes as the leading candidate for future authenticated records**;
 - **keep production signing deferred until real identity issuance, protected key storage, revocation/status infrastructure, and deployment trust roots exist**;
-- **permit a research-only DSSE signing/verification prototype now that the candidate signer/key/payload/trust policy is explicit and testable**.
+- **implement and continuously test a research-only DSSE signing/verification prototype using ephemeral test keys and the candidate trust policy**;
+- **keep production signing blocked until real identity issuance, protected key storage, revocation/status infrastructure, and deployment trust roots exist**.
 
 This is intentionally conservative. The next implementation should add cryptography only when the project can test the trust semantics around it, not merely because producing a signature is technically easy.
+
+
+---
+
+## Executable research prototype
+
+The repository now includes a research-only DSSE v1 + Ed25519 signing/verification prototype using ephemeral in-memory test keys and the machine-readable trust policy.
+
+See [DSSE Signing / Verification Prototype](DSSE-PROTOTYPE.md).
+
+The prototype verifies exact payload bytes, signer policy/role/validity, record schema and semantics, deterministic Receipt derivation, and record/Receipt binding. It also includes adversarial cases for payload/signature/key/type mutation, malformed envelopes, duplicate signatures, invalid records, Receipt mismatch, and expired signer validity.
+
+This remains test-only cryptographic evidence. No production key, trust root, revocation service, or trusted timestamp is deployed.
