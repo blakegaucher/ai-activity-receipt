@@ -18,7 +18,13 @@
     "design": "randomized_balanced_incomplete_block",
     "same_case_both_conditions_per_reviewer": false,
     "independently_randomize_case_order": true,
-    "balance_each_ordinary_case_across_conditions": true
+    "assignment_version": "AR-P003-v0.3-draft-assignment-v0.2",
+    "condition_balance_method": "balanced_bipartite_edge_coloring_v1",
+    "max_reviewer_condition_imbalance": 1,
+    "max_case_condition_imbalance": 1,
+    "balance_all_cases_across_conditions": true,
+    "inspect_stratum_condition_balance_before_freeze": true,
+    "freeze_generator_version_and_diagnostics": true
   },
   "primary_targets": [
     "material_actions",

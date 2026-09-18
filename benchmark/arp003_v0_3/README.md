@@ -9,7 +9,7 @@ This directory contains **development infrastructure** for the next human-center
 - `protocol.json` — machine-readable candidate protocol scaffold.
 - `score_responses.py` — deterministic component-level scorer with a built-in synthetic self-test.
 - `response-record.schema.json` — JSON Schema for one analysis-side reviewer/case scoring record.
-- `generate_assignment.py` — seeded reviewer/case assignment generator that avoids showing the same case twice to one reviewer and balances case exposure/conditions.
+- `generate_assignment.py` — seeded reviewer/case assignment generator that avoids showing the same case twice to one reviewer, balances case exposure, and guarantees per-reviewer/per-case control-vs-Receipt imbalance of at most one observation.
 - `freeze_manifest.py` — SHA-256 manifest utility for protocol/corpus/scorer freeze artifacts.
 - `case-package.schema.json` — development manifest schema for reviewer-facing evidence, Receipt, and analysis-only files.
 - `lint_case_packages.py` — file-separation, path-safety, stratum/state, leakage-marker, and hash-report linter for development case packages.
@@ -31,6 +31,22 @@ Future confirmatory materials should distinguish:
 - **release data** — de-identified material that can responsibly be published after evaluation.
 
 The synthetic records embedded in the scorer self-test are developer checks only. They are not AR-P003 evidence.
+
+### Assignment balance guarantee
+
+Condition labels are assigned only after reviewer/case incidence is selected. The current generator treats that incidence structure as a bipartite graph and uses deterministic balanced edge coloring based on Euler circuits.
+
+For every generated assignment:
+
+- each reviewer sees each selected case only once;
+- case exposure differs by at most one across cases;
+- each reviewer has control-vs-Receipt count imbalance of at most one;
+- each case has control-vs-Receipt count imbalance of at most one;
+- even-degree reviewers/cases receive an exact 50/50 condition split.
+
+The generator also emits reviewer-, case-, and stratum-level condition diagnostics. Stratum-level totals are diagnostic rather than a mathematical guarantee; they should be inspected before the final assignment is frozen.
+
+This replaces an earlier development-only greedy condition allocator that could keep individual cases balanced while leaving a reviewer with a 4/2 split when six cases were assigned. No human confirmatory data had been collected or frozen under that development allocator.
 
 ## Response record format
 

@@ -182,6 +182,29 @@ This is a consistency tool for research mappings. It does not establish conforma
 
 ---
 
+## AR-P003 assignment-balance hardening
+
+**Status:** Development assignment-tooling correction and regression test
+
+Testing of the earlier greedy condition allocator found a design defect: it could keep each case close to 50/50 across conditions while leaving an individual reviewer with an avoidable 4/2 split when six cases were assigned.
+
+The current generator first selects reviewer/case incidence while balancing case exposure, then assigns control/Receipt labels using a deterministic bipartite edge-coloring construction. Its self-tests require:
+
+- no reviewer sees the same case twice;
+- case exposure imbalance is at most one;
+- reviewer condition imbalance is at most one;
+- case condition imbalance is at most one;
+- even-degree reviewer/case designs receive exact 50/50 local splits;
+- odd-degree designs remain within one observation;
+- mixed ordinary/stale/incomplete/conflicting strata preserve the local balance guarantees;
+- repeated generation with the same seed is identical.
+
+The generator emits reviewer-, case-, and stratum-level balance diagnostics. Stratum totals remain an inspection item before freeze rather than a guaranteed property.
+
+This was found and corrected during development. No confirmatory human assignment or human outcome dataset was frozen under the superseded allocator.
+
+---
+
 ## AR-P003 sample-size / precision planner smoke test
 
 **Status:** Development planning/tooling check
