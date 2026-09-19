@@ -33,6 +33,15 @@ The project is pre-commercial research. Version labels below describe repository
 - advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
 - correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
 
+### AR-P003 methodology decision ledger
+
+- preserve material differences between the current executable v0.3 draft and the earlier project research-review recommendations instead of silently reconciling them;
+- add a machine-readable ledger covering comparison conditions, primary endpoint, timing clock, misleading-Receipt challenge architecture, reviewer population, and meaningful effect/precision target;
+- add a validator that requires unique decisions/candidates, evidence-linked rationale for selected choices, protocol-version agreement, and complete pre-freeze methodology resolution before a frozen protocol is permitted;
+- add comparison-condition design as an explicit freeze-readiness gate;
+- wire the ledger into CI, aggregate reproducibility, protocol metadata, freeze-readiness evidence, continuity, and the remaining-gates dashboard;
+- keep every listed methodology choice unresolved in this update; no human-study or favorable-outcome claim is created.
+
 ### AR-P003 crossed reviewer × case planning
 
 - add a deterministic Monte Carlo planner that uses the repository's balanced reviewer/case assignment rather than treating reviewer-case observations as independent;
