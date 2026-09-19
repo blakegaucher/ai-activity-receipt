@@ -6,12 +6,14 @@
   "required": [
     "bundle_version",
     "protocol_version",
+    "assignment_version",
+    "assignment_sha256",
     "reviewer_id",
     "cases"
   ],
   "properties": {
     "bundle_version": {
-      "const": "AR-P003-v0.3-dev-runner-bundle-v0.1"
+      "const": "AR-P003-v0.3-dev-runner-bundle-v0.2"
     },
     "protocol_version": {
       "type": "string",
@@ -77,6 +79,14 @@
         },
         "additionalProperties": false
       }
+    },
+    "assignment_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assignment_sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
     }
   },
   "$defs": {
