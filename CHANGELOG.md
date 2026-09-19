@@ -33,6 +33,14 @@ The project is pre-commercial research. Version labels below describe repository
 - advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
 - correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
 
+### AR-P003 bound manual case-review guard
+
+- add a machine-readable analysis-side review record for semantic leakage, realism, framing neutrality, answer-option quality, and accept/revise/drop disposition;
+- bind the manual review to the exact leakage-audit file and corpus build hash;
+- require a complete review to cover every audited case and reject completion while any automated high-risk leakage flag remains;
+- add a deliberately `not_tested` checked-in template, validator self-tests, CI coverage, and reproducibility-suite coverage;
+- keep the leakage-validation gate at `prepared` until a real sealed corpus has both a clean audit and completed human methodology review.
+
 ### AR-P003 leakage/presentation audit hardening
 
 - add an analysis-side pre-freeze audit over generated reviewer bundles plus hidden gold;
