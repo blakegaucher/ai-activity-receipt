@@ -123,6 +123,16 @@ The project is pre-commercial research. Version labels below describe repository
 - refuse silent output-directory overwrite and fail on non-UTF-8 evidence in the current text-only runner profile;
 - add deterministic self-test, CI, and aggregate reproducibility coverage.
 
+### AR-P003 freeze-readiness and smoke-evidence guards
+
+- add a machine-readable v0.3 freeze-readiness state for all major preregistration, corpus, browser, analysis, ethics, assignment, timing, and freeze-manifest gates;
+- distinguish pending/prepared/complete/not-applicable so engineering preparation cannot silently become a completed evidence gate;
+- reject ready-for-freeze or frozen status when required gates remain unresolved;
+- cross-check readiness protocol version/frozen state against `protocol.json`;
+- add a structured manual browser/device smoke-record schema that binds results to exact runner commit/hash and records environment, per-check status, and defects;
+- keep the checked-in smoke record deliberately incomplete/not-run so CI cannot be misread as browser evidence;
+- add CI and aggregate reproducibility coverage.
+
 ### AR-P003 v0.3 development offline runner
 
 - add a self-contained offline reviewer interface with no external scripts, hosted APIs, telemetry, or network calls;
