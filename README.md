@@ -1,5 +1,8 @@
 # AI Activity Receipt
 
+[![Validation](https://github.com/blakegaucher/ai-activity-receipt/actions/workflows/validate-receipts.yml/badge.svg)](https://github.com/blakegaucher/ai-activity-receipt/actions/workflows/validate-receipts.yml)
+[![CodeQL](https://github.com/blakegaucher/ai-activity-receipt/actions/workflows/codeql.yml/badge.svg)](https://github.com/blakegaucher/ai-activity-receipt/actions/workflows/codeql.yml)
+
 **Human-centered, provenance-aware records for consequential AI-agent activity.**
 
 > **Status:** Pre-commercial research and development. Current evidence is synthetic/technical; this repository does **not** claim proven productivity, safety, legal compliance, standards conformance, or commercial advantage.
@@ -9,6 +12,26 @@ AI Activity Receipt is an independent research project by **Blake Gaucher / Anci
 > When an AI system performs meaningful work, what should a human be able to verify afterward?
 
 The project is developing a **model-neutral activity record and human-facing receipt** for agent runs. The goal is to make consequential AI activity easier to inspect without exposing private chain-of-thought.
+
+### Current repository boundary
+
+- **Evidence:** primarily synthetic/technical engineering evidence.
+- **Human study:** AR-P003 v0.3 is development-only, not frozen, and not executed.
+- **Security:** validation and CodeQL workflows are active; this is not a security certification or proof of zero vulnerabilities.
+- **License:** no explicit repository license has been selected yet; public visibility does not imply unrestricted reuse. See [Licensing Status](docs/LICENSING.md).
+
+## Reproduce the repository-local checks
+
+For the closest reproduction of the tested CI environment:
+
+```bash
+python -m pip install -r requirements-lock.txt
+python research/reproduce.py --output reproducibility-report.json
+```
+
+For an independent clean-room attempt, see [Independent Reproduction Handoff](docs/EXTERNAL-REPRODUCTION-HANDOFF.md).
+
+A passing run reproduces repository-local deterministic/synthetic checks only. It does not establish human benefit, standards conformance, production security, or commercial validation.
 
 ---
 ## Project resources
