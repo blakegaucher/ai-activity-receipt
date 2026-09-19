@@ -20,7 +20,7 @@
       "type": "string",
       "enum": [
         "development_unresolved",
-        "ready_for_freeze"
+        "methodology_resolved"
       ]
     },
     "decisions": {
