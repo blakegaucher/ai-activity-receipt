@@ -1,5 +1,5 @@
 {
-  "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.1",
+  "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.2",
   "protocol_version": "v0.3-development-only",
   "reviewer_id": "dev-reviewer-001",
   "cases": [
@@ -56,5 +56,7 @@
         "incidents": []
       }
     }
-  ]
+  ],
+  "assignment_version": "AR-P003-v0.3-draft-assignment-v0.2",
+  "assignment_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
 }
