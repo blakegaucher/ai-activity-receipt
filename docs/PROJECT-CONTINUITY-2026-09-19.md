@@ -456,3 +456,16 @@ draft / not frozen / not executed
 ```
 
 No human-benefit, ethics, external-reproduction, licensing, production-security, customer-validation, or commercial status changed.
+
+
+### Continuity guard source binding
+
+The continuity validator no longer relies only on duplicated hard-coded development version strings for the reproducibility suite and reviewer runner contracts.
+
+It now reads the authoritative current values directly from:
+
+- `research/reproduce.py` → `SUITE_VERSION`;
+- `runner-bundle.schema.json` → `bundle_version.const`;
+- `runner-response.schema.json` → `response_bundle_version.const`.
+
+The machine-readable continuity state must match those source artifacts. This is specifically intended to prevent the kind of version drift found in this review from recurring silently.
