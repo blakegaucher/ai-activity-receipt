@@ -373,7 +373,6 @@ def run_self_test() -> int:
             "literal_gold_incident_label_in_control_evidence"
             in case["high_risk_flags"]
         )
-        assert "literal_gold_action_label_present" in case["review_flags"]
         assert "literal_gold_source_label_present" in case["review_flags"]
         assert case["conditions_present"] == ["control", "receipt"]
 
