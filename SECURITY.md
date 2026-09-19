@@ -48,4 +48,6 @@ Repository-file controls and remaining GitHub-admin gates are documented in [Rep
 
 The repository now includes least-privilege/pinned primary CI, disabled checkout credential persistence, a finite CI timeout, stale-run cancellation, a deterministic security smoke test, weekly Dependabot version-update configuration, CODEOWNERS metadata, private-study ignore rules, and stricter offline-runner CSP/resource limits.
 
-GitHub API inspection on 2026-09-19 returned no repository rulesets. Main-branch ruleset/protection, CodeQL default setup, private vulnerability reporting, and confirmation of Dependabot security alerts/security updates remain repository-admin settings and must not be described as enabled until verified.
+GitHub API inspection on 2026-09-19 returned no repository rulesets. Main-branch ruleset/protection, private vulnerability reporting, confirmation of Dependabot security alerts/security updates, owner security-alert notifications, and manual inspection of the CodeQL alert inventory remain repository-admin settings and must not be described as enabled until verified.
+
+CodeQL **advanced setup** is already active and green for Python and JavaScript/TypeScript. CodeQL default setup is therefore not a pending task unless the project deliberately decides to replace the advanced workflow.
