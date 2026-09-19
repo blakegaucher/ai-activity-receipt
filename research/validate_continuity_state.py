@@ -79,9 +79,34 @@ def main() -> int:
         errors.append("AR-P003 assignment case/order/condition verification unexpectedly disabled")
     if assignment_binding.get("incomplete_session_rejected") is not True:
         errors.append("AR-P003 incomplete-session scoring guard unexpectedly disabled")
+    if assignment_binding.get("bundle_contract") != "AR-P003-v0.3-dev-runner-bundle-v0.2":
+        errors.append("AR-P003 reviewer bundle contract version unexpectedly changed")
+    if assignment_binding.get("response_contract") != "AR-P003-v0.3-dev-runner-response-v0.4":
+        errors.append("AR-P003 reviewer response contract version unexpectedly changed")
+
+    leakage = arp003.get("leakage_validation") or {}
+    if leakage.get("status") != "prepared_not_complete":
+        errors.append(
+            "AR-P003 leakage-validation continuity status changed; update deliberately "
+            "only after the final sealed corpus audit/review evidence changes"
+        )
+    automated_audit = leakage.get("automated_audit") or {}
+    if automated_audit.get("status") != "development_only_ci_green":
+        errors.append("AR-P003 leakage-audit development status unexpectedly changed")
+    if automated_audit.get("final_corpus_audit") != "not_run":
+        errors.append(
+            "AR-P003 final-corpus leakage-audit state changed without continuity update"
+        )
+    manual_review = leakage.get("manual_case_review") or {}
+    if manual_review.get("checked_in_record") != "not_tested_template_only":
+        errors.append("AR-P003 checked-in manual case-review evidence boundary changed")
+    if manual_review.get("final_corpus_review") != "not_run":
+        errors.append(
+            "AR-P003 final-corpus manual case-review state changed without continuity update"
+        )
 
     repro = dev.get("reproducibility_runner") or {}
-    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.8":
+    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.10":
         errors.append("reproducibility suite version unexpectedly changed")
     if repro.get("exact_dependency_lock") is not True:
         errors.append("exact dependency-lock continuity flag unexpectedly changed")
