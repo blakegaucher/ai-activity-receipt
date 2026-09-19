@@ -49,7 +49,29 @@ def main() -> int:
     if (dev.get("public_record_profile") or {}).get("version") != "candidate-record-v0.1":
         errors.append("current public canonical record profile unexpectedly changed")
 
-    runner = ((dev.get("arp003_v0_3") or {}).get("offline_runner") or {})
+    arp003 = dev.get("arp003_v0_3") or {}
+    methodology = arp003.get("methodology_decision_ledger") or {}
+    if methodology.get("status") != "development_unresolved":
+        errors.append(
+            "AR-P003 methodology-decision status changed; update continuity "
+            "deliberately when preregistration choices are selected"
+        )
+    required_methodology_unresolved = {
+        "comparison_conditions",
+        "primary_endpoint",
+        "primary_timing_clock",
+        "challenge_design",
+        "reviewer_population",
+        "effect_precision_target",
+    }
+    for decision_id in required_methodology_unresolved:
+        if methodology.get(decision_id) != "unresolved":
+            errors.append(
+                f"AR-P003 methodology decision {decision_id!r} changed without "
+                "a deliberate continuity update"
+            )
+
+    runner = (arp003.get("offline_runner") or {})
     assignment_binding = runner.get("assignment_binding") or {}
     if assignment_binding.get("exact_assignment_sha256") is not True:
         errors.append("AR-P003 exact assignment binding unexpectedly disabled")
@@ -59,7 +81,7 @@ def main() -> int:
         errors.append("AR-P003 incomplete-session scoring guard unexpectedly disabled")
 
     repro = dev.get("reproducibility_runner") or {}
-    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.5":
+    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.8":
         errors.append("reproducibility suite version unexpectedly changed")
     if repro.get("exact_dependency_lock") is not True:
         errors.append("exact dependency-lock continuity flag unexpectedly changed")
