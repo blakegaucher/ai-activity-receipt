@@ -33,6 +33,15 @@ The project is pre-commercial research. Version labels below describe repository
 - advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
 - correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
 
+### AR-P003 freeze-manifest v0.2 integrity hardening
+
+- replace the hard-coded abbreviated protocol version in the manifest utility with the exact version read from the bound protocol file;
+- bind the manifest to protocol path, SHA-256, and frozen-state flag;
+- add sorted artifact-set SHA-256 and deterministic `freeze_content_id` independent of generation timestamp;
+- reject duplicate artifact paths and support a final-freeze fail-closed `--require-protocol-frozen` mode;
+- add a machine-readable manifest schema and adversarial/self-consistency tests;
+- keep the freeze-manifest readiness gate at `prepared` because no final frozen artifact set exists.
+
 ### Continuity-state version drift correction
 
 - synchronize the machine-readable continuity state with reproducibility suite v0.10 and reviewer-response contract v0.4;
