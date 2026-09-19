@@ -49,6 +49,21 @@ def main() -> int:
     if (dev.get("public_record_profile") or {}).get("version") != "candidate-record-v0.1":
         errors.append("current public canonical record profile unexpectedly changed")
 
+    repro = dev.get("reproducibility_runner") or {}
+    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.2":
+        errors.append("reproducibility suite version unexpectedly changed")
+    if repro.get("exact_dependency_lock") is not True:
+        errors.append("exact dependency-lock continuity flag unexpectedly changed")
+    if repro.get("github_actions_commit_pinned") is not True:
+        errors.append("GitHub Actions pinning continuity flag unexpectedly changed")
+
+    governance = state.get("repository_governance") or {}
+    if governance.get("explicit_license_status") != "not_selected":
+        errors.append(
+            "repository license status changed; update continuity deliberately "
+            "before changing public licensing claims"
+        )
+
     gates = state.get("claim_gates") or {}
     protected = {
         "human_productivity": "unproven",
