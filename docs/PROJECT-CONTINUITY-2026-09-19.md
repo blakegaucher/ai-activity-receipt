@@ -235,6 +235,20 @@ These repository controls are defense-in-depth only. They do not establish produ
 
 ---
 
+### License-decision preflight completion
+
+The repository now contains a completed licensing preflight without selecting terms:
+
+- `docs/LICENSE-PREFLIGHT.md`;
+- `research/third-party-inventory.json`;
+- `research/validate_third_party_inventory.py`.
+
+The inventory/drift check is included in CI and the aggregate reproducibility suite. Issue #44 remains open because Blake Gaucher / Ancient Immortal Art must explicitly choose the license model before a `LICENSE` file is published or the repository is described as open-source licensed.
+
+This is a governance-preparation milestone only, not legal clearance or permission for unrestricted reuse.
+
+---
+
 ## 11. Tasks that can continue without fabricating external evidence
 
 The project can continue to improve:
