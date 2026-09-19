@@ -72,9 +72,12 @@
         "benchmark/arp003_v0_3/audit_leakage.py",
         "benchmark/arp003_v0_3/leakage-audit.schema.json",
         "benchmark/arp003_v0_3/build_runner_bundles.py",
-        "docs/AR-P003-V0.3-LEAKAGE-AUDIT.md"
+        "docs/AR-P003-V0.3-LEAKAGE-AUDIT.md",
+        "benchmark/arp003_v0_3/case-methodology-review.schema.json",
+        "benchmark/arp003_v0_3/case-methodology-review.example.json",
+        "benchmark/arp003_v0_3/validate_case_methodology_review.py"
       ],
-      "notes": "Mechanical package checks plus a development leakage/presentation audit now exist. The audit flags literal incident-label leakage, degenerate answer-option sets, reviewer-evidence drift, and large Receipt presentation expansion while reporting action/source literal mentions for human review. It is heuristic and must be run on the final sealed corpus; realistic heterogeneous confirmatory logs and human review remain required before this gate can be complete."
+      "notes": "Mechanical package checks, a leakage/presentation audit, and a bound manual case-methodology review record/validator now exist. A complete manual review must bind to the exact leakage-audit report/build hash, cover every audited case, contain no unresolved automated high-risk flags, and mark semantic leakage, realism, framing neutrality, and answer-option quality acceptable. The checked-in review is a not-run template; the gate remains prepared until the final sealed corpus is audited and manually reviewed."
     },
     "challenge_strata": {
       "status": "prepared",

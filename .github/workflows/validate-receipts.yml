@@ -150,6 +150,12 @@ jobs:
       - name: Run AR-P003 leakage-audit self-test
         run: python benchmark/arp003_v0_3/audit_leakage.py --self-test
 
+      - name: Run AR-P003 manual case-review self-test
+        run: python benchmark/arp003_v0_3/validate_case_methodology_review.py --self-test
+
+      - name: Validate not-run AR-P003 case-review template
+        run: python benchmark/arp003_v0_3/validate_case_methodology_review.py
+
       - name: Run AR-P003 planning self-test
         run: python benchmark/arp003_v0_3/plan_sample_size.py --self-test
 

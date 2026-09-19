@@ -1,0 +1,20 @@
+{
+  "review_version": "AR-P003-v0.3-case-methodology-review-v0.1",
+  "status": "not_tested",
+  "corpus_build_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "leakage_audit_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "reviewer_id": "methodology-reviewer-template",
+  "reviewed_at": null,
+  "cases": [
+    {
+      "case_id": "REPLACE-WITH-SEALED-CASE-ID",
+      "semantic_leakage": "not_reviewed",
+      "realism": "not_reviewed",
+      "framing_neutrality": "not_reviewed",
+      "answer_option_quality": "not_reviewed",
+      "decision": "not_reviewed",
+      "notes": "Template only; not evidence of a completed case review."
+    }
+  ],
+  "evidence_boundary": "Incomplete template only. This file is not evidence that any AR-P003 case passed manual methodology review."
+}

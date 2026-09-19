@@ -393,3 +393,23 @@ The audit:
 This improves pre-freeze detection tooling only. The `leakage_validation` gate remains **prepared**, not complete, because no final sealed v0.3 corpus exists and heuristic checks cannot replace human review of semantic clueing, realism, and framing.
 
 No historical v0.2.3 result, human-benefit claim, ethics status, or commercial evidence changed.
+
+
+---
+
+## Manual case-methodology review control — 2026-09-19
+
+The AR-P003 v0.3 leakage-validation path now includes a structured **manual case-methodology review** control after the automated leakage/presentation audit.
+
+A completed review must bind to the exact leakage-audit file and corpus build hash, cover every audited case, and cannot be marked complete while the audit still reports automated high-risk leakage flags. Each case must be explicitly reviewed for semantic leakage, realism, framing neutrality, and answer-option quality.
+
+The repository contains only a `not_tested` template plus validator self-tests. No final corpus has been manually reviewed.
+
+Therefore:
+
+```text
+leakage_validation = prepared
+AR-P003 v0.3      = development_not_ready
+```
+
+No human-study, ethics, external-validation, or commercial evidence changed.

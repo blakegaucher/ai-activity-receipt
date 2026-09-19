@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Manual Case Methodology Review Record",
+  "description": "Analysis-side development QA record for human pre-freeze review of sealed candidate cases. Actual review records may contain sensitive hidden-analysis context and are not reviewer-facing.",
+  "type": "object",
+  "required": [
+    "review_version",
+    "status",
+    "corpus_build_sha256",
+    "leakage_audit_sha256",
+    "reviewer_id",
+    "reviewed_at",
+    "cases",
+    "evidence_boundary"
+  ],
+  "properties": {
+    "review_version": {
+      "const": "AR-P003-v0.3-case-methodology-review-v0.1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_tested",
+        "in_progress",
+        "complete"
+      ]
+    },
+    "corpus_build_sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "leakage_audit_sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "reviewer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewed_at": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "semantic_leakage",
+          "realism",
+          "framing_neutrality",
+          "answer_option_quality",
+          "decision",
+          "notes"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "semantic_leakage": {
+            "type": "string",
+            "enum": [
+              "not_reviewed",
+              "pass",
+              "revise"
+            ]
+          },
+          "realism": {
+            "type": "string",
+            "enum": [
+              "not_reviewed",
+              "acceptable",
+              "revise"
+            ]
+          },
+          "framing_neutrality": {
+            "type": "string",
+            "enum": [
+              "not_reviewed",
+              "acceptable",
+              "revise"
+            ]
+          },
+          "answer_option_quality": {
+            "type": "string",
+            "enum": [
+              "not_reviewed",
+              "acceptable",
+              "revise"
+            ]
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "not_reviewed",
+              "accept",
+              "revise",
+              "drop"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidence_boundary": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}
