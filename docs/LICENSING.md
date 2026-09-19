@@ -6,6 +6,21 @@ This repository does not currently include an explicit open-source license.
 
 That means the project should not describe the repository as MIT-, Apache-, CC-, or otherwise open-source licensed until Blake Gaucher / Ancient Immortal Art deliberately selects and publishes a license.
 
+## Decision preflight completed
+
+The factual preflight is now published at [Repository License Decision Preflight](LICENSE-PREFLIGHT.md).
+
+It records:
+
+- direct Python dependencies and observed upstream license files;
+- external GitHub Action repositories used by the workflows;
+- the exact transitive lock-package name snapshot;
+- the DSSE reference implementation boundary;
+- standards/specification citation boundaries;
+- a machine-readable inventory and drift check.
+
+This reduces the remaining work to an explicit owner/IP decision. It does **not** grant a license or provide legal clearance.
+
 ## Why this is kept explicit
 
 The repository is public for research transparency and reproducibility, but public visibility and an open-source license are different things.
