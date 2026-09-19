@@ -33,6 +33,15 @@ The project is pre-commercial research. Version labels below describe repository
 - advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
 - correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
 
+### CodeQL advanced setup and continuity refresh
+
+- add and verify a separate pinned CodeQL advanced-setup workflow for Python and JavaScript/TypeScript;
+- keep the primary validation workflow read-only while granting the CodeQL workflow only the required `security-events: write` in addition to `contents: read`;
+- extend the repository security smoke test to enforce CodeQL Action pinning, scoped permissions, checkout credential hardening, timeout, and language coverage;
+- record successful pull-request and post-merge `main` CodeQL runs without claiming that the uninspectable alert inventory is empty;
+- update machine-readable continuity so CodeQL default setup is no longer treated as a pending task;
+- retain main ruleset, private vulnerability reporting, Dependabot security settings, security notifications, and alert inspection as explicit manual/admin gates.
+
 ### External reproduction handoff
 
 - add a public clean-room handoff for independent reproduction attempts;
