@@ -469,3 +469,36 @@ It now reads the authoritative current values directly from:
 - `runner-response.schema.json` → `response_bundle_version.const`.
 
 The machine-readable continuity state must match those source artifacts. This is specifically intended to prevent the kind of version drift found in this review from recurring silently.
+
+
+---
+
+## Freeze-manifest integrity hardening — 2026-09-19
+
+A source review found that the development freeze-manifest utility still emitted a hard-coded `protocol_version = "v0.3-draft"`, while the authoritative protocol version is versioned directly in `protocol.json`.
+
+That drift path has been removed.
+
+Freeze-manifest v0.2 now binds:
+
+- exact protocol path;
+- exact protocol version;
+- exact protocol SHA-256;
+- protocol `frozen` state;
+- sorted artifact file hashes/sizes;
+- aggregate artifact-set SHA-256;
+- deterministic freeze content ID.
+
+A final-freeze invocation can require `protocol.frozen=true` and will fail closed otherwise.
+
+Current status remains:
+
+```text
+freeze-manifest tooling = prepared
+final freeze manifest   = not created
+AR-P003 v0.3            = development_not_ready
+```
+
+The reproducibility suite advances to `ai-activity-receipt-repro-v0.11` to include the manifest schema in the tested artifact set.
+
+No protocol choice, human result, ethics determination, or historical benchmark state changed.

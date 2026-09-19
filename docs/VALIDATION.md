@@ -62,6 +62,26 @@ This is continuity/preregistration discipline only. It does not make the missing
 
 ---
 
+## AR-P003 freeze-manifest v0.2 self-test
+
+**Status:** Development freeze-integrity tooling; no final confirmatory manifest exists
+
+The freeze-manifest utility now binds the exact `protocol.json` version and SHA-256 instead of emitting a hard-coded abbreviated protocol version.
+
+The self-test verifies:
+
+- manifest JSON Schema validity;
+- exact protocol version/hash binding;
+- deterministic `freeze_content_id` independent of generation timestamp;
+- artifact-byte changes alter artifact-set and freeze IDs;
+- protocol changes alter the freeze ID;
+- duplicate artifact paths are rejected;
+- `--require-protocol-frozen` rejects an unfrozen protocol and accepts a synthetic frozen one.
+
+This improves freeze integrity only. It does not resolve any preregistration, ethics, browser, corpus, analysis, or human-evidence gate.
+
+---
+
 ## AR-P003 v0.3 manual case-methodology review guard
 
 **Status:** Development QA workflow prepared; no sealed-corpus manual review completed

@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.7",
+  "snapshot_version": "project-continuity-v0.8",
   "snapshot_date": "2026-09-19",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -76,6 +76,14 @@
           "checked_in_record": "not_tested_template_only",
           "final_corpus_review": "not_run"
         }
+      },
+      "freeze_manifest": {
+        "version": "AR-P003-v0.3-freeze-manifest-v0.2",
+        "status": "prepared_no_final_manifest",
+        "exact_protocol_binding": true,
+        "protocol_frozen_gate": true,
+        "deterministic_freeze_content_id": true,
+        "final_manifest": "not_created"
       }
     },
     "public_record_profile": {
@@ -98,7 +106,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.10",
+      "suite_version": "ai-activity-receipt-repro-v0.11",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,

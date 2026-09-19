@@ -135,9 +135,10 @@
     "freeze_manifest": {
       "status": "prepared",
       "evidence_refs": [
-        "benchmark/arp003_v0_3/freeze_manifest.py"
+        "benchmark/arp003_v0_3/freeze_manifest.py",
+        "benchmark/arp003_v0_3/freeze-manifest.schema.json"
       ],
-      "notes": "Manifest tooling exists; no final confirmatory freeze manifest can be produced until all preceding gates are resolved."
+      "notes": "Freeze-manifest v0.2 tooling now binds the exact protocol path/version/SHA-256, records whether the protocol is frozen, rejects duplicate artifact paths, computes an aggregate artifact-set SHA-256 and deterministic freeze_content_id, and can fail closed unless protocol.frozen=true. The gate remains prepared: no final confirmatory freeze manifest can exist until all preceding gates are resolved and the actual frozen artifacts are supplied."
     }
   }
 }
