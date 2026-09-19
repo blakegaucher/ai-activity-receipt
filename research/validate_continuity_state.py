@@ -95,6 +95,11 @@ def main() -> int:
                 f"AR-P003 methodology decision {decision_id!r} changed without "
                 "a deliberate continuity update"
             )
+    if methodology.get("freeze_readiness_crosscheck") is not True:
+        errors.append(
+            "AR-P003 methodology/freeze-readiness cross-check continuity flag "
+            "is not enabled"
+        )
 
     runner = (arp003.get("offline_runner") or {})
     assignment_binding = runner.get("assignment_binding") or {}

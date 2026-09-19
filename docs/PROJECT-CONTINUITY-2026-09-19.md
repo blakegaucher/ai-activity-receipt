@@ -502,3 +502,28 @@ AR-P003 v0.3            = development_not_ready
 The reproducibility suite advances to `ai-activity-receipt-repro-v0.11` to include the manifest schema in the tested artifact set.
 
 No protocol choice, human result, ethics determination, or historical benchmark state changed.
+
+---
+
+## Methodology/freeze cross-check update — 2026-09-19
+
+The readiness checker now validates the supplied methodology ledger before
+accepting completed gates or a ready/frozen state. Its six linked gates must
+agree with valid selections; mandatory decisions cannot be marked optional.
+Custom ledger files receive the same validation as the checked-in ledger.
+
+This continues the existing `arp003-freeze-methodology-crosscheck` work. It
+corrects a metadata-consistency gap: selected status labels alone previously
+allowed an invalid candidate reference through the pending implementation.
+
+Integration preserves the newer `main` changes through commit
+`0473eeafe1af04f6829771a0e3735bccd6146cee`: leakage audit, bound manual case
+review, source-bound continuity checks, and freeze-manifest v0.2. The combined
+reproducibility suite advances to `ai-activity-receipt-repro-v0.12`; continuity
+advances to `project-continuity-v0.9`. No earlier version labels are rewritten.
+
+The current methodology ledger remains `development_unresolved`; AR-P003 v0.3
+remains `draft_not_frozen_not_executed`. Relative to that current `main`, the
+protocol, actual decision ledger, readiness declarations, and frozen v0.2.3
+evidence are unchanged. The next study actions remain deliberate methodology
+decisions and real browser/device tests.

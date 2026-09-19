@@ -23,7 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.11"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.12"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -298,6 +298,9 @@ CHECKS: list[dict[str, Any]] = [
             "benchmark/arp003_v0_3/freeze-readiness.schema.json",
             "benchmark/arp003_v0_3/freeze-readiness.current.json",
             "benchmark/arp003_v0_3/protocol.json",
+            "benchmark/arp003_v0_3/methodology-decisions.current.json",
+            "benchmark/arp003_v0_3/methodology-decisions.schema.json",
+            "benchmark/arp003_v0_3/validate_methodology_decisions.py",
             "docs/AR-P003-V0.3-FREEZE-READINESS.md",
         ],
     },
@@ -306,8 +309,12 @@ CHECKS: list[dict[str, Any]] = [
         "argv": ["benchmark/arp003_v0_3/check_freeze_readiness.py"],
         "artifacts": [
             "benchmark/arp003_v0_3/check_freeze_readiness.py",
+            "benchmark/arp003_v0_3/freeze-readiness.schema.json",
             "benchmark/arp003_v0_3/freeze-readiness.current.json",
             "benchmark/arp003_v0_3/protocol.json",
+            "benchmark/arp003_v0_3/methodology-decisions.current.json",
+            "benchmark/arp003_v0_3/methodology-decisions.schema.json",
+            "benchmark/arp003_v0_3/validate_methodology_decisions.py",
         ],
     },
     {

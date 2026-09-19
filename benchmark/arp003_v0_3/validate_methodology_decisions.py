@@ -94,7 +94,15 @@ def semantic_errors(
                 f"LEDGER-04 decisions[{index}] candidate_id values must be unique"
             )
 
-        if decision["pre_freeze_required"]:
+        mandatory = decision["decision_id"] in REQUIRED_DECISIONS
+        required = mandatory or decision["pre_freeze_required"]
+        if mandatory and not decision["pre_freeze_required"]:
+            errors.append(
+                f"LEDGER-12 decisions[{index}] mandatory decision "
+                f"{decision['decision_id']!r} must remain pre_freeze_required"
+            )
+
+        if required:
             required_total += 1
 
         status = decision["status"]
@@ -116,7 +124,7 @@ def semantic_errors(
                     f"LEDGER-07 decisions[{index}] selected decision requires "
                     "decision-level evidence_refs"
                 )
-            if decision["pre_freeze_required"]:
+            if required:
                 selected_required += 1
 
         elif status == "unresolved":
@@ -127,7 +135,7 @@ def semantic_errors(
                 )
 
         elif status == "deferred":
-            if decision["pre_freeze_required"]:
+            if required:
                 errors.append(
                     f"LEDGER-09 decisions[{index}] pre-freeze-required decision "
                     "cannot be deferred"
@@ -237,9 +245,37 @@ def run_self_test() -> int:
     errors = validate(ledger, schema, protocol_mismatch)
     assert any("LEDGER-01" in error for error in errors)
 
+    # Required decision IDs remain required even if an input flips their flags.
+    optionalized = copy.deepcopy(ledger)
+    for decision in optionalized["decisions"]:
+        decision["pre_freeze_required"] = False
+    optionalized["status"] = "methodology_resolved"
+    errors = validate(optionalized, schema, frozen_protocol)
+    for code in ("LEDGER-10", "LEDGER-11", "LEDGER-12"):
+        assert any(code in error for error in errors), errors
+
+    deferred = copy.deepcopy(ledger)
+    deferred["decisions"][0]["pre_freeze_required"] = False
+    deferred["decisions"][0]["status"] = "deferred"
+    errors = validate(deferred, schema, protocol)
+    assert any("LEDGER-09" in error for error in errors), errors
+    assert any("LEDGER-12" in error for error in errors), errors
+
+    # Positive control: valid synthetic selections still pass, including freeze.
+    resolved = copy.deepcopy(ledger)
+    resolved["status"] = "methodology_resolved"
+    for decision in resolved["decisions"]:
+        decision["status"] = "selected"
+        decision["selected_candidate"] = decision["candidates"][0]["candidate_id"]
+        decision["rationale"] = "Synthetic self-test selection only."
+        decision["evidence_refs"] = ["synthetic://methodology-selection"]
+    for test_protocol in (protocol, frozen_protocol):
+        errors = validate(resolved, schema, test_protocol)
+        assert not errors, errors
+
     print(
         "AR-P003 methodology-decision ledger self-test passed: current "
-        "unresolved state plus 8 adversarial mutations."
+        "unresolved state, valid synthetic selections, and adversarial mutations."
     )
     return 0
 

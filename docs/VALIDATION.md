@@ -56,6 +56,8 @@ The validator distinguishes `pending`, `prepared`, `complete`, and `not_applicab
 
 The checked-in current state is deliberately `development_not_ready`.
 
+Freeze readiness now also cross-checks the methodology ledger. A freeze gate that corresponds to an unresolved methodology decision cannot be marked resolved, and neither `ready_for_freeze` nor `frozen` may coexist with unresolved required methodology decisions. This closes the gap where readiness metadata and methodology metadata could otherwise drift independently.
+
 A separate browser-smoke record schema/validator requires a real environment-specific record before browser validation can be claimed. The checked-in example is explicitly incomplete/not-run and cannot pass as completed smoke evidence.
 
 This is continuity/preregistration discipline only. It does not make the missing methodology, ethics, corpus, browser, or human evidence decisions.
