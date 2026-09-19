@@ -27,6 +27,14 @@ The project is pre-commercial research. Version labels below describe repository
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
 - preserve private-reasoning exclusion diagnostics.
 
+### Continuity after pipeline hardening
+
+- advance the machine-readable continuity snapshot to v0.2;
+- record the development bundle builder, gold-option representability guard, and end-to-end AR-P003 integration smoke test;
+- record the pinned CPython/dependency/Actions reproducibility profile and CI report artifact;
+- record that contribution/data-safety guidance exists while the explicit repository-license decision remains open;
+- extend the continuity guard so later changes to the reproducibility profile or licensing state require an explicit continuity update.
+
 ### Reproducibility and study-pipeline hardening
 
 - pin CI to CPython 3.12.14 and an exact tested dependency snapshot while retaining `requirements.txt` as the supported-range declaration;
