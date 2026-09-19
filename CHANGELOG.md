@@ -33,6 +33,13 @@ The project is pre-commercial research. Version labels below describe repository
 - advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
 - correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
 
+### Remaining-gates dashboard
+
+- add a concise operational dashboard separating repository-complete engineering work from owner/admin, human-study, independent-reproduction, production-trust, realistic-workflow, and commercialization gates;
+- link each actionable repository gate to its tracked GitHub issue;
+- make explicit that additional technical activity cannot substitute for customer validation, human evidence, external reproduction, or repository-admin settings;
+- define the change-control sequence for updating a gate without silently upgrading adjacent evidence classes.
+
 ### CodeQL advanced setup and continuity refresh
 
 - add and verify a separate pinned CodeQL advanced-setup workflow for Python and JavaScript/TypeScript;
