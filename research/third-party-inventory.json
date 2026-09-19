@@ -1,0 +1,101 @@
+{
+  "inventory_version": "third-party-inventory-v0.1",
+  "snapshot_date": "2026-09-19",
+  "repository_license_status": "not_selected",
+  "evidence_boundary": "Observed upstream license files for direct dependencies/actions are inventory evidence only. This file is not legal advice, does not grant rights, and does not replace review of upstream terms when redistributing third-party material.",
+  "direct_python_dependencies": [
+    {
+      "package": "jsonschema",
+      "requirement": "jsonschema[format]>=4.23,<5",
+      "role": "runtime_validation",
+      "upstream_repository": "python-jsonschema/jsonschema",
+      "observed_license": "MIT",
+      "observed_license_file": "COPYING",
+      "vendored_source": false
+    },
+    {
+      "package": "cryptography",
+      "requirement": "cryptography>=50.0.1,<51",
+      "role": "research_dsse_ed25519",
+      "upstream_repository": "pyca/cryptography",
+      "observed_license": "Apache-2.0 OR BSD-3-Clause",
+      "observed_license_file": "LICENSE",
+      "vendored_source": false
+    }
+  ],
+  "github_actions": [
+    {
+      "repository": "actions/checkout",
+      "role": "checkout",
+      "observed_license": "MIT",
+      "observed_license_file": "LICENSE",
+      "vendored_source": false
+    },
+    {
+      "repository": "actions/setup-python",
+      "role": "python_runtime",
+      "observed_license": "MIT",
+      "observed_license_file": "LICENSE",
+      "vendored_source": false
+    },
+    {
+      "repository": "actions/upload-artifact",
+      "role": "ci_artifact_upload",
+      "observed_license": "MIT",
+      "observed_license_file": "LICENSE",
+      "vendored_source": false
+    },
+    {
+      "repository": "github/codeql-action",
+      "role": "static_analysis",
+      "observed_license": "MIT",
+      "observed_license_file": "LICENSE",
+      "vendored_source": false
+    }
+  ],
+  "referenced_protocol_implementations": [
+    {
+      "reference": "DSSE v1 protocol",
+      "upstream_repository": "secure-systems-lab/dsse",
+      "observed_license": "Apache-2.0",
+      "observed_license_file": "LICENSE",
+      "repository_use": "project-authored research implementation guided by protocol documentation; upstream source package is not vendored",
+      "vendored_source": false
+    }
+  ],
+  "transitive_python_snapshot_packages": [
+    "arrow",
+    "attrs",
+    "cffi",
+    "cryptography",
+    "fqdn",
+    "idna",
+    "isoduration",
+    "jsonpointer",
+    "jsonschema",
+    "jsonschema-specifications",
+    "pycparser",
+    "python-dateutil",
+    "referencing",
+    "rfc3339-validator",
+    "rfc3987",
+    "rpds-py",
+    "six",
+    "typing-extensions",
+    "tzdata",
+    "uri-template",
+    "webcolors"
+  ],
+  "transitive_license_review_status": "Package names are pinned for reproducibility, but transitive package license texts were not individually reverified in this preflight because their source is not vendored in this repository. Review upstream terms before redistributing or vendoring their source/assets.",
+  "external_standards_and_specifications": [
+    "JSON Schema",
+    "W3C PROV / PROV-O",
+    "OpenTelemetry / GenAI conventions",
+    "Model Context Protocol (MCP)",
+    "Agent2Agent (A2A)",
+    "OAuth RFCs including RFC 8693 and RFC 9396",
+    "C2PA",
+    "DSSE"
+  ],
+  "repository_tree_observation": "No third-party source subtree or vendored dependency directory is present in the repository tree at this snapshot. References to standards/projects are documentation or interoperability references unless a file states otherwise."
+}
