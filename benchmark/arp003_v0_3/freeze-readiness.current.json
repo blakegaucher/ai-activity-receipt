@@ -29,9 +29,12 @@
       "status": "prepared",
       "evidence_refs": [
         "benchmark/arp003_v0_3/plan_sample_size.py",
-        "docs/AR-P003-V0.3-PLANNING.md"
+        "benchmark/arp003_v0_3/plan_crossed_design.py",
+        "benchmark/arp003_v0_3/crossed-planning-scenarios.example.json",
+        "docs/AR-P003-V0.3-PLANNING.md",
+        "docs/AR-P003-V0.3-CROSSED-PLANNING.md"
       ],
-      "notes": "Independent-observation screening exists; reviewer-by-case design-specific planning remains open."
+      "notes": "Design-specific reviewer × case simulation tooling now exists and uses the balanced assignment plus two-way reviewer/case cluster-robust covariance. The gate remains prepared, not complete: primary endpoint/effect target and variance assumptions are not frozen."
     },
     "sample_allocation_stopping": {
       "status": "pending",
