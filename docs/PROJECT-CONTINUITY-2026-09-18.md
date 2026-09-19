@@ -64,7 +64,11 @@ Current direction includes:
 
 Do not silently retrofit v0.3 improvements into v0.2.3.
 
-A development offline reviewer runner is now implemented and passing repository CI. It removes raw-JSON answer entry, records wall/active time plus pause/visibility events, provides an untimed intermission between cases, and keeps gold labels/hidden strata outside the reviewer-facing browser bundle. This is instrumentation preparation only: manual browser/device testing and the remaining preregistration/freeze gates are still open.
+A development offline reviewer runner is now implemented and passing repository CI. It removes raw-JSON answer entry, records wall/active time plus pause/visibility events, provides an untimed intermission between cases, and keeps gold labels/hidden strata outside the reviewer-facing browser bundle.
+
+The study-development pipeline now also includes an analysis-side assignment-to-bundle builder, a fail-closed gold-to-visible-option representability check, and an end-to-end synthetic integration test spanning assignment → bundle → reviewer response → hidden-label merge → scoring.
+
+This is instrumentation preparation only: manual browser/device testing, answer-option leakage review, and the remaining preregistration/freeze gates are still open.
 
 ## 3. Current public engineering stack
 
@@ -86,7 +90,9 @@ The public repository currently includes:
 - heterogeneous synthetic workflow derivation pilot;
 - one-command public reproducibility runner with SHA-256 artifact manifest;
 - AR-P003 development scoring, assignment, case-package linting, planning, and freeze-manifest tooling;
-- AR-P003 v0.3 development offline reviewer runner with structured responses, wall/active timing, pause/visibility instrumentation, safe intermissions, and reviewer/analysis data separation.
+- AR-P003 v0.3 development offline reviewer runner with structured responses, wall/active timing, pause/visibility instrumentation, safe intermissions, and reviewer/analysis data separation;
+- assignment-to-runner bundle builder with hidden gold/stratum separation, answer-option representability diagnostics, and SHA-256 build manifests;
+- end-to-end synthetic AR-P003 assignment → bundle → response → hidden-label merge → scoring integration test.
 
 These are engineering/research capabilities. They do not establish human benefit or production readiness.
 
@@ -126,6 +132,14 @@ python research/reproduce.py --output reproducibility-report.json
 ```
 
 This aggregate runner executes the current deterministic/synthetic public checks and records SHA-256 hashes for important artifacts.
+
+The current CI reproduction profile is additionally hardened with:
+
+- CPython 3.12.14 pinned in CI;
+- an exact tested dependency snapshot in `requirements-lock.txt`;
+- GitHub Actions dependencies pinned to exact commit SHAs;
+- the aggregate reproducibility report uploaded as a CI artifact;
+- common local/private AR-P003 study outputs ignored by Git by default.
 
 A project-authored passing run is **preparation for external reproducibility**, not independent validation.
 
@@ -186,7 +200,15 @@ The human-centered direction carried into AR-P003 remains consistent with the ex
 
 Business/government correspondence should likewise remain evidence of discussion/routing, not adoption or funding.
 
-## 10. Tasks that can continue without fabricating external evidence
+## 10. Repository governance continuity
+
+The repository currently has **no explicit open-source license selected**. Public visibility must not be described as a named open-source license or unrestricted reuse permission until Blake Gaucher / Ancient Immortal Art deliberately selects and publishes one.
+
+Contribution guidance is published, and common local/private study outputs are ignored by Git as a backup control. Neither substitutes for access control over participant or hidden-analysis material.
+
+---
+
+## 11. Tasks that can continue without fabricating external evidence
 
 The project can continue to improve:
 
@@ -197,6 +219,8 @@ The project can continue to improve:
 - AR-P003 runner/interface tooling before freeze;
 - sealed-corpus construction procedures;
 - reproducibility packaging;
+- manual browser/device smoke testing for the AR-P003 development runner;
+- explicit repository-license selection as a governance decision;
 - public documentation and evidence boundaries.
 
 The following must remain open until the required external/human evidence exists:
@@ -208,9 +232,10 @@ The following must remain open until the required external/human evidence exists
 - actual customer-demand/pricing validation;
 - financing readiness;
 - standards certification/conformance;
-- institutional endorsement/adoption.
+- institutional endorsement/adoption;
+- any claim that the repository is licensed under a named open-source license until an explicit license is published.
 
-## 11. Immediate continuity rule
+## 12. Immediate continuity rule
 
 Before changing a frozen benchmark, public schema version, claim boundary, or cross-project boundary:
 
