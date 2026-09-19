@@ -144,6 +144,9 @@ jobs:
       - name: Run AR-P003 planning self-test
         run: python benchmark/arp003_v0_3/plan_sample_size.py --self-test
 
+      - name: Run AR-P003 crossed-design planning self-test
+        run: python benchmark/arp003_v0_3/plan_crossed_design.py --self-test
+
       - name: Run AR-P003 offline-runner data self-test
         run: python benchmark/arp003_v0_3/validate_runner_data.py --self-test
 
