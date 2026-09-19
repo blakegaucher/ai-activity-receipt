@@ -205,6 +205,8 @@ The browser runner is self-contained and offline, records wall and active time, 
 
 Before the first timed case, the runner now requires a three-question **pre-case comprehension gate** covering: Receipt-vs-source-evidence conflict handling, the prohibition on private chain-of-thought submission, and pause/visibility timing behavior. The response export records only the gate version, attempt count, and pass timestamp; it does not score the comprehension check as a study outcome.
 
+After that gate, reviewers complete one **untimed structured practice reconstruction** using a fixed synthetic training example. They must correctly use the same action/source/incident/authorization/verification/missing-evidence controls before the first study case begins. The export records only practice version, attempt count, and pass time; the practice answer is not included in scorer input.
+
 The analysis-side bundle builder now closes the development packaging loop: it reads the seeded assignment and linted case manifests, verifies the assignment's hidden stratum against each case manifest, gives control reviewers only shared evidence, gives Receipt reviewers the same evidence plus the Receipt, and emits gold/stratum data to a separate hidden analysis bundle.
 
 See `../../docs/AR-P003-V0.3-OFFLINE-RUNNER.md`.
