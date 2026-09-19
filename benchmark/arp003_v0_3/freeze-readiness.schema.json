@@ -28,6 +28,7 @@
     "gates": {
       "type": "object",
       "required": [
+        "comparison_conditions",
         "reviewer_population",
         "primary_endpoints",
         "effect_or_precision_target",
@@ -480,6 +481,37 @@
           "additionalProperties": false
         },
         "freeze_manifest": {
+          "type": "object",
+          "required": [
+            "status",
+            "evidence_refs",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "prepared",
+                "complete",
+                "not_applicable"
+              ]
+            },
+            "evidence_refs": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "comparison_conditions": {
           "type": "object",
           "required": [
             "status",
