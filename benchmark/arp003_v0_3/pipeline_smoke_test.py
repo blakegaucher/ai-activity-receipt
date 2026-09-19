@@ -244,13 +244,18 @@ def main() -> int:
                 )
 
             response = {
-                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.2",
+                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.3",
                 "protocol_version": bundle["protocol_version"],
                 "assignment_version": bundle["assignment_version"],
                 "assignment_sha256": bundle["assignment_sha256"],
                 "reviewer_id": bundle["reviewer_id"],
                 "session_started_at": "2026-09-18T12:00:00Z",
                 "session_completed_at": "2026-09-18T12:10:00Z",
+                "comprehension": {
+                    "gate_version": "AR-P003-v0.3-comprehension-v0.1",
+                    "attempts": 1,
+                    "passed_at": "2026-09-18T12:00:00Z",
+                },
                 "cases": response_cases,
             }
             merged_records.extend(
@@ -290,13 +295,18 @@ def main() -> int:
         tampered_condition = "control" if true_condition == "receipt" else "receipt"
         hidden_gold = hidden_by_id[first_case["case_id"]]["gold"]
         tampered_response = {
-            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.2",
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.3",
             "protocol_version": first_bundle["protocol_version"],
             "assignment_version": first_bundle["assignment_version"],
             "assignment_sha256": first_bundle["assignment_sha256"],
             "reviewer_id": first_bundle["reviewer_id"],
             "session_started_at": "2026-09-18T13:00:00Z",
             "session_completed_at": "2026-09-18T13:01:00Z",
+            "comprehension": {
+                "gate_version": "AR-P003-v0.3-comprehension-v0.1",
+                "attempts": 1,
+                "passed_at": "2026-09-18T13:00:00Z",
+            },
             "cases": [
                 {
                     "case_id": first_case["case_id"],

@@ -203,6 +203,8 @@ Reviewer-facing bundles contain only evidence, optional Receipt, pseudonymous ID
 
 The browser runner is self-contained and offline, records wall and active time, supports manual and visibility pauses, inserts a safe intermission between cases, and uses structured controls rather than raw JSON editing.
 
+Before the first timed case, the runner now requires a three-question **pre-case comprehension gate** covering: Receipt-vs-source-evidence conflict handling, the prohibition on private chain-of-thought submission, and pause/visibility timing behavior. The response export records only the gate version, attempt count, and pass timestamp; it does not score the comprehension check as a study outcome.
+
 The analysis-side bundle builder now closes the development packaging loop: it reads the seeded assignment and linted case manifests, verifies the assignment's hidden stratum against each case manifest, gives control reviewers only shared evidence, gives Receipt reviewers the same evidence plus the Receipt, and emits gold/stratum data to a separate hidden analysis bundle.
 
 See `../../docs/AR-P003-V0.3-OFFLINE-RUNNER.md`.

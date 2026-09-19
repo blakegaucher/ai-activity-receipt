@@ -311,3 +311,16 @@ The guard rejects premature `ready_for_freeze` / `frozen` status and cross-check
 A separate structured browser/device smoke-record schema now exists for issue #38. The checked-in smoke record is explicitly a not-run template and is not browser evidence.
 
 No human-study, ethics, customer, or external-validation gate changed status in this update.
+
+
+---
+
+## Comprehension-gate update — 2026-09-19
+
+The AR-P003 v0.3 development runner now blocks the first timed case behind a neutral three-question instruction check.
+
+The gate verifies understanding that the Receipt is not guaranteed ground truth, private chain-of-thought is excluded, and active timing can pause through manual pause/resume or browser visibility changes.
+
+The reviewer export records gate version, attempt count, and pass timestamp. The analysis merge rejects responses lacking a valid gate record.
+
+This improves instrument preparation only. Reviewer instructions and the final runner remain unfrozen, and no human-study evidence changed status.
