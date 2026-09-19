@@ -23,7 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.3"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.4"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -104,6 +104,22 @@ CHECKS: list[dict[str, Any]] = [
             "research/project-continuity-state.json",
             "docs/PROJECT-CONTINUITY-2026-09-18.md",
             "docs/AR-P003-V0.2.3-HISTORICAL-BASELINE.md",
+        ],
+    },
+    {
+        "id": "repository-security-smoke",
+        "argv": ["research/security_smoke_test.py"],
+        "artifacts": [
+            "research/security_smoke_test.py",
+            ".github/dependabot.yml",
+            ".github/CODEOWNERS",
+            ".github/workflows/validate-receipts.yml",
+            "SECURITY.md",
+            "docs/SECURITY-HARDENING.md",
+            "benchmark/arp003_v0_3/offline_runner.html",
+            "benchmark/arp003_v0_3/runner-bundle.schema.json",
+            "benchmark/arp003_v0_3/runner-response.schema.json",
+            "benchmark/arp003_v0_3/runner-analysis.schema.json",
         ],
     },
     {
@@ -230,7 +246,10 @@ BASE_ARTIFACTS = [
     "requirements.txt",
     "requirements-lock.txt",
     ".gitignore",
+    ".github/dependabot.yml",
+    ".github/CODEOWNERS",
     ".github/workflows/validate-receipts.yml",
+    "SECURITY.md",
     "benchmark/arp003_v0_3/protocol.json",
 ]
 
