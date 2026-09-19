@@ -63,13 +63,20 @@ A green CodeQL workflow is not evidence that the alert count is zero.
 
 ### Repository license — issue #44
 
-**Status:** Open; explicit owner/IP decision required.
+**Status:** Preflight complete; explicit owner/IP decision still required.
 
 The repository currently has **no explicit license**.
 
+Completed preparation:
+
+- third-party/dependency/action inventory published;
+- direct dependency + GitHub Action drift guard added to CI/reproducibility;
+- owner decision brief published at [LICENSE-PREFLIGHT.md](LICENSE-PREFLIGHT.md);
+- current no-license boundary preserved.
+
 Do not describe the repository as MIT, Apache, CC, or otherwise open-source licensed until the owner deliberately selects terms.
 
-This gate should be resolved before broad reuse/redistribution or a release intended for outside implementation.
+The remaining action is the owner's explicit choice for project-authored code, documentation, synthetic fixtures, and any future released study material. This gate should be resolved before broad reuse/redistribution or a release intended for outside implementation.
 
 ## Gate 2 — AR-P003 study-instrument readiness
 
