@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this research repository, please cite the repository and the exact commit or release you used."
+title: "AI Activity Receipt"
+type: software
+authors:
+  - family-names: Gaucher
+    given-names: Blake
+repository-code: "https://github.com/blakegaucher/ai-activity-receipt"
+abstract: >-
+  An independent research repository exploring human-centered,
+  provenance-aware records and compact Activity Receipts for consequential
+  AI-agent activity. Current public evidence is primarily synthetic and
+  technical; the project does not claim proven human benefit, standards
+  conformance, legal compliance, or production security.
+keywords:
+  - AI governance
+  - provenance
+  - auditability
+  - AI agents
+  - human-centered AI
