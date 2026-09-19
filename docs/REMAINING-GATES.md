@@ -100,6 +100,8 @@ Use only synthetic development bundles.
 
 ### Preregistration/freeze decisions — issue #47
 
+**Methodology-source conflicts:** now explicitly tracked. The current executable draft and the earlier project research review differ on comparison conditions, primary endpoint, timing semantics, and misleading-Receipt challenge architecture. The repository now fails closed against a future frozen protocol while required methodology decisions remain unresolved. See [AR-P003-V0.3-METHODOLOGY-DECISIONS.md](AR-P003-V0.3-METHODOLOGY-DECISIONS.md).
+
 **Status:** Open; human-study methodology decisions required.
 
 **Crossed-design planning tooling:** prepared. The repository now simulates the actual balanced reviewer/case assignment with reviewer/case random effects and two-way clustered uncertainty. This removes the earlier tooling gap but does not select the effect/precision target or freeze the sample size.
@@ -108,6 +110,7 @@ Use only synthetic development bundles.
 
 Before confirmatory human execution:
 
+- deliberately select the final comparison-condition design rather than inheriting the current two-condition implementation by default;
 - define reviewer population/eligibility;
 - freeze primary endpoint(s);
 - define meaningful effect/precision target;
