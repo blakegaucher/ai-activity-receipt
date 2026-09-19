@@ -33,6 +33,16 @@ The project is pre-commercial research. Version labels below describe repository
 - advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
 - correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
 
+### AR-P003 crossed reviewer × case planning
+
+- add a deterministic Monte Carlo planner that uses the repository's balanced reviewer/case assignment rather than treating reviewer-case observations as independent;
+- simulate binary outcomes with explicit reviewer and case random intercepts;
+- estimate the condition contrast with additive two-way cluster-robust covariance (reviewer + case - reviewer/case intersection);
+- report simulated marginal performance, risk-difference variability, median cluster-robust SE, rejection-rate sensitivity, Monte Carlo error, and assignment diagnostics;
+- add an illustrative scenario grid centered on the earlier 108 reviewer / 72 case / 24 cases-per-reviewer planning proposal without freezing those counts or the example effect/variance assumptions;
+- add CI and aggregate reproducibility coverage;
+- keep crossed-design readiness at `prepared`, not `complete`, until the primary endpoint/effect target and variance assumptions are frozen.
+
 ### Remaining-gates dashboard
 
 - add a concise operational dashboard separating repository-complete engineering work from owner/admin, human-study, independent-reproduction, production-trust, realistic-workflow, and commercialization gates;

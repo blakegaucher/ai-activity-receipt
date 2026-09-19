@@ -68,6 +68,7 @@ A passing run reproduces repository-local deterministic/synthetic checks only. I
 - [AR-P003 v0.3 Reviewer Instructions Draft](docs/AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md)
 - [AR-P003 v0.3 Development Offline Runner](docs/AR-P003-V0.3-OFFLINE-RUNNER.md)
 - [AR-P003 v0.3 Freeze Readiness](docs/AR-P003-V0.3-FREEZE-READINESS.md)
+- [AR-P003 v0.3 Crossed Design Planning](docs/AR-P003-V0.3-CROSSED-PLANNING.md)
 - [AR-P003 v0.3 Benchmark Workspace](benchmark/arp003_v0_3/README.md)
 - [Project Roadmap](docs/ROADMAP.md)
 - [Remaining Gates Dashboard](docs/REMAINING-GATES.md)

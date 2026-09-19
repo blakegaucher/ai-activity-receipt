@@ -1,0 +1,76 @@
+{
+  "planner_status": "illustrative_not_frozen",
+  "note": "The 108 reviewer / 72 case / 24 cases-per-reviewer configuration is carried forward as a planning center from the project research review, not as a frozen sample size. Probabilities and random-effect SDs below are sensitivity assumptions only.",
+  "scenarios": [
+    {
+      "scenario_id": "source-centered-72-reviewers",
+      "reviewers": 72,
+      "cases": 72,
+      "cases_per_reviewer": 24,
+      "assignment_seed": 73917,
+      "simulation_seed": 2026091901,
+      "iterations": 500,
+      "conditional_p_control": 0.7,
+      "conditional_p_receipt": 0.8,
+      "reviewer_sd_logit": 0.6,
+      "case_sd_logit": 0.6,
+      "alpha": 0.05
+    },
+    {
+      "scenario_id": "source-centered-108-reviewers",
+      "reviewers": 108,
+      "cases": 72,
+      "cases_per_reviewer": 24,
+      "assignment_seed": 73917,
+      "simulation_seed": 2026091902,
+      "iterations": 500,
+      "conditional_p_control": 0.7,
+      "conditional_p_receipt": 0.8,
+      "reviewer_sd_logit": 0.6,
+      "case_sd_logit": 0.6,
+      "alpha": 0.05
+    },
+    {
+      "scenario_id": "source-centered-144-reviewers",
+      "reviewers": 144,
+      "cases": 72,
+      "cases_per_reviewer": 24,
+      "assignment_seed": 73917,
+      "simulation_seed": 2026091903,
+      "iterations": 500,
+      "conditional_p_control": 0.7,
+      "conditional_p_receipt": 0.8,
+      "reviewer_sd_logit": 0.6,
+      "case_sd_logit": 0.6,
+      "alpha": 0.05
+    },
+    {
+      "scenario_id": "108-reviewers-higher-heterogeneity",
+      "reviewers": 108,
+      "cases": 72,
+      "cases_per_reviewer": 24,
+      "assignment_seed": 73917,
+      "simulation_seed": 2026091904,
+      "iterations": 500,
+      "conditional_p_control": 0.7,
+      "conditional_p_receipt": 0.8,
+      "reviewer_sd_logit": 0.9,
+      "case_sd_logit": 0.9,
+      "alpha": 0.05
+    },
+    {
+      "scenario_id": "108-reviewers-smaller-effect",
+      "reviewers": 108,
+      "cases": 72,
+      "cases_per_reviewer": 24,
+      "assignment_seed": 73917,
+      "simulation_seed": 2026091905,
+      "iterations": 500,
+      "conditional_p_control": 0.7,
+      "conditional_p_receipt": 0.77,
+      "reviewer_sd_logit": 0.6,
+      "case_sd_logit": 0.6,
+      "alpha": 0.05
+    }
+  ]
+}
