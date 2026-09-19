@@ -18,7 +18,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - **Evidence:** primarily synthetic/technical engineering evidence.
 - **Human study:** AR-P003 v0.3 is development-only, not frozen, and not executed.
 - **Security:** validation and CodeQL workflows are active; this is not a security certification or proof of zero vulnerabilities.
-- **License:** no explicit repository license has been selected yet; public visibility does not imply unrestricted reuse. See [Licensing Status](docs/LICENSING.md).
+- **License:** no explicit repository license has been selected yet; public visibility does not imply unrestricted reuse. The third-party/license decision preflight is complete, but the owner choice remains open. See [Licensing Status](docs/LICENSING.md) and [License Decision Preflight](docs/LICENSE-PREFLIGHT.md).
 
 ## Reproduce the repository-local checks
 
