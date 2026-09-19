@@ -225,7 +225,7 @@ Contribution guidance is published, and common local/private study outputs are i
 
 Repository-file security controls now include weekly Dependabot configuration, CODEOWNERS routing, least-privilege/pinned CI checks, checkout credential-persistence disablement, a deterministic security smoke test, and stricter offline-runner CSP/resource bounds.
 
-GitHub API inspection on 2026-09-19 returned **no repository rulesets**. The available connector cannot change branch-protection/ruleset or Advanced Security settings. Main-branch protection/ruleset configuration, CodeQL default setup, private vulnerability reporting, and confirmation of Dependabot security alerts/updates therefore remain explicit repository-admin tasks rather than completed controls.
+GitHub API inspection on 2026-09-19 returned **no repository rulesets**. CodeQL **advanced setup** is now committed at `.github/workflows/codeql.yml`, and a post-merge `main` run completed successfully for both Python and JavaScript/TypeScript. The available connector still cannot change branch-protection/ruleset or the remaining repository-admin security settings, and it cannot read the CodeQL alert list. Main-branch protection/ruleset configuration, private vulnerability reporting, confirmation of Dependabot security alerts/updates and owner notifications, plus manual inspection of the CodeQL alert page therefore remain explicit admin tasks.
 
 These repository controls are defense-in-depth only. They do not establish production security, penetration-test coverage, standards conformance, or participant-data readiness.
 
@@ -244,8 +244,9 @@ The project can continue to improve:
 - reproducibility packaging;
 - manual browser/device smoke testing for the AR-P003 development runner;
 - repository-admin enablement of a main-branch ruleset/protection with required CI and no force-push/delete;
-- repository-admin enablement of CodeQL default setup and private vulnerability reporting;
+- repository-admin enablement of private vulnerability reporting;
 - confirmation of Dependabot security alerts/security updates;
+- manual review of the CodeQL alert page (CodeQL advanced setup is active; default setup should not also be enabled unless intentionally replacing it);
 - explicit repository-license selection as a governance decision;
 - public documentation and evidence boundaries.
 
