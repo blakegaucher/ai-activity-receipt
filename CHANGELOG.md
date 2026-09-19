@@ -27,6 +27,15 @@ The project is pre-commercial research. Version labels below describe repository
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
 - preserve private-reasoning exclusion diagnostics.
 
+### AR-P003 exact assignment binding
+
+- bump development reviewer-bundle and response-export contracts to v0.2;
+- include the exact assignment version and SHA-256 digest in reviewer bundles and response exports;
+- require the exact frozen assignment when joining reviewer responses to hidden analysis labels;
+- reject reviewer IDs absent from the assignment, missing/extra cases, case-order drift, edited control/Receipt labels, stratum disagreement, wrong assignment version/hash, and incomplete sessions;
+- treat the frozen assignment as the analysis-side source of truth for condition allocation rather than trusting a response-export field;
+- extend unit/integration tests and protocol/runner documentation while keeping the human study unfrozen.
+
 ### Repository reviewer/contributor health
 
 - add a pull-request template that requires evidence-boundary, validation, privacy, frozen-history, and third-party provenance checks;
