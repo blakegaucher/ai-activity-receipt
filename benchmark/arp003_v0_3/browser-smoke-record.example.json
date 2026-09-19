@@ -73,6 +73,14 @@
     "export_schema_validation": {
       "status": "not_tested",
       "notes": "Not run; template value."
+    },
+    "comprehension_gate_flow": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "practice_gate_flow": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
     }
   },
   "defects": []
