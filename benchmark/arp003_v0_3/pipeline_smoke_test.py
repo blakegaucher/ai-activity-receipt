@@ -244,14 +244,24 @@ def main() -> int:
                 )
 
             response = {
-                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.1",
+                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.2",
                 "protocol_version": bundle["protocol_version"],
+                "assignment_version": bundle["assignment_version"],
+                "assignment_sha256": bundle["assignment_sha256"],
                 "reviewer_id": bundle["reviewer_id"],
                 "session_started_at": "2026-09-18T12:00:00Z",
                 "session_completed_at": "2026-09-18T12:10:00Z",
                 "cases": response_cases,
             }
-            merged_records.extend(merge(response, hidden, timing="active"))
+            merged_records.extend(
+                merge(
+                    response,
+                    hidden,
+                    assignment,
+                    assignment_sha256=bundle["assignment_sha256"],
+                    timing="active",
+                )
+            )
 
         assert conditions.count("control") == 2
         assert conditions.count("receipt") == 2
@@ -271,6 +281,48 @@ def main() -> int:
         assert summary["n_records"] == 4
         assert summary["by_condition"]["control"]["n"] == 2
         assert summary["by_condition"]["receipt"]["n"] == 2
+
+        # Analysis-side merge must not trust a reviewer-edited condition field.
+        first_bundle_path = output_dir / build_manifest["reviewer_bundles"][0]["path"]
+        first_bundle = json.loads(first_bundle_path.read_text(encoding="utf-8"))
+        first_case = first_bundle["cases"][0]
+        true_condition = "receipt" if first_case["receipt"] is not None else "control"
+        tampered_condition = "control" if true_condition == "receipt" else "receipt"
+        hidden_gold = hidden_by_id[first_case["case_id"]]["gold"]
+        tampered_response = {
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.2",
+            "protocol_version": first_bundle["protocol_version"],
+            "assignment_version": first_bundle["assignment_version"],
+            "assignment_sha256": first_bundle["assignment_sha256"],
+            "reviewer_id": first_bundle["reviewer_id"],
+            "session_started_at": "2026-09-18T13:00:00Z",
+            "session_completed_at": "2026-09-18T13:01:00Z",
+            "cases": [
+                {
+                    "case_id": first_case["case_id"],
+                    "condition": tampered_condition,
+                    "started_at": "2026-09-18T13:00:00Z",
+                    "submitted_at": "2026-09-18T13:00:10Z",
+                    "elapsed_wall_seconds": 10.0,
+                    "elapsed_active_seconds": 10.0,
+                    "events": [],
+                    "technical_issue": False,
+                    "answer": perfect_answer(hidden_gold),
+                }
+            ],
+        }
+        try:
+            merge(
+                tampered_response,
+                hidden,
+                assignment,
+                assignment_sha256=first_bundle["assignment_sha256"],
+                timing="active",
+            )
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("tampered reviewer condition was accepted")
 
     print(
         "AR-P003 end-to-end pipeline smoke test passed: assignment -> build -> "
