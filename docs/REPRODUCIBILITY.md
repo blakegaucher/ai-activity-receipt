@@ -32,6 +32,10 @@ The suite currently executes:
 - AR-P003 assignment balance tests;
 - AR-P003 case-package linting;
 - AR-P003 sample-size/precision planning tests;
+- AR-P003 offline-runner data and no-network checks;
+- AR-P003 response/gold merge tests;
+- AR-P003 assignment-to-runner bundle-builder tests;
+- AR-P003 end-to-end assignment → bundle → merge → scoring smoke test;
 - AR-P003 freeze-manifest tests.
 
 The AR-P003 protocol JSON is also parsed explicitly before the suite runs.
@@ -47,7 +51,7 @@ The JSON report records:
 - exit code;
 - pass/fail state;
 - captured stdout/stderr;
-- SHA-256 and byte size for the scripts, schemas, fixtures, protocol files, requirements, and CI workflow used by the suite;
+- SHA-256 and byte size for the scripts, schemas, fixtures, protocol files, supported-range requirements, exact tested dependency lock, ignore rules, and CI workflow used by the suite;
 - the explicit evidence boundary.
 
 This gives a reviewer both the execution result and a content manifest of the important artifacts that were actually used.
@@ -81,11 +85,19 @@ GitHub Actions runs this aggregate suite in addition to the individually named C
 
 ## Reproduce locally
 
-From the repository root:
+From the repository root, the closest reproduction of the currently tested CI environment is:
+
+```bash
+python -m pip install -r requirements-lock.txt
+python research/reproduce.py --output reproducibility-report.json
+```
+
+The CI snapshot is pinned to CPython **3.12.14**. `requirements-lock.txt` records the exact dependency versions observed in the tested GitHub Actions environment.
+
+For ordinary development against the project's supported version ranges instead of the exact snapshot:
 
 ```bash
 python -m pip install -r requirements.txt
-python research/reproduce.py --output reproducibility-report.json
 ```
 
 A successful run prints a concise per-check summary.
@@ -95,6 +107,14 @@ For JSON-only output to standard output:
 ```bash
 python research/reproduce.py --quiet
 ```
+
+## CI hardening
+
+The public workflow pins the checkout/setup/upload actions to exact commit SHAs, pins CPython 3.12.14, installs the exact dependency snapshot, and uploads the machine-readable reproducibility report as a workflow artifact.
+
+This reduces avoidable environment drift. It does not make GitHub-hosted infrastructure or the dependency supply chain independently trusted.
+
+---
 
 ## What this does not establish
 
