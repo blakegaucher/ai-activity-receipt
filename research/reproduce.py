@@ -23,7 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.6"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.7"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -199,6 +199,16 @@ CHECKS: list[dict[str, Any]] = [
         "artifacts": [
             "benchmark/arp003_v0_3/plan_sample_size.py",
             "benchmark/arp003_v0_3/planning-scenarios.example.json",
+        ],
+    },
+    {
+        "id": "arp003-crossed-planning",
+        "argv": ["benchmark/arp003_v0_3/plan_crossed_design.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/plan_crossed_design.py",
+            "benchmark/arp003_v0_3/crossed-planning-scenarios.example.json",
+            "benchmark/arp003_v0_3/generate_assignment.py",
+            "docs/AR-P003-V0.3-CROSSED-PLANNING.md",
         ],
     },
     {
