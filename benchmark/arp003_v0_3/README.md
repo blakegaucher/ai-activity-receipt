@@ -23,7 +23,8 @@ This directory contains **development infrastructure** for the next human-center
 - `validate_runner_data.py` — bundle/response validation plus static offline/no-network runner checks.
 - `merge_runner_responses.py` — analysis-side join from reviewer export + hidden gold bundle into scorer-compatible JSONL.
 - `runner-build-config.schema.json` — analysis-side configuration for turning case packages + assignment rows into reviewer bundles.
-- `build_runner_bundles.py` — validates case packages, enforces assignment/manifest stratum agreement, emits condition-specific reviewer bundles plus a separate hidden analysis bundle and SHA-256 build manifest.
+- `build_runner_bundles.py` — validates case packages, enforces assignment/manifest stratum agreement, checks that every set-valued gold answer is representable by the reviewer UI options, emits condition-specific reviewer bundles plus a separate hidden analysis bundle and SHA-256 build manifest.
+- `pipeline_smoke_test.py` — synthetic end-to-end assignment → bundle build → reviewer response → hidden-label merge → scoring integration test.
 
 The human-readable preregistration draft is in:
 
@@ -104,6 +105,7 @@ python benchmark/arp003_v0_3/plan_sample_size.py --self-test
 python benchmark/arp003_v0_3/validate_runner_data.py --self-test
 python benchmark/arp003_v0_3/merge_runner_responses.py --self-test
 python benchmark/arp003_v0_3/build_runner_bundles.py --self-test
+python benchmark/arp003_v0_3/pipeline_smoke_test.py
 python benchmark/arp003_v0_3/freeze_manifest.py --self-test
 ```
 
@@ -163,6 +165,18 @@ python benchmark/arp003_v0_3/freeze_manifest.py \
 ```
 
 Do not treat a development manifest as the final confirmatory freeze unless it also includes the final corpus, instructions, assignments, exclusions, and analysis artifacts required by the protocol.
+
+### Answer-option representability guard
+
+The bundle builder fails closed if a gold material-action, material-source, or incident label is absent from the reviewer-facing answer options. It also records analysis-side counts for option-set size, gold-set size, and non-gold options.
+
+This prevents an impossible-to-answer case from reaching the runner. It does **not** prove that the options are free of answer leakage. Before freeze, review the option diagnostics and ensure the visible choice set is justified independently of the hidden gold labels.
+
+### Local/private output protection
+
+The repository `.gitignore` excludes common local reviewer-bundle, hidden-analysis, response-export, scorer-input, and private study-data paths. This is a backup against accidental commits, not an access-control mechanism.
+
+---
 
 ## Development offline runner
 
