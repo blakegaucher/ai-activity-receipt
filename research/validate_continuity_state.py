@@ -49,8 +49,17 @@ def main() -> int:
     if (dev.get("public_record_profile") or {}).get("version") != "candidate-record-v0.1":
         errors.append("current public canonical record profile unexpectedly changed")
 
+    runner = ((dev.get("arp003_v0_3") or {}).get("offline_runner") or {})
+    assignment_binding = runner.get("assignment_binding") or {}
+    if assignment_binding.get("exact_assignment_sha256") is not True:
+        errors.append("AR-P003 exact assignment binding unexpectedly disabled")
+    if assignment_binding.get("condition_order_case_verification") is not True:
+        errors.append("AR-P003 assignment case/order/condition verification unexpectedly disabled")
+    if assignment_binding.get("incomplete_session_rejected") is not True:
+        errors.append("AR-P003 incomplete-session scoring guard unexpectedly disabled")
+
     repro = dev.get("reproducibility_runner") or {}
-    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.2":
+    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.3":
         errors.append("reproducibility suite version unexpectedly changed")
     if repro.get("exact_dependency_lock") is not True:
         errors.append("exact dependency-lock continuity flag unexpectedly changed")
