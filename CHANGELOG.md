@@ -33,6 +33,14 @@ The project is pre-commercial research. Version labels below describe repository
 - advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
 - correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
 
+### External reproduction handoff
+
+- add a public clean-room handoff for independent reproduction attempts;
+- require exact commit/environment recording, exact-lock installation, aggregate-suite execution, and preservation of favorable or unfavorable outcomes;
+- separate ordinary reproducibility findings from sensitive security reports and prohibit participant/hidden-analysis/secrets in public reports;
+- document that public repository visibility does not imply broad reuse rights while the explicit license decision remains open;
+- keep actual independent reproduction as an external gate that project-authored documentation cannot satisfy.
+
 ### Repository security hardening
 
 - add weekly Dependabot version-update configuration for pip dependencies and GitHub Actions;
