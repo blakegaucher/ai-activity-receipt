@@ -23,7 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.7"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.8"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -170,6 +170,17 @@ CHECKS: list[dict[str, Any]] = [
             "research/dsse-envelope.schema.json",
             "research/attestation-trust-policy.schema.json",
             "research/attestation-trust-policy.example.json",
+        ],
+    },
+    {
+        "id": "arp003-methodology-decisions",
+        "argv": ["benchmark/arp003_v0_3/validate_methodology_decisions.py"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/validate_methodology_decisions.py",
+            "benchmark/arp003_v0_3/methodology-decisions.schema.json",
+            "benchmark/arp003_v0_3/methodology-decisions.current.json",
+            "benchmark/arp003_v0_3/protocol.json",
+            "docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md",
         ],
     },
     {

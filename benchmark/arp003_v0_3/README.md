@@ -14,7 +14,9 @@ This directory contains **development infrastructure** for the next human-center
 - `case-package.schema.json` — development manifest schema for reviewer-facing evidence, Receipt, and analysis-only files.
 - `lint_case_packages.py` — file-separation, path-safety, stratum/state, leakage-marker, and hash-report linter for development case packages.
 - `plan_sample_size.py` — development-only sample-size/precision screening approximations.
-- `planning-scenarios.example.json` — illustrative sensitivity grid; not frozen study assumptions.
+- `planning-scenarios.example.json` — illustrative independent-observation sensitivity grid; not frozen study assumptions.
+- `plan_crossed_design.py` — development-only reviewer × case Monte Carlo sensitivity planner using the balanced assignment and two-way clustered uncertainty.
+- `crossed-planning-scenarios.example.json` — illustrative crossed-design scenarios; not frozen performance or variance assumptions.
 - `offline_runner.html` — self-contained development-only reviewer interface with structured answers, pause/visibility timing, safe intermissions, and local response export.
 - `runner-bundle.schema.json` — reviewer-facing bundle schema; hidden gold/stratum data are excluded.
 - `runner-response.schema.json` — reviewer-side response/timing export schema.
@@ -210,6 +212,28 @@ After that gate, reviewers complete one **untimed structured practice reconstruc
 The analysis-side bundle builder now closes the development packaging loop: it reads the seeded assignment and linted case manifests, verifies the assignment's hidden stratum against each case manifest, gives control reviewers only shared evidence, gives Receipt reviewers the same evidence plus the Receipt, and emits gold/stratum data to a separate hidden analysis bundle.
 
 See `../../docs/AR-P003-V0.3-OFFLINE-RUNNER.md`.
+
+---
+
+## Methodology decision control
+
+The current executable draft and the earlier project research review contain material methodological differences that must be resolved deliberately before confirmatory freeze.
+
+Files:
+
+- `methodology-decisions.schema.json`
+- `methodology-decisions.current.json`
+- `validate_methodology_decisions.py`
+- `../../docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md`
+
+The ledger currently leaves comparison conditions, primary endpoint, primary timing clock, challenge architecture, reviewer population, and meaningful effect/precision target unresolved. CI rejects a frozen protocol while required methodology decisions remain unresolved.
+
+Run:
+
+```bash
+python benchmark/arp003_v0_3/validate_methodology_decisions.py --self-test
+python benchmark/arp003_v0_3/validate_methodology_decisions.py
+```
 
 ---
 

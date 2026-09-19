@@ -93,6 +93,12 @@ jobs:
       - name: Validate protocol JSON
         run: python -m json.tool benchmark/arp003_v0_3/protocol.json > /dev/null
 
+      - name: Run AR-P003 methodology decision-ledger self-test
+        run: python benchmark/arp003_v0_3/validate_methodology_decisions.py --self-test
+
+      - name: Validate current AR-P003 methodology decision ledger
+        run: python benchmark/arp003_v0_3/validate_methodology_decisions.py
+
       - name: Run Receipt fixture suite
         run: python validate_receipts.py
 

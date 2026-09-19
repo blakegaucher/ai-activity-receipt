@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Methodology Decision Ledger",
+  "type": "object",
+  "required": [
+    "ledger_version",
+    "protocol_version",
+    "status",
+    "decisions"
+  ],
+  "properties": {
+    "ledger_version": {
+      "const": "AR-P003-v0.3-methodology-decisions-v0.1"
+    },
+    "protocol_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "development_unresolved",
+        "methodology_resolved"
+      ]
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "decision_id",
+          "title",
+          "pre_freeze_required",
+          "status",
+          "current_implementation",
+          "candidates",
+          "notes"
+        ],
+        "properties": {
+          "decision_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "pre_freeze_required": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unresolved",
+              "selected",
+              "deferred"
+            ]
+          },
+          "current_implementation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "selected_candidate": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "candidates": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "candidate_id",
+                "description",
+                "source_class",
+                "evidence_refs"
+              ],
+              "properties": {
+                "candidate_id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_]+$"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source_class": {
+                  "type": "string",
+                  "enum": [
+                    "current_repository",
+                    "project_research_review",
+                    "future_decision",
+                    "external_method_reference"
+                  ]
+                },
+                "evidence_refs": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

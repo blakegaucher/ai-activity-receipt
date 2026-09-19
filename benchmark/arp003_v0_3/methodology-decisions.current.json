@@ -1,0 +1,177 @@
+{
+  "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.1",
+  "protocol_version": "v0.3-draft-2026-09-18",
+  "status": "development_unresolved",
+  "decisions": [
+    {
+      "decision_id": "comparison_conditions",
+      "title": "Comparison-condition design",
+      "pre_freeze_required": true,
+      "status": "unresolved",
+      "current_implementation": "Two conditions: underlying evidence only vs the same underlying evidence plus Activity Receipt.",
+      "selected_candidate": null,
+      "evidence_refs": [
+        "benchmark/arp003_v0_3/protocol.json",
+        "docs/AR-P003-V0.3-PROTOCOL.md"
+      ],
+      "candidates": [
+        {
+          "candidate_id": "two_condition_current",
+          "description": "Control = heterogeneous evidence only; Receipt = same evidence plus standardized Activity Receipt.",
+          "source_class": "current_repository",
+          "evidence_refs": [
+            "benchmark/arp003_v0_3/protocol.json",
+            "docs/AR-P003-V0.3-PROTOCOL.md"
+          ]
+        },
+        {
+          "candidate_id": "three_condition_structured_control",
+          "description": "Raw evidence, neutral structured event table plus raw evidence, and Receipt plus raw evidence, allowing separation of generic evidence organization from Receipt-specific presentation.",
+          "source_class": "project_research_review",
+          "evidence_refs": [
+            "AI_Activity_Receipt_Research_and_v03_Protocol.pdf"
+          ]
+        }
+      ],
+      "notes": "The 2026-09-15 research review recommended a structured-log control, while the later repository draft currently implements two conditions. Do not silently treat these as reconciled."
+    },
+    {
+      "decision_id": "primary_endpoint",
+      "title": "Primary confirmatory endpoint",
+      "pre_freeze_required": true,
+      "status": "unresolved",
+      "current_implementation": "Repository protocol reports prespecified component endpoints separately and explicitly has no post-hoc weighted composite primary score.",
+      "selected_candidate": null,
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-PROTOCOL.md",
+        "benchmark/arp003_v0_3/response-record.schema.json"
+      ],
+      "candidates": [
+        {
+          "candidate_id": "component_endpoint_set",
+          "description": "Prespecify a small primary set drawn from the existing action/source/incident F1 and categorical reconstruction endpoints, with timing reported separately.",
+          "source_class": "current_repository",
+          "evidence_refs": [
+            "docs/AR-P003-V0.3-PROTOCOL.md"
+          ]
+        },
+        {
+          "candidate_id": "correct_completion_by_180s",
+          "description": "Evidence-supported correct audit completion by 180 seconds: all required judgments correct with supported evidence and no fabricated material event/authorization; timeout cannot pass.",
+          "source_class": "project_research_review",
+          "evidence_refs": [
+            "AI_Activity_Receipt_Research_and_v03_Protocol.pdf"
+          ]
+        }
+      ],
+      "notes": "The earlier research review proposed a single interpretable deadline-based primary endpoint; the current repository draft intentionally decomposes endpoints. A deliberate preregistration choice is still required."
+    },
+    {
+      "decision_id": "primary_timing_clock",
+      "title": "Primary timing definition",
+      "pre_freeze_required": true,
+      "status": "unresolved",
+      "current_implementation": "Development runner records both wall and active elapsed time; page visibility automatically pauses active time and analysis requires an explicit active-vs-wall choice.",
+      "selected_candidate": null,
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-OFFLINE-RUNNER.md",
+        "benchmark/arp003_v0_3/runner-response.schema.json"
+      ],
+      "candidates": [
+        {
+          "candidate_id": "active_time_primary",
+          "description": "Use active time as primary timing measure, excluding explicit manual/visibility pause intervals under frozen rules.",
+          "source_class": "current_repository",
+          "evidence_refs": [
+            "docs/AR-P003-V0.3-OFFLINE-RUNNER.md"
+          ]
+        },
+        {
+          "candidate_id": "wall_deadline_with_hidden_sensitivity",
+          "description": "Include elapsed background/hidden time in the primary deadline and prespecify sensitivity analysis for trials with more than 10 seconds hidden rather than silently pausing selected trials.",
+          "source_class": "project_research_review",
+          "evidence_refs": [
+            "AI_Activity_Receipt_Research_and_v03_Protocol.pdf"
+          ]
+        }
+      ],
+      "notes": "Instrumentation already preserves both clocks, so this decision can be frozen later without losing development observability. Do not select timing after confirmatory outcomes are visible."
+    },
+    {
+      "decision_id": "challenge_design",
+      "title": "Misleading-Receipt robustness design",
+      "pre_freeze_required": true,
+      "status": "unresolved",
+      "current_implementation": "Current repository protocol includes stale, incomplete, and conflicting Receipt challenge strata alongside ordinary cases and requires separate reporting.",
+      "selected_candidate": null,
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-PROTOCOL.md",
+        "benchmark/arp003_v0_3/runner-analysis.schema.json"
+      ],
+      "candidates": [
+        {
+          "candidate_id": "integrated_challenge_strata",
+          "description": "Include prespecified stale/incomplete/conflicting Receipt strata within the broader balanced assignment and report ordinary/challenge results separately.",
+          "source_class": "current_repository",
+          "evidence_refs": [
+            "docs/AR-P003-V0.3-PROTOCOL.md"
+          ]
+        },
+        {
+          "candidate_id": "separate_robustness_cohort",
+          "description": "Use a distinct misleading-Receipt experiment/cohort with raw, faithful-Receipt, and corrupted-Receipt presentations as proposed in the research review.",
+          "source_class": "project_research_review",
+          "evidence_refs": [
+            "AI_Activity_Receipt_Research_and_v03_Protocol.pdf"
+          ]
+        }
+      ],
+      "notes": "Either architecture can preserve the robustness question, but the sampling/randomization implications differ materially and must be chosen before corpus/assignment freeze."
+    },
+    {
+      "decision_id": "reviewer_population",
+      "title": "Target reviewer population and eligibility",
+      "pre_freeze_required": true,
+      "status": "unresolved",
+      "current_implementation": "Protocol requires experience bands, language proficiency, project-familiarity rules, and exclusion of case constructors/scorers, but no target population is frozen.",
+      "selected_candidate": null,
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-PROTOCOL.md"
+      ],
+      "candidates": [
+        {
+          "candidate_id": "population_to_be_selected",
+          "description": "Select a reviewer population whose recruitment matches the intended scope of any human-audit claim; preserve explicit eligibility/exclusion criteria.",
+          "source_class": "future_decision",
+          "evidence_refs": [
+            "docs/AR-P003-V0.3-PROTOCOL.md"
+          ]
+        }
+      ],
+      "notes": "A convenience sample must not be generalized to a professional population without justification."
+    },
+    {
+      "decision_id": "effect_precision_target",
+      "title": "Minimally meaningful effect or precision target",
+      "pre_freeze_required": true,
+      "status": "unresolved",
+      "current_implementation": "Independent-observation and crossed-design sensitivity tools exist, but their example effect/variance assumptions are explicitly illustrative.",
+      "selected_candidate": null,
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-PLANNING.md",
+        "docs/AR-P003-V0.3-CROSSED-PLANNING.md"
+      ],
+      "candidates": [
+        {
+          "candidate_id": "effect_target_to_be_selected",
+          "description": "Freeze a minimally meaningful condition effect or precision target before final crossed-design sample-size planning.",
+          "source_class": "future_decision",
+          "evidence_refs": [
+            "docs/AR-P003-V0.3-CROSSED-PLANNING.md"
+          ]
+        }
+      ],
+      "notes": "Do not infer a meaningful effect from v0.2.3 because both presentations were at ceiling under the auxiliary AI reviewer."
+    }
+  ]
+}

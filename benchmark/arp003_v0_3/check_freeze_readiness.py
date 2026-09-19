@@ -26,6 +26,7 @@ CURRENT = ROOT / "benchmark" / "arp003_v0_3" / "freeze-readiness.current.json"
 PROTOCOL = ROOT / "benchmark" / "arp003_v0_3" / "protocol.json"
 
 ALL_GATES = (
+    "comparison_conditions",
     "reviewer_population",
     "primary_endpoints",
     "effect_or_precision_target",

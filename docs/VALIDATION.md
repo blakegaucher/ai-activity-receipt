@@ -32,11 +32,25 @@ These controls reduce interface mismatch and accidental-publication risk. They d
 
 ---
 
+## AR-P003 v0.3 methodology decision-ledger guard
+
+**Status:** Development governance control; no methodology choice is frozen
+
+The current executable v0.3 draft and the earlier project research review contain material differences in comparison conditions, primary endpoint, timing semantics, and misleading-Receipt challenge design.
+
+The repository now preserves those alternatives in a machine-readable decision ledger together with unresolved reviewer-population and meaningful-effect/precision choices. The validator requires protocol-version agreement, unique decision/candidate identifiers, evidence-linked rationale for any selected choice, and complete resolution of every pre-freeze methodology decision before a frozen protocol is permitted.
+
+The freeze-readiness model now includes comparison-condition design as an explicit gate, so the existing two-condition implementation cannot silently become the confirmatory design merely because code already exists.
+
+The checked-in methodology state remains `development_unresolved`. This adds preregistration discipline only; it does not select a method or add human evidence.
+
+---
+
 ## AR-P003 v0.3 freeze-readiness guard
 
 **Status:** Development governance control; current study remains not ready/frozen
 
-The repository now publishes a machine-readable freeze-readiness state covering reviewer population, primary endpoint(s), effect/precision target, reviewer × case planning, sample allocation/stopping, sealed corpus, leakage validation, challenge strata, browser smoke evidence, reviewer instructions, assignment, timing/exclusions, scorer/analysis plan, ethics determination, and final freeze manifest.
+The repository now publishes a machine-readable freeze-readiness state covering comparison-condition design, reviewer population, primary endpoint(s), effect/precision target, reviewer × case planning, sample allocation/stopping, sealed corpus, leakage validation, challenge strata, browser smoke evidence, reviewer instructions, assignment, timing/exclusions, scorer/analysis plan, ethics determination, and final freeze manifest.
 
 The validator distinguishes `pending`, `prepared`, `complete`, and `not_applicable`. It rejects `complete`/`not_applicable` gates without evidence references, rejects `ready_for_freeze` while any pre-freeze gate is unresolved, rejects `frozen` while any gate is unresolved, and cross-checks the machine-readable protocol's version/frozen state.
 
