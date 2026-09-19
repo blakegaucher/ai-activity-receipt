@@ -37,6 +37,24 @@ The primary validation workflow:
 
 GitHub documents least-privilege `GITHUB_TOKEN` permissions and full-SHA Action pinning as workflow-hardening practices.
 
+### CodeQL advanced setup
+
+The repository now uses a committed **CodeQL advanced-setup workflow** at `.github/workflows/codeql.yml`.
+
+Verified on 2026-09-19:
+
+- Python analysis completed successfully;
+- JavaScript/TypeScript analysis completed successfully;
+- the workflow grants `contents: read` plus the CodeQL-required `security-events: write`;
+- checkout credentials are not persisted;
+- checkout and CodeQL Actions are pinned to immutable commit SHAs;
+- the workflow runs on pull requests, pushes to `main`, a weekly schedule, and manual dispatch;
+- post-merge run `35435629990` completed successfully for commit `c62c6c381859fea5cb5147f52f73c53080813189`.
+
+Because advanced setup is active, **do not also enable CodeQL default setup unless the advanced workflow is intentionally being replaced**.
+
+The available connector can verify workflow execution but cannot read the repository's CodeQL alert list. A successful analysis run therefore must not be reported as “zero CodeQL findings” unless the alert page is checked separately.
+
 ### Dependency maintenance
 
 `.github/dependabot.yml` schedules weekly grouped update checks for:
@@ -75,12 +93,12 @@ Current API inspection found no repository rulesets on `main`. The GitHub connec
 Repository administration should therefore separately evaluate and enable:
 
 1. a `main` ruleset/branch protection requiring pull requests and the validation status check, while blocking force-pushes and branch deletion;
-2. CodeQL default setup for the public Python/JavaScript codebase;
-3. private vulnerability reporting;
-4. Dependabot security alerts/security updates if they are not already enabled;
-5. security-alert notifications for the repository owner.
+2. private vulnerability reporting;
+3. Dependabot security alerts/security updates if they are not already enabled;
+4. security-alert notifications for the repository owner;
+5. manual inspection of the CodeQL/code-scanning alert page so open findings, if any, are recorded.
 
-GitHub currently recommends default CodeQL setup for eligible repositories and supports private vulnerability reporting for public repositories.
+CodeQL advanced setup is already active in the repository. Do not enable default setup in parallel unless the advanced workflow is deliberately retired.
 
 ## Human-study data boundary
 
