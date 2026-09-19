@@ -10,9 +10,15 @@ This directory contains **development infrastructure** for the next human-center
 - `score_responses.py` — deterministic component-level scorer with a built-in synthetic self-test.
 - `response-record.schema.json` — JSON Schema for one analysis-side reviewer/case scoring record.
 - `generate_assignment.py` — seeded reviewer/case assignment generator that avoids showing the same case twice to one reviewer, balances case exposure, and guarantees per-reviewer/per-case control-vs-Receipt imbalance of at most one observation.
-- `freeze_manifest.py` — SHA-256 manifest utility for protocol/corpus/scorer freeze artifacts.
+- `freeze_manifest.py` — content-bound SHA-256 manifest utility that reads the exact protocol version/hash, rejects duplicate paths, computes an aggregate artifact-set digest and deterministic freeze content ID, and can require `protocol.frozen=true`.
+- `freeze-manifest.schema.json` — machine-readable v0.2 freeze-manifest contract.
 - `case-package.schema.json` — development manifest schema for reviewer-facing evidence, Receipt, and analysis-only files.
 - `lint_case_packages.py` — file-separation, path-safety, stratum/state, leakage-marker, and hash-report linter for development case packages.
+- `audit_leakage.py` — analysis-side heuristic audit for literal gold-label exposure, degenerate answer-option sets, cross-presentation evidence drift, and Receipt presentation expansion.
+- `leakage-audit.schema.json` — machine-readable report schema for the pre-freeze leakage/presentation audit.
+- `case-methodology-review.schema.json` — analysis-side schema for manual pre-freeze case review bound to one exact audit/build.
+- `case-methodology-review.example.json` — deliberately not-run review template; not evidence.
+- `validate_case_methodology_review.py` — requires full case coverage, exact audit/build binding, no unresolved high-risk leakage flags, and acceptable manual review dimensions before a review may be marked complete.
 - `plan_sample_size.py` — development-only sample-size/precision screening approximations.
 - `planning-scenarios.example.json` — illustrative independent-observation sensitivity grid; not frozen study assumptions.
 - `plan_crossed_design.py` — development-only reviewer × case Monte Carlo sensitivity planner using the balanced assignment and two-way clustered uncertainty.
@@ -109,6 +115,9 @@ Run the development self-tests:
 python benchmark/arp003_v0_3/score_responses.py --self-test
 python benchmark/arp003_v0_3/generate_assignment.py --self-test
 python benchmark/arp003_v0_3/lint_case_packages.py --self-test
+python benchmark/arp003_v0_3/audit_leakage.py --self-test
+python benchmark/arp003_v0_3/validate_case_methodology_review.py --self-test
+python benchmark/arp003_v0_3/validate_case_methodology_review.py
 python benchmark/arp003_v0_3/plan_sample_size.py --self-test
 python benchmark/arp003_v0_3/validate_runner_data.py --self-test
 python benchmark/arp003_v0_3/merge_runner_responses.py --self-test

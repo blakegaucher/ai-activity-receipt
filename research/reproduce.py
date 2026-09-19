@@ -23,7 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.9"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.12"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -205,6 +205,26 @@ CHECKS: list[dict[str, Any]] = [
         ],
     },
     {
+        "id": "arp003-leakage-audit",
+        "argv": ["benchmark/arp003_v0_3/audit_leakage.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/audit_leakage.py",
+            "benchmark/arp003_v0_3/leakage-audit.schema.json",
+            "benchmark/arp003_v0_3/build_runner_bundles.py",
+            "benchmark/arp003_v0_3/runner-analysis.schema.json",
+        ],
+    },
+    {
+        "id": "arp003-case-methodology-review",
+        "argv": ["benchmark/arp003_v0_3/validate_case_methodology_review.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/validate_case_methodology_review.py",
+            "benchmark/arp003_v0_3/case-methodology-review.schema.json",
+            "benchmark/arp003_v0_3/case-methodology-review.example.json",
+            "benchmark/arp003_v0_3/leakage-audit.schema.json",
+        ],
+    },
+    {
         "id": "arp003-planning",
         "argv": ["benchmark/arp003_v0_3/plan_sample_size.py", "--self-test"],
         "artifacts": [
@@ -309,7 +329,8 @@ CHECKS: list[dict[str, Any]] = [
     },
     {
         "id": "arp003-freeze-manifest",
-        "argv": ["benchmark/arp003_v0_3/freeze_manifest.py", "--self-test"],
+        "argv": ["benchmark/arp003_v0_3/freeze_manifest.py",
+            "benchmark/arp003_v0_3/freeze-manifest.schema.json", "--self-test"],
         "artifacts": ["benchmark/arp003_v0_3/freeze_manifest.py"],
     },
 ]

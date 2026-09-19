@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Development Leakage Audit Report",
+  "type": "object",
+  "required": [
+    "audit_version",
+    "status",
+    "build_manifest_sha256",
+    "analysis_sha256",
+    "n_cases",
+    "n_high_risk_cases",
+    "requires_human_review",
+    "thresholds",
+    "cases",
+    "evidence_boundary"
+  ],
+  "properties": {
+    "audit_version": {
+      "const": "AR-P003-v0.3-leakage-audit-v0.1"
+    },
+    "status": {
+      "const": "development_audit"
+    },
+    "build_manifest_sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "analysis_sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "n_cases": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "n_high_risk_cases": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "requires_human_review": {
+      "type": "boolean"
+    },
+    "thresholds": {
+      "type": "object",
+      "required": [
+        "presentation_expansion_ratio_review"
+      ],
+      "properties": {
+        "presentation_expansion_ratio_review": {
+          "type": "number",
+          "exclusiveMinimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "stratum",
+          "conditions_present",
+          "n_presentations",
+          "evidence_sha256",
+          "evidence_chars",
+          "receipt_chars",
+          "presentation_expansion_ratio",
+          "answer_option_audit",
+          "literal_gold_mentions",
+          "high_risk_flags",
+          "review_flags"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "stratum": {
+            "type": "string",
+            "minLength": 1
+          },
+          "conditions_present": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "control",
+                "receipt"
+              ]
+            }
+          },
+          "n_presentations": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "evidence_sha256": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "evidence_chars": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "receipt_chars": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "presentation_expansion_ratio": {
+            "type": "number",
+            "minimum": 1
+          },
+          "answer_option_audit": {
+            "type": "object",
+            "required": [
+              "material_actions",
+              "material_sources",
+              "incidents"
+            ],
+            "additionalProperties": true
+          },
+          "literal_gold_mentions": {
+            "type": "object",
+            "required": [
+              "material_actions",
+              "material_sources",
+              "incidents"
+            ],
+            "properties": {
+              "material_actions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "material_sources": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "incidents": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "high_risk_flags": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "review_flags": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidence_boundary": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

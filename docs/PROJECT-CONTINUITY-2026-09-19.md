@@ -374,6 +374,135 @@ The freeze-readiness model now includes an explicit comparison-condition gate. C
 
 No historical v0.2.3 result, human-benefit claim, ethics status, or commercial evidence changed in this update.
 
+
+---
+
+## Leakage-audit hardening update — 2026-09-19
+
+AR-P003 v0.3 now has a dedicated analysis-side leakage/presentation audit in addition to package linting and answer-option representability checks.
+
+The audit:
+
+- verifies that the shared reviewer evidence is identical across control/Receipt presentations for a case;
+- reports literal gold action/source/incident labels visible in the shared evidence;
+- treats literal incident-label exposure as high-risk because the frozen v0.2.3 benchmark had this exact failure mode;
+- flags non-empty answer-option sets that exactly equal the gold set;
+- quantifies Receipt presentation expansion relative to the same shared evidence;
+- produces a machine-readable report bound to the build manifest and hidden-analysis file by SHA-256.
+
+This improves pre-freeze detection tooling only. The `leakage_validation` gate remains **prepared**, not complete, because no final sealed v0.3 corpus exists and heuristic checks cannot replace human review of semantic clueing, realism, and framing.
+
+No historical v0.2.3 result, human-benefit claim, ethics status, or commercial evidence changed.
+
+
+---
+
+## Manual case-methodology review control — 2026-09-19
+
+The AR-P003 v0.3 leakage-validation path now includes a structured **manual case-methodology review** control after the automated leakage/presentation audit.
+
+A completed review must bind to the exact leakage-audit file and corpus build hash, cover every audited case, and cannot be marked complete while the audit still reports automated high-risk leakage flags. Each case must be explicitly reviewed for semantic leakage, realism, framing neutrality, and answer-option quality.
+
+The repository contains only a `not_tested` template plus validator self-tests. No final corpus has been manually reviewed.
+
+Therefore:
+
+```text
+leakage_validation = prepared
+AR-P003 v0.3      = development_not_ready
+```
+
+No human-study, ethics, external-validation, or commercial evidence changed.
+
+
+---
+
+## Continuity-state drift correction — 2026-09-19
+
+A source-first review of current `main` found that the machine-readable continuity file still recorded older development version strings even though the repository had already advanced.
+
+The correction is **forward-only** and does not rewrite historical benchmark evidence.
+
+Current development continuity is now synchronized to:
+
+```text
+reproducibility suite:
+ai-activity-receipt-repro-v0.10
+
+reviewer bundle contract:
+AR-P003-v0.3-dev-runner-bundle-v0.2
+
+reviewer response contract:
+AR-P003-v0.3-dev-runner-response-v0.4
+
+leakage validation:
+prepared_not_complete
+
+final sealed-corpus automated leakage audit:
+not_run
+
+final sealed-corpus manual case-methodology review:
+not_run
+```
+
+The continuity guard now checks those exact current development versions/boundaries so future version drift cannot remain silently hidden behind a still-green continuity test.
+
+The automated leakage audit and manual review **self-tests** are repository engineering checks only. They do not mean the final corpus has been audited or manually reviewed.
+
+AR-P003 v0.3 remains:
+
+```text
+draft / not frozen / not executed
+```
+
+No human-benefit, ethics, external-reproduction, licensing, production-security, customer-validation, or commercial status changed.
+
+
+### Continuity guard source binding
+
+The continuity validator no longer relies only on duplicated hard-coded development version strings for the reproducibility suite and reviewer runner contracts.
+
+It now reads the authoritative current values directly from:
+
+- `research/reproduce.py` → `SUITE_VERSION`;
+- `runner-bundle.schema.json` → `bundle_version.const`;
+- `runner-response.schema.json` → `response_bundle_version.const`.
+
+The machine-readable continuity state must match those source artifacts. This is specifically intended to prevent the kind of version drift found in this review from recurring silently.
+
+
+---
+
+## Freeze-manifest integrity hardening — 2026-09-19
+
+A source review found that the development freeze-manifest utility still emitted a hard-coded `protocol_version = "v0.3-draft"`, while the authoritative protocol version is versioned directly in `protocol.json`.
+
+That drift path has been removed.
+
+Freeze-manifest v0.2 now binds:
+
+- exact protocol path;
+- exact protocol version;
+- exact protocol SHA-256;
+- protocol `frozen` state;
+- sorted artifact file hashes/sizes;
+- aggregate artifact-set SHA-256;
+- deterministic freeze content ID.
+
+A final-freeze invocation can require `protocol.frozen=true` and will fail closed otherwise.
+
+Current status remains:
+
+```text
+freeze-manifest tooling = prepared
+final freeze manifest   = not created
+AR-P003 v0.3            = development_not_ready
+```
+
+The reproducibility suite advances to `ai-activity-receipt-repro-v0.11` to include the manifest schema in the tested artifact set.
+
+No protocol choice, human result, ethics determination, or historical benchmark state changed.
+
 ---
 
 ## Methodology/freeze cross-check update — 2026-09-19
@@ -383,12 +512,18 @@ accepting completed gates or a ready/frozen state. Its six linked gates must
 agree with valid selections; mandatory decisions cannot be marked optional.
 Custom ledger files receive the same validation as the checked-in ledger.
 
-This continues the existing `arp003-freeze-methodology-crosscheck` work and is
-covered by synthetic negative tests and reproducibility suite v0.9. It corrects
-a metadata-consistency gap: selected status labels alone previously allowed an
-invalid candidate reference through the pending cross-check implementation.
+This continues the existing `arp003-freeze-methodology-crosscheck` work. It
+corrects a metadata-consistency gap: selected status labels alone previously
+allowed an invalid candidate reference through the pending implementation.
+
+Integration preserves the newer `main` changes through commit
+`0473eeafe1af04f6829771a0e3735bccd6146cee`: leakage audit, bound manual case
+review, source-bound continuity checks, and freeze-manifest v0.2. The combined
+reproducibility suite advances to `ai-activity-receipt-repro-v0.12`; continuity
+advances to `project-continuity-v0.9`. No earlier version labels are rewritten.
 
 The current methodology ledger remains `development_unresolved`; AR-P003 v0.3
-remains `draft_not_frozen_not_executed`. The protocol, actual decision ledger,
-readiness declarations, and frozen v0.2.3 evidence are unchanged. The next study
-actions remain deliberate methodology decisions and real browser/device tests.
+remains `draft_not_frozen_not_executed`. Relative to that current `main`, the
+protocol, actual decision ledger, readiness declarations, and frozen v0.2.3
+evidence are unchanged. The next study actions remain deliberate methodology
+decisions and real browser/device tests.

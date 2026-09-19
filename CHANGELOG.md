@@ -33,6 +33,41 @@ The project is pre-commercial research. Version labels below describe repository
 - advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
 - correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
 
+### AR-P003 freeze-manifest v0.2 integrity hardening
+
+- replace the hard-coded abbreviated protocol version in the manifest utility with the exact version read from the bound protocol file;
+- bind the manifest to protocol path, SHA-256, and frozen-state flag;
+- add sorted artifact-set SHA-256 and deterministic `freeze_content_id` independent of generation timestamp;
+- reject duplicate artifact paths and support a final-freeze fail-closed `--require-protocol-frozen` mode;
+- add a machine-readable manifest schema and adversarial/self-consistency tests;
+- keep the freeze-manifest readiness gate at `prepared` because no final frozen artifact set exists.
+
+### Continuity-state version drift correction
+
+- synchronize the machine-readable continuity state with reproducibility suite v0.10 and reviewer-response contract v0.4;
+- explicitly record automated leakage audit and bound manual case review as prepared development controls whose final-corpus executions remain not run;
+- strengthen the continuity guard to reject silent drift in reviewer bundle/response contract versions, reproducibility version, and leakage/manual-review evidence state;
+- derive current reproducibility and runner-contract versions from their authoritative source files rather than duplicating those expected values inside the guard;
+- preserve historical benchmark results and human-evidence gates unchanged.
+
+### AR-P003 bound manual case-review guard
+
+- add a machine-readable analysis-side review record for semantic leakage, realism, framing neutrality, answer-option quality, and accept/revise/drop disposition;
+- bind the manual review to the exact leakage-audit file and corpus build hash;
+- require a complete review to cover every audited case and reject completion while any automated high-risk leakage flag remains;
+- add a deliberately `not_tested` checked-in template, validator self-tests, CI coverage, and reproducibility-suite coverage;
+- keep the leakage-validation gate at `prepared` until a real sealed corpus has both a clean audit and completed human methodology review.
+
+### AR-P003 leakage/presentation audit hardening
+
+- add an analysis-side pre-freeze audit over generated reviewer bundles plus hidden gold;
+- fail closed when the shared reviewer evidence drifts across control/Receipt presentations for the same case;
+- flag literal gold incident labels in control evidence and report literal gold action/source labels for human review;
+- flag non-empty answer-option sets that exactly equal the gold set;
+- quantify Receipt presentation expansion relative to the same shared evidence and surface large expansion as a review signal;
+- add a machine-readable report schema, deterministic self-test, CI coverage, and aggregate reproducibility coverage;
+- keep the leakage-validation gate at `prepared`, not `complete`, until the final sealed corpus is audited and manually reviewed.
+
 ### AR-P003 methodology decision ledger
 
 - preserve material differences between the current executable v0.3 draft and the earlier project research-review recommendations instead of silently reconciling them;

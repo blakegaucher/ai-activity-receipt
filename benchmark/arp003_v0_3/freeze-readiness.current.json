@@ -68,9 +68,16 @@
       "status": "prepared",
       "evidence_refs": [
         "benchmark/arp003_v0_3/lint_case_packages.py",
-        "docs/AR-P003-V0.3-PROTOCOL.md"
+        "docs/AR-P003-V0.3-PROTOCOL.md",
+        "benchmark/arp003_v0_3/audit_leakage.py",
+        "benchmark/arp003_v0_3/leakage-audit.schema.json",
+        "benchmark/arp003_v0_3/build_runner_bundles.py",
+        "docs/AR-P003-V0.3-LEAKAGE-AUDIT.md",
+        "benchmark/arp003_v0_3/case-methodology-review.schema.json",
+        "benchmark/arp003_v0_3/case-methodology-review.example.json",
+        "benchmark/arp003_v0_3/validate_case_methodology_review.py"
       ],
-      "notes": "Mechanical leakage checks exist; realistic heterogeneous confirmatory logs still require construction and review."
+      "notes": "Mechanical package checks, a leakage/presentation audit, and a bound manual case-methodology review record/validator now exist. A complete manual review must bind to the exact leakage-audit report/build hash, cover every audited case, contain no unresolved automated high-risk flags, and mark semantic leakage, realism, framing neutrality, and answer-option quality acceptable. The checked-in review is a not-run template; the gate remains prepared until the final sealed corpus is audited and manually reviewed."
     },
     "challenge_strata": {
       "status": "prepared",
@@ -128,9 +135,10 @@
     "freeze_manifest": {
       "status": "prepared",
       "evidence_refs": [
-        "benchmark/arp003_v0_3/freeze_manifest.py"
+        "benchmark/arp003_v0_3/freeze_manifest.py",
+        "benchmark/arp003_v0_3/freeze-manifest.schema.json"
       ],
-      "notes": "Manifest tooling exists; no final confirmatory freeze manifest can be produced until all preceding gates are resolved."
+      "notes": "Freeze-manifest v0.2 tooling now binds the exact protocol path/version/SHA-256, records whether the protocol is frozen, rejects duplicate artifact paths, computes an aggregate artifact-set SHA-256 and deterministic freeze_content_id, and can fail closed unless protocol.frozen=true. The gate remains prepared: no final confirmatory freeze manifest can exist until all preceding gates are resolved and the actual frozen artifacts are supplied."
     }
   }
 }
