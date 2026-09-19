@@ -56,6 +56,8 @@ The repository now includes a self-contained browser runner, reviewer-bundle/res
 
 The runner now requires a pre-case comprehension gate before the first timed case. The gate checks neutral instruction understanding, records version/attempt count/pass time, and is rejected by the analysis merge if absent. It is instrument metadata rather than a scored endpoint.
 
+The runner also requires an untimed structured practice reconstruction after the comprehension check. Study timing starts only after a correct practice answer. Response exports retain only practice version/attempt count/pass time; the practice answer is excluded from scorer input and the analysis merge rejects missing practice-gate metadata.
+
 The runner records wall and active case time, manual pause/resume, browser hidden/visible events, technical issues, and inserts an untimed intermission between submitted cases. Reviewers use structured response controls rather than editing raw JSON.
 
 Gold labels, hidden challenge strata, Receipt-state labels, and analysis-only metadata are excluded from reviewer-facing bundles and are joined only after response export. The merge utility requires an explicit `--timing active|wall` choice before scorer-compatible JSONL is produced.
