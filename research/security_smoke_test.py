@@ -14,6 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "validate-receipts.yml"
+CODEQL_WORKFLOW = ROOT / ".github" / "workflows" / "codeql.yml"
 DEPENDABOT = ROOT / ".github" / "dependabot.yml"
 CODEOWNERS = ROOT / ".github" / "CODEOWNERS"
 SECURITY = ROOT / "SECURITY.md"
@@ -110,6 +111,7 @@ def main() -> int:
 
     required_paths = [
         WORKFLOW,
+        CODEQL_WORKFLOW,
         DEPENDABOT,
         CODEOWNERS,
         SECURITY,
@@ -156,6 +158,39 @@ def main() -> int:
 
     errors.extend(external_action_errors(workflow))
     errors.extend(checkout_hardening_errors(workflow))
+
+    codeql = read(CODEQL_WORKFLOW)
+    if "pull_request_target:" in codeql:
+        errors.append("CodeQL workflow must not use pull_request_target")
+    if not re.search(
+        r"(?m)^permissions:\s*$\n\s+contents:\s+read\s*$\n\s+security-events:\s+write\s*$",
+        codeql,
+    ):
+        errors.append(
+            "CodeQL workflow must grant only contents: read and security-events: write"
+        )
+    unexpected_codeql_writes = [
+        line.strip()
+        for line in codeql.splitlines()
+        if re.fullmatch(r"[A-Za-z0-9_-]+:\s+write", line.strip())
+        and line.strip() != "security-events: write"
+    ]
+    if unexpected_codeql_writes:
+        errors.append(
+            "CodeQL workflow has unexpected write permissions: "
+            + ", ".join(unexpected_codeql_writes)
+        )
+    for marker in ("python", "javascript-typescript"):
+        if marker not in codeql:
+            errors.append(f"CodeQL workflow missing language {marker!r}")
+    if "github/codeql-action/init@" not in codeql:
+        errors.append("CodeQL workflow has no init action")
+    if "github/codeql-action/analyze@" not in codeql:
+        errors.append("CodeQL workflow has no analyze action")
+    if "timeout-minutes:" not in codeql:
+        errors.append("CodeQL workflow must have a finite timeout")
+    errors.extend(external_action_errors(codeql))
+    errors.extend(checkout_hardening_errors(codeql))
 
     dependabot = read(DEPENDABOT)
     for required in (
@@ -237,8 +272,9 @@ def main() -> int:
         return 1
 
     print(
-        "Repository security smoke test passed: least-privilege/pinned CI, "
-        "credential persistence guard, Dependabot/CODEOWNERS metadata, strict "
+        "Repository security smoke test passed: least-privilege/pinned primary "
+        "CI, pinned CodeQL workflow, credential persistence guards, "
+        "Dependabot/CODEOWNERS metadata, strict "
         "offline-runner boundaries, private-study ignore rules, and high-"
         "confidence secret markers are consistent."
     )
