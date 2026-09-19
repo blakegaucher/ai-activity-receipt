@@ -123,6 +123,12 @@ The project is pre-commercial research. Version labels below describe repository
 - refuse silent output-directory overwrite and fail on non-UTF-8 evidence in the current text-only runner profile;
 - add deterministic self-test, CI, and aggregate reproducibility coverage.
 
+### Browser-smoke coverage for pre-case gates
+
+- extend the manual browser/device smoke schema to require explicit comprehension-gate and practice-gate flow checks;
+- update the checked-in smoke template with both new checks as `not_tested`;
+- keep issue #38 open until these and the existing browser/accessibility/timing checks are performed in real target environments.
+
 ### AR-P003 untimed structured practice case
 
 - add one fixed synthetic practice reconstruction after the comprehension gate and before the first timed study case;

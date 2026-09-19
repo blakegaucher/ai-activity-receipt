@@ -337,3 +337,12 @@ The practice uses the same structured response concepts as the study interface. 
 The response export records only practice version, attempt count, and pass timestamp. Practice answers are not exported into scorer input, and the analysis merge rejects responses without valid practice-gate metadata.
 
 This remains instrument preparation. Final practice content/reviewer instructions are unfrozen, and no human-study evidence changed status.
+
+
+---
+
+## Browser-smoke gate-coverage update — 2026-09-19
+
+The AR-P003 manual browser/device smoke-test record now includes explicit checks for the comprehension-gate flow and the untimed practice-gate flow.
+
+The checked-in template remains `not_tested`; this update does not create browser evidence. Real environment interaction is still required before issue #38 or the freeze-readiness browser gate can be completed.

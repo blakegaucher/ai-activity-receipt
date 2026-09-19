@@ -99,6 +99,8 @@
         "load_valid_bundle",
         "reject_invalid_or_oversized_bundle",
         "structured_answer_controls",
+        "practice_gate_flow",
+        "comprehension_gate_flow",
         "manual_pause_resume_timing",
         "visibility_pause_timing",
         "intermission_timer_boundary",
@@ -408,6 +410,48 @@
           "additionalProperties": false
         },
         "export_schema_validation": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "comprehension_gate_flow": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "practice_gate_flow": {
           "type": "object",
           "required": [
             "status",
