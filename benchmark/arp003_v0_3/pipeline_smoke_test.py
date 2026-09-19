@@ -244,7 +244,7 @@ def main() -> int:
                 )
 
             response = {
-                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.3",
+                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
                 "protocol_version": bundle["protocol_version"],
                 "assignment_version": bundle["assignment_version"],
                 "assignment_sha256": bundle["assignment_sha256"],
@@ -253,6 +253,11 @@ def main() -> int:
                 "session_completed_at": "2026-09-18T12:10:00Z",
                 "comprehension": {
                     "gate_version": "AR-P003-v0.3-comprehension-v0.1",
+                    "attempts": 1,
+                    "passed_at": "2026-09-18T11:59:00Z",
+                },
+                "practice": {
+                    "practice_version": "AR-P003-v0.3-practice-v0.1",
                     "attempts": 1,
                     "passed_at": "2026-09-18T12:00:00Z",
                 },
@@ -295,7 +300,7 @@ def main() -> int:
         tampered_condition = "control" if true_condition == "receipt" else "receipt"
         hidden_gold = hidden_by_id[first_case["case_id"]]["gold"]
         tampered_response = {
-            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.3",
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
             "protocol_version": first_bundle["protocol_version"],
             "assignment_version": first_bundle["assignment_version"],
             "assignment_sha256": first_bundle["assignment_sha256"],
@@ -304,6 +309,11 @@ def main() -> int:
             "session_completed_at": "2026-09-18T13:01:00Z",
             "comprehension": {
                 "gate_version": "AR-P003-v0.3-comprehension-v0.1",
+                "attempts": 1,
+                "passed_at": "2026-09-18T12:59:00Z",
+            },
+            "practice": {
+                "practice_version": "AR-P003-v0.3-practice-v0.1",
                 "attempts": 1,
                 "passed_at": "2026-09-18T13:00:00Z",
             },
