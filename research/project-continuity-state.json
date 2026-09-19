@@ -1,6 +1,6 @@
 {
-  "snapshot_version": "project-continuity-v0.3",
-  "snapshot_date": "2026-09-18",
+  "snapshot_version": "project-continuity-v0.4",
+  "snapshot_date": "2026-09-19",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
   "historical": {
@@ -73,7 +73,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.3",
+      "suite_version": "ai-activity-receipt-repro-v0.4",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,
@@ -106,10 +106,30 @@
   "repository_governance": {
     "contribution_guidance": true,
     "local_private_output_gitignore": true,
-    "explicit_license_status": "not_selected"
+    "explicit_license_status": "not_selected",
+    "security_hardening": {
+      "status": "repository_controls_added_admin_settings_open",
+      "dependabot_version_updates_configured": true,
+      "codeowners_present": true,
+      "primary_ci_contents_read_only": true,
+      "primary_ci_checkout_persist_credentials": false,
+      "primary_ci_actions_commit_pinned": true,
+      "primary_ci_timeout_minutes": 20,
+      "primary_ci_cancel_stale_runs": true,
+      "security_smoke_test": true,
+      "offline_runner_strict_csp": true,
+      "offline_runner_resource_limits": true,
+      "main_ruleset": "not_configured_detected_via_api",
+      "codeql_default_setup": "manual_admin_gate",
+      "private_vulnerability_reporting": "manual_admin_gate"
+    }
   },
   "open_project_governance_gates": [
     "explicit_repository_license_selection",
-    "manual_AR_P003_browser_device_smoke_testing"
+    "manual_AR_P003_browser_device_smoke_testing",
+    "enable_main_branch_ruleset_or_protection",
+    "enable_codeql_default_setup",
+    "enable_private_vulnerability_reporting",
+    "confirm_dependabot_security_alerts_and_updates"
   ]
 }
