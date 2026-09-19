@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AR-P003 v0.3 Development Offline Runner Response Export",
-  "description": "Reviewer-side response export. It deliberately contains no gold labels.",
+  "description": "Reviewer-side response export. It deliberately contains no gold labels. Defensive cardinality/string limits reduce accidental or hostile local resource exhaustion.",
   "type": "object",
   "required": [
     "response_bundle_version",
@@ -19,11 +19,13 @@
     },
     "protocol_version": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "maxLength": 256
     },
     "reviewer_id": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "maxLength": 256
     },
     "session_started_at": {
       "type": "string",
@@ -44,11 +46,13 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/caseResponse"
-      }
+      },
+      "maxItems": 512
     },
     "assignment_version": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "maxLength": 256
     },
     "assignment_sha256": {
       "type": "string",
@@ -61,8 +65,10 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "minLength": 1
-      }
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "maxItems": 256
     },
     "event": {
       "type": "object",
@@ -155,7 +161,8 @@
       "properties": {
         "case_id": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "maxLength": 256
         },
         "condition": {
           "type": "string",
@@ -184,7 +191,8 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/event"
-          }
+          },
+          "maxItems": 4096
         },
         "technical_issue": {
           "type": "boolean"
