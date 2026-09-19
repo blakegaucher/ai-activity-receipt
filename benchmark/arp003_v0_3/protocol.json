@@ -93,6 +93,22 @@
     "example_scenarios": "benchmark/arp003_v0_3/planning-scenarios.example.json",
     "independent_observation_approximations_only": true,
     "crossed_reviewer_case_adjustment_required_before_freeze": true,
-    "development_scenarios_are_confirmatory": false
+    "development_scenarios_are_confirmatory": false,
+    "crossed_tool": "benchmark/arp003_v0_3/plan_crossed_design.py",
+    "crossed_example_scenarios": "benchmark/arp003_v0_3/crossed-planning-scenarios.example.json",
+    "crossed_planning_prepared": true
+  },
+  "methodology_decision_ledger": {
+    "status": "development_unresolved",
+    "path": "benchmark/arp003_v0_3/methodology-decisions.current.json",
+    "required_before_freeze": true,
+    "unresolved_decisions": [
+      "comparison_conditions",
+      "primary_endpoint",
+      "primary_timing_clock",
+      "challenge_design",
+      "reviewer_population",
+      "effect_precision_target"
+    ]
   }
 }
