@@ -23,7 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.1"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.2"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -204,6 +204,22 @@ CHECKS: list[dict[str, Any]] = [
         ],
     },
     {
+        "id": "arp003-pipeline-smoke",
+        "argv": ["benchmark/arp003_v0_3/pipeline_smoke_test.py"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/pipeline_smoke_test.py",
+            "benchmark/arp003_v0_3/build_runner_bundles.py",
+            "benchmark/arp003_v0_3/generate_assignment.py",
+            "benchmark/arp003_v0_3/merge_runner_responses.py",
+            "benchmark/arp003_v0_3/score_responses.py",
+            "benchmark/arp003_v0_3/runner-build-config.schema.json",
+            "benchmark/arp003_v0_3/runner-bundle.schema.json",
+            "benchmark/arp003_v0_3/runner-analysis.schema.json",
+            "benchmark/arp003_v0_3/runner-response.schema.json",
+            "benchmark/arp003_v0_3/response-record.schema.json",
+        ],
+    },
+    {
         "id": "arp003-freeze-manifest",
         "argv": ["benchmark/arp003_v0_3/freeze_manifest.py", "--self-test"],
         "artifacts": ["benchmark/arp003_v0_3/freeze_manifest.py"],
@@ -212,6 +228,8 @@ CHECKS: list[dict[str, Any]] = [
 
 BASE_ARTIFACTS = [
     "requirements.txt",
+    "requirements-lock.txt",
+    ".gitignore",
     ".github/workflows/validate-receipts.yml",
     "benchmark/arp003_v0_3/protocol.json",
 ]

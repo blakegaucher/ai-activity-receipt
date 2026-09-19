@@ -126,6 +126,41 @@ def canonical_reconstruction(value: Any, *, label: str) -> dict[str, Any]:
     return value
 
 
+def validate_answer_options(
+    gold: dict[str, Any],
+    options: dict[str, Any],
+    *,
+    case_id: str,
+) -> dict[str, Any]:
+    """Ensure every set-valued gold answer can be expressed by the UI.
+
+    This is a representability guard, not a non-leakage guarantee. A case can
+    still have answer-option leakage even when every gold label is representable.
+    The returned counts are therefore retained for analysis-side pre-freeze review.
+    """
+
+    audit: dict[str, Any] = {"case_id": case_id}
+    for endpoint in ("material_actions", "material_sources", "incidents"):
+        gold_set = set(gold[endpoint])
+        option_set = set(options[endpoint])
+        missing = sorted(gold_set - option_set)
+        if missing:
+            raise ValueError(
+                f"case {case_id!r} gold {endpoint} cannot be represented by "
+                f"answer_options; missing={missing!r}"
+            )
+
+        audit[endpoint] = {
+            "n_gold": len(gold_set),
+            "n_options": len(option_set),
+            "n_non_gold_options": len(option_set - gold_set),
+            "option_set_equals_gold_set": option_set == gold_set,
+            "gold_representable": True,
+        }
+
+    return audit
+
+
 def build(
     assignment: dict[str, Any],
     config: dict[str, Any],
@@ -170,6 +205,7 @@ def build(
 
     prepared: dict[str, dict[str, Any]] = {}
     hidden_cases: list[dict[str, Any]] = []
+    answer_option_audits: list[dict[str, Any]] = []
 
     for case_id in sorted(used_case_ids):
         item = config_by_id[case_id]
@@ -219,6 +255,13 @@ def build(
         gold = canonical_reconstruction(
             load_json(gold_path),
             label=f"case {case_id!r} gold_file",
+        )
+        answer_option_audits.append(
+            validate_answer_options(
+                gold,
+                item["answer_options"],
+                case_id=case_id,
+            )
         )
 
         prepared[case_id] = {
@@ -366,6 +409,7 @@ def build(
             "sha256": sha256_file(analysis_path),
             "n_cases": len(hidden_cases),
         },
+        "answer_option_audit": answer_option_audits,
         "evidence_boundary": (
             "Development-only build output. Reviewer bundles contain no gold "
             "labels or hidden strata; analysis output must remain access-controlled."
@@ -499,6 +543,26 @@ def run_self_test() -> int:
             output_dir=output_dir,
         )
         assert len(result["reviewer_bundles"]) == 2
+        assert result["answer_option_audit"][0]["material_actions"]["gold_representable"]
+        assert result["answer_option_audit"][0]["material_actions"]["option_set_equals_gold_set"]
+        # The equality above is allowed in this tiny smoke fixture. It is surfaced
+        # for pre-freeze leakage review rather than silently treated as safe.
+        print("gold representability guard accepted the valid smoke case")
+
+        try:
+            validate_answer_options(
+                gold,
+                {
+                    "material_actions": [],
+                    "material_sources": [],
+                    "incidents": [],
+                },
+                case_id="case-1",
+            )
+        except ValueError as exc:
+            assert "cannot be represented" in str(exc)
+        else:
+            raise AssertionError("unrepresentable gold answer was accepted")
 
         control = load_json(output_dir / "reviewer_bundles" / "R-control.json")
         receipt = load_json(output_dir / "reviewer_bundles" / "R-receipt.json")

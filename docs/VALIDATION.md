@@ -6,6 +6,20 @@ This document summarizes the current validation state of the **AI Activity Recei
 
 ---
 
+## AR-P003 v0.3 pipeline integration and privacy hardening
+
+**Status:** Synthetic engineering integration test
+
+The development pipeline now has an end-to-end smoke test spanning seeded assignment generation, case-package lint/build, condition-specific reviewer bundles, reviewer-side response structure, hidden-label merge, and the existing scorer.
+
+The bundle builder also rejects any case whose set-valued gold answer cannot be represented by the visible material-action, material-source, or incident options. It records counts of gold, visible, and non-gold options for pre-freeze leakage review.
+
+Common local reviewer bundles, hidden analysis material, response exports, scorer inputs, and private study-data directories are ignored by Git by default.
+
+These controls reduce interface mismatch and accidental-publication risk. They do not establish that answer options are unbiased, that private files cannot be leaked by other means, or that the future human study is valid.
+
+---
+
 ## AR-P003 v0.3 offline runner smoke test
 
 **Status:** Development instrumentation only; not a frozen human-study instrument
@@ -59,7 +73,7 @@ The guard is not an external validator. It is a project discipline mechanism so 
 
 **Status:** Public repository-local reproducibility helper
 
-The repository now includes `research/reproduce.py`, which runs the current deterministic/synthetic checks in a fixed order and emits a JSON report containing per-check exit status, captured output, Python version, and SHA-256/byte-size metadata for the scripts, schemas, fixtures, protocol files, requirements, and CI workflow used by the run.
+The repository now includes `research/reproduce.py`, which runs the current deterministic/synthetic checks in a fixed order and emits a JSON report containing per-check exit status, captured output, Python version, and SHA-256/byte-size metadata for the scripts, schemas, fixtures, protocol files, dependency declarations/lock, ignore rules, and CI workflow used by the run. CI uses CPython 3.12.14, an exact tested dependency snapshot, commit-pinned GitHub Actions, and publishes the generated report as a workflow artifact.
 
 GitHub Actions runs the aggregate suite in addition to the individually named checks. This deliberately duplicates execution: the individual steps remain easy to diagnose, while the aggregate runner tests the exact one-command path available to an external reviewer.
 
