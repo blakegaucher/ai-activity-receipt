@@ -1,0 +1,81 @@
+name: Reproducibility report
+description: Report an independent reproduction attempt, mismatch, or undocumented setup requirement.
+title: "[Reproduction] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing the public reproducibility path. Do not include secrets, participant data, private chain-of-thought, or hidden human-study analysis material.
+
+  - type: input
+    id: commit
+    attributes:
+      label: Commit SHA
+      description: Exact repository commit you tested.
+      placeholder: e.g. d0150e5...
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: e.g. CPython 3.12.14
+    validations:
+      required: true
+
+  - type: dropdown
+    id: dependencies
+    attributes:
+      label: Dependency installation
+      options:
+        - requirements-lock.txt
+        - requirements.txt
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Command(s) run
+      description: Include the exact commands, without credentials or private paths.
+      render: shell
+    validations:
+      required: true
+
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Overall outcome
+      options:
+        - Passed as documented
+        - Failed
+        - Passed only after undocumented setup/change
+        - Partial / not completed
+    validations:
+      required: true
+
+  - type: textarea
+    id: mismatch
+    attributes:
+      label: Mismatch or missing assumption
+      description: What differed from the documented path? Include the first failing check and error text when useful.
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment details
+      description: OS, architecture, container/VM details, or other reproducibility-relevant context.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Data-safety confirmation
+      options:
+        - label: I removed secrets, credentials, participant data, private chain-of-thought, and hidden analysis/gold material from this report.
+          required: true

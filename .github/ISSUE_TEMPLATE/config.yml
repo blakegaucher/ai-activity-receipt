@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Contribution and evidence-boundary guidance
+    url: https://github.com/blakegaucher/ai-activity-receipt/blob/main/CONTRIBUTING.md
+    about: Read the repository contribution, evidence, privacy, and frozen-history rules before filing.

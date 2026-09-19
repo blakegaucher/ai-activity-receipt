@@ -27,6 +27,14 @@ The project is pre-commercial research. Version labels below describe repository
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
 - preserve private-reasoning exclusion diagnostics.
 
+### Repository reviewer/contributor health
+
+- add a pull-request template that requires evidence-boundary, validation, privacy, frozen-history, and third-party provenance checks;
+- add a dedicated reproducibility issue form for independent reproduction reports and undocumented setup mismatches;
+- add a research security policy that separates non-sensitive bug reporting from sensitive vulnerability/participant-data handling;
+- add CITATION.cff metadata so outside reviewers can cite the repository and exact commit they used;
+- link the new reviewer/contributor resources from the README and reproducibility documentation.
+
 ### Continuity after pipeline hardening
 
 - advance the machine-readable continuity snapshot to v0.2;

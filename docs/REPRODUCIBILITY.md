@@ -141,3 +141,5 @@ The practical next step is to give an independent person or organization:
 4. a place to record any mismatch, ambiguity, or missing assumption.
 
 Phase 6 should only be marked complete after at least one independent party actually performs that work.
+
+For outside reproduction attempts, the repository now provides a dedicated GitHub **reproducibility issue form** that asks for the exact commit, Python version, dependency path, commands, outcome, and environment while explicitly prohibiting secrets or participant/hidden-analysis data.
