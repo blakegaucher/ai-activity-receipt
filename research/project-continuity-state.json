@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.4",
+  "snapshot_version": "project-continuity-v0.5",
   "snapshot_date": "2026-09-19",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -128,16 +128,23 @@
       "offline_runner_strict_csp": true,
       "offline_runner_resource_limits": true,
       "main_ruleset": "not_configured_detected_via_api",
-      "codeql_default_setup": "manual_admin_gate",
-      "private_vulnerability_reporting": "manual_admin_gate"
+      "private_vulnerability_reporting": "manual_admin_gate",
+      "codeql_advanced_setup": "active_ci_green",
+      "codeql_languages": [
+        "python",
+        "javascript-typescript"
+      ],
+      "codeql_last_verified_main_run_id": 35435629990,
+      "codeql_last_verified_main_sha": "c62c6c381859fea5cb5147f52f73c53080813189",
+      "codeql_alert_review": "manual_admin_gate"
     }
   },
   "open_project_governance_gates": [
     "explicit_repository_license_selection",
     "manual_AR_P003_browser_device_smoke_testing",
     "enable_main_branch_ruleset_or_protection",
-    "enable_codeql_default_setup",
     "enable_private_vulnerability_reporting",
-    "confirm_dependabot_security_alerts_and_updates"
+    "confirm_dependabot_security_alerts_and_updates",
+    "inspect_codeql_alerts_and_confirm_security_notifications"
   ]
 }
