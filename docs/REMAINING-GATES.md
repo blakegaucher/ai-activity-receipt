@@ -108,6 +108,8 @@ Use only synthetic development bundles.
 
 **Machine-readable readiness guard:** published at `benchmark/arp003_v0_3/freeze-readiness.current.json` with validator `check_freeze_readiness.py`. The current state is `development_not_ready`; the guard rejects premature ready/frozen claims but does not make the missing decisions.
 
+**Leakage audit tooling:** prepared. `audit_leakage.py` operates analysis-side on generated reviewer bundles plus hidden gold and reports literal incident-label leakage, answer-option degeneracy, cross-presentation evidence drift, and Receipt presentation expansion. It is a heuristic pre-freeze screen, not proof that cases are unbiased or realistic.
+
 Before confirmatory human execution:
 
 - deliberately select the final comparison-condition design rather than inheriting the current two-condition implementation by default;
@@ -117,7 +119,8 @@ Before confirmatory human execution:
 - freeze the assumptions/endpoint target for reviewer × case power/precision planning (design-specific crossed simulation tooling is now prepared);
 - freeze sample size/allocation/stopping rule;
 - create fresh sealed corpus;
-- remove answer leakage from realistic heterogeneous logs;
+- run the development leakage/presentation audit on the final build output and preserve the report;
+- remove answer leakage from realistic heterogeneous logs and complete human case review;
 - include stale/incomplete/conflicting Receipt strata;
 - finalize reviewer instructions;
 - freeze assignment/case order;

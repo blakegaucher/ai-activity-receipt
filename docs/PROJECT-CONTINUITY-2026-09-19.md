@@ -373,3 +373,23 @@ AR-P003 v0.3             = draft / not frozen / not executed
 The freeze-readiness model now includes an explicit comparison-condition gate. Code implementing one current option must not be treated as a final preregistration choice merely because it already exists.
 
 No historical v0.2.3 result, human-benefit claim, ethics status, or commercial evidence changed in this update.
+
+
+---
+
+## Leakage-audit hardening update — 2026-09-19
+
+AR-P003 v0.3 now has a dedicated analysis-side leakage/presentation audit in addition to package linting and answer-option representability checks.
+
+The audit:
+
+- verifies that the shared reviewer evidence is identical across control/Receipt presentations for a case;
+- reports literal gold action/source/incident labels visible in the shared evidence;
+- treats literal incident-label exposure as high-risk because the frozen v0.2.3 benchmark had this exact failure mode;
+- flags non-empty answer-option sets that exactly equal the gold set;
+- quantifies Receipt presentation expansion relative to the same shared evidence;
+- produces a machine-readable report bound to the build manifest and hidden-analysis file by SHA-256.
+
+This improves pre-freeze detection tooling only. The `leakage_validation` gate remains **prepared**, not complete, because no final sealed v0.3 corpus exists and heuristic checks cannot replace human review of semantic clueing, realism, and framing.
+
+No historical v0.2.3 result, human-benefit claim, ethics status, or commercial evidence changed.

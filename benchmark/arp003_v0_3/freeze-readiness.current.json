@@ -68,9 +68,13 @@
       "status": "prepared",
       "evidence_refs": [
         "benchmark/arp003_v0_3/lint_case_packages.py",
-        "docs/AR-P003-V0.3-PROTOCOL.md"
+        "docs/AR-P003-V0.3-PROTOCOL.md",
+        "benchmark/arp003_v0_3/audit_leakage.py",
+        "benchmark/arp003_v0_3/leakage-audit.schema.json",
+        "benchmark/arp003_v0_3/build_runner_bundles.py",
+        "docs/AR-P003-V0.3-LEAKAGE-AUDIT.md"
       ],
-      "notes": "Mechanical leakage checks exist; realistic heterogeneous confirmatory logs still require construction and review."
+      "notes": "Mechanical package checks plus a development leakage/presentation audit now exist. The audit flags literal incident-label leakage, degenerate answer-option sets, reviewer-evidence drift, and large Receipt presentation expansion while reporting action/source literal mentions for human review. It is heuristic and must be run on the final sealed corpus; realistic heterogeneous confirmatory logs and human review remain required before this gate can be complete."
     },
     "challenge_strata": {
       "status": "prepared",
