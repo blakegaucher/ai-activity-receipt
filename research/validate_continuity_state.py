@@ -84,6 +84,21 @@ def main() -> int:
             errors.append(
                 f"repository security continuity flag {key!r} changed unexpectedly"
             )
+    if security.get("codeql_advanced_setup") != "active_ci_green":
+        errors.append(
+            "CodeQL advanced-setup status changed; update continuity deliberately "
+            "after verifying the workflow state"
+        )
+    if set(security.get("codeql_languages") or []) != {
+        "python",
+        "javascript-typescript",
+    }:
+        errors.append("CodeQL language coverage changed unexpectedly")
+    if "codeql_default_setup" in security:
+        errors.append(
+            "stale codeql_default_setup continuity field is present while "
+            "advanced setup is the active repository configuration"
+        )
     if security.get("main_ruleset") != "not_configured_detected_via_api":
         errors.append(
             "main ruleset status changed; update continuity deliberately after "
