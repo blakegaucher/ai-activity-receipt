@@ -40,6 +40,15 @@ The project is pre-commercial research. Version labels below describe repository
 - make explicit that additional technical activity cannot substitute for customer validation, human evidence, external reproduction, or repository-admin settings;
 - define the change-control sequence for updating a gate without silently upgrading adjacent evidence classes.
 
+### License-governance preflight
+
+- inventory direct Python dependencies, external GitHub Action repositories, the exact transitive lock-package name snapshot, and the DSSE reference implementation;
+- record observed upstream license files for the direct dependencies/actions without treating the inventory as legal clearance;
+- add a repository license-decision preflight covering code, documentation, synthetic fixtures, future human-study material, and cross-lane competition reuse;
+- add a deterministic drift check so direct requirements/workflow Action repositories cannot silently change without updating the inventory;
+- keep the repository's actual license status as **not selected** and preserve issue #44 as an owner decision gate;
+- include the preflight in CI and the aggregate reproducibility suite.
+
 ### CodeQL advanced setup and continuity refresh
 
 - add and verify a separate pinned CodeQL advanced-setup workflow for Python and JavaScript/TypeScript;
