@@ -59,7 +59,7 @@ def main() -> int:
         errors.append("AR-P003 incomplete-session scoring guard unexpectedly disabled")
 
     repro = dev.get("reproducibility_runner") or {}
-    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.3":
+    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.4":
         errors.append("reproducibility suite version unexpectedly changed")
     if repro.get("exact_dependency_lock") is not True:
         errors.append("exact dependency-lock continuity flag unexpectedly changed")
@@ -67,6 +67,28 @@ def main() -> int:
         errors.append("GitHub Actions pinning continuity flag unexpectedly changed")
 
     governance = state.get("repository_governance") or {}
+    security = governance.get("security_hardening") or {}
+    required_security_flags = {
+        "dependabot_version_updates_configured": True,
+        "codeowners_present": True,
+        "primary_ci_contents_read_only": True,
+        "primary_ci_checkout_persist_credentials": False,
+        "primary_ci_actions_commit_pinned": True,
+        "primary_ci_cancel_stale_runs": True,
+        "security_smoke_test": True,
+        "offline_runner_strict_csp": True,
+        "offline_runner_resource_limits": True,
+    }
+    for key, expected in required_security_flags.items():
+        if security.get(key) is not expected:
+            errors.append(
+                f"repository security continuity flag {key!r} changed unexpectedly"
+            )
+    if security.get("main_ruleset") != "not_configured_detected_via_api":
+        errors.append(
+            "main ruleset status changed; update continuity deliberately after "
+            "repository-admin verification"
+        )
     if governance.get("explicit_license_status") != "not_selected":
         errors.append(
             "repository license status changed; update continuity deliberately "
