@@ -117,6 +117,24 @@ def main() -> int:
             f"schema={actual_response_contract!r}"
         )
 
+    freeze_manifest = arp003.get("freeze_manifest") or {}
+    if freeze_manifest.get("version") != "AR-P003-v0.3-freeze-manifest-v0.2":
+        errors.append("AR-P003 freeze-manifest continuity version unexpectedly changed")
+    if freeze_manifest.get("status") != "prepared_no_final_manifest":
+        errors.append(
+            "AR-P003 freeze-manifest evidence status changed without deliberate continuity update"
+        )
+    if freeze_manifest.get("exact_protocol_binding") is not True:
+        errors.append("AR-P003 freeze-manifest protocol binding unexpectedly disabled")
+    if freeze_manifest.get("protocol_frozen_gate") is not True:
+        errors.append("AR-P003 final-freeze protocol-frozen gate unexpectedly disabled")
+    if freeze_manifest.get("deterministic_freeze_content_id") is not True:
+        errors.append("AR-P003 deterministic freeze content ID unexpectedly disabled")
+    if freeze_manifest.get("final_manifest") != "not_created":
+        errors.append(
+            "AR-P003 final manifest state changed; update continuity only with final freeze evidence"
+        )
+
     leakage = arp003.get("leakage_validation") or {}
     if leakage.get("status") != "prepared_not_complete":
         errors.append(
