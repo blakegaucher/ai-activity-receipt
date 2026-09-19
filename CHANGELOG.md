@@ -27,6 +27,12 @@ The project is pre-commercial research. Version labels below describe repository
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
 - preserve private-reasoning exclusion diagnostics.
 
+### Dependency refresh after security hardening
+
+- update immutable GitHub Actions pins after Dependabot review and full green CI: checkout 7.0.1, setup-python 7.0.0, and upload-artifact 7.0.1;
+- advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
+- correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
+
 ### Repository security hardening
 
 - add weekly Dependabot version-update configuration for pip dependencies and GitHub Actions;
