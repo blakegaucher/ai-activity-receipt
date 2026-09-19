@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# AR-P003 local/private study outputs
+# Keep participant/reviewer exports and hidden analysis material out of Git by default.
+benchmark/arp003_v0_3/local_runs/
+benchmark/arp003_v0_3/private_study_data/
+benchmark/arp003_v0_3/**/reviewer_bundles/
+benchmark/arp003_v0_3/**/analysis/runner-analysis.json
+benchmark/arp003_v0_3/**/*-responses.json
+benchmark/arp003_v0_3/**/scorer-input.jsonl
+
+# Local reproducibility reports
+reproducibility-report.json
