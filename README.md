@@ -46,6 +46,8 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [AR-P003 v0.3 Benchmark Workspace](benchmark/arp003_v0_3/README.md)
 - [Project Roadmap](docs/ROADMAP.md)
 - [Changelog](CHANGELOG.md)
+- [Contributing](CONTRIBUTING.md)
+- [Licensing Status](docs/LICENSING.md)
 - [Executable validator](validate_receipts.py)
 ---
 ## The problem
