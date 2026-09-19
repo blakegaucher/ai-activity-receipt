@@ -118,6 +118,15 @@ def merge(
     if response["session_completed_at"] is None:
         raise ValueError("response export is incomplete; session_completed_at is null")
 
+    comprehension = response.get("comprehension")
+    if not isinstance(comprehension, dict):
+        raise ValueError("response export has no comprehension-gate record")
+    if comprehension.get("gate_version") != "AR-P003-v0.3-comprehension-v0.1":
+        raise ValueError("response comprehension gate version is unsupported")
+    attempts = comprehension.get("attempts")
+    if not isinstance(attempts, int) or isinstance(attempts, bool) or attempts < 1:
+        raise ValueError("response comprehension gate was not passed")
+
     if response["protocol_version"] != analysis["protocol_version"]:
         raise ValueError("response and analysis protocol_version values differ")
 
@@ -236,13 +245,18 @@ def run_self_test() -> int:
         assignment_digest = sha256_file(assignment_path)
 
         response = {
-            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.2",
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.3",
             "protocol_version": "v0.3-development-only",
             "assignment_version": assignment["assignment_version"],
             "assignment_sha256": assignment_digest,
             "reviewer_id": "dev-reviewer-001",
             "session_started_at": "2026-09-18T12:00:00Z",
             "session_completed_at": "2026-09-18T12:02:00Z",
+            "comprehension": {
+                "gate_version": "AR-P003-v0.3-comprehension-v0.1",
+                "attempts": 1,
+                "passed_at": "2026-09-18T12:00:00Z",
+            },
             "cases": [
                 {
                     "case_id": "DEV-RUNNER-001",
@@ -290,6 +304,21 @@ def run_self_test() -> int:
         assert wall[0]["elapsed_seconds"] == 60.0
         assert active[0]["stratum"] == "ordinary"
         assert not errors_for(active[0], scoring_schema)
+
+        missing_comprehension = json.loads(json.dumps(response))
+        missing_comprehension.pop("comprehension")
+        try:
+            merge(
+                missing_comprehension,
+                analysis,
+                assignment,
+                assignment_sha256=assignment_digest,
+                timing="active",
+            )
+        except ValueError as exc:
+            assert "comprehension-gate" in str(exc)
+        else:
+            raise AssertionError("response without comprehension evidence was accepted")
 
         bad_condition = json.loads(json.dumps(response))
         bad_condition["cases"][0]["condition"] = "receipt"
