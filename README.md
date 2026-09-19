@@ -69,6 +69,7 @@ A passing run reproduces repository-local deterministic/synthetic checks only. I
 - [AR-P003 v0.3 Development Offline Runner](docs/AR-P003-V0.3-OFFLINE-RUNNER.md)
 - [AR-P003 v0.3 Benchmark Workspace](benchmark/arp003_v0_3/README.md)
 - [Project Roadmap](docs/ROADMAP.md)
+- [Remaining Gates Dashboard](docs/REMAINING-GATES.md)
 - [Changelog](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security Policy](SECURITY.md)

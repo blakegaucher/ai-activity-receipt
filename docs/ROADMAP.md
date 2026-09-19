@@ -4,6 +4,8 @@ This roadmap describes the current development direction for the **AI Activity R
 
 > **Status:** Early-stage, pre-commercial research and development. Roadmap items are plans, not claims of completed functionality.
 
+For the shortest operational view of what is still blocked on owner/admin, human-study, external-review, or production evidence, see [Remaining Gates Dashboard](REMAINING-GATES.md).
+
 ---
 
 ## Current foundation
