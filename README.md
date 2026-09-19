@@ -47,6 +47,8 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [Project Roadmap](docs/ROADMAP.md)
 - [Changelog](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md)
+- [Security Policy](SECURITY.md)
+- [Citation Metadata](CITATION.cff)
 - [Licensing Status](docs/LICENSING.md)
 - [Executable validator](validate_receipts.py)
 ---
