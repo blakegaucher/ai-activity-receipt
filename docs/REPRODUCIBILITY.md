@@ -148,3 +148,14 @@ The practical next step is to give an independent person or organization:
 Phase 6 should only be marked complete after at least one independent party actually performs that work.
 
 For outside reproduction attempts, the repository now provides a dedicated GitHub **reproducibility issue form** that asks for the exact commit, Python version, dependency path, commands, outcome, and environment while explicitly prohibiting secrets or participant/hidden-analysis data.
+
+
+---
+
+## Independent reviewer handoff
+
+A public clean-room handoff is available at [EXTERNAL-REPRODUCTION-HANDOFF.md](EXTERNAL-REPRODUCTION-HANDOFF.md).
+
+It asks an independent reviewer to record the exact commit/environment, install the exact dependency lock, run the aggregate suite without undocumented project help, preserve favorable or unfavorable results, and report the first mismatch or hidden prerequisite.
+
+The first independent reproduction remains an **external gate**. Publishing the handoff does not satisfy it.
