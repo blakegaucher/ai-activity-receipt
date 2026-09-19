@@ -32,6 +32,22 @@ These controls reduce interface mismatch and accidental-publication risk. They d
 
 ---
 
+## AR-P003 v0.3 freeze-readiness guard
+
+**Status:** Development governance control; current study remains not ready/frozen
+
+The repository now publishes a machine-readable freeze-readiness state covering reviewer population, primary endpoint(s), effect/precision target, reviewer × case planning, sample allocation/stopping, sealed corpus, leakage validation, challenge strata, browser smoke evidence, reviewer instructions, assignment, timing/exclusions, scorer/analysis plan, ethics determination, and final freeze manifest.
+
+The validator distinguishes `pending`, `prepared`, `complete`, and `not_applicable`. It rejects `complete`/`not_applicable` gates without evidence references, rejects `ready_for_freeze` while any pre-freeze gate is unresolved, rejects `frozen` while any gate is unresolved, and cross-checks the machine-readable protocol's version/frozen state.
+
+The checked-in current state is deliberately `development_not_ready`.
+
+A separate browser-smoke record schema/validator requires a real environment-specific record before browser validation can be claimed. The checked-in example is explicitly incomplete/not-run and cannot pass as completed smoke evidence.
+
+This is continuity/preregistration discipline only. It does not make the missing methodology, ethics, corpus, browser, or human evidence decisions.
+
+---
+
 ## AR-P003 v0.3 offline runner smoke test
 
 **Status:** Development instrumentation only; not a frozen human-study instrument
