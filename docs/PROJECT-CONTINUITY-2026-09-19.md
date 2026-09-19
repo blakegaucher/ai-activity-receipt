@@ -346,3 +346,30 @@ This remains instrument preparation. Final practice content/reviewer instruction
 The AR-P003 manual browser/device smoke-test record now includes explicit checks for the comprehension-gate flow and the untimed practice-gate flow.
 
 The checked-in template remains `not_tested`; this update does not create browser evidence. Real environment interaction is still required before issue #38 or the freeze-readiness browser gate can be completed.
+
+
+---
+
+## Methodology-decision continuity update — 2026-09-19
+
+AR-P003 v0.3 now preserves a material source conflict that must not be silently reconciled before confirmatory freeze.
+
+The **current repository** remains authoritative for executable development behavior, but the earlier project research review recommended several different methodological choices:
+
+- add a neutral structured-log/event-table control rather than only raw/control versus Receipt;
+- use evidence-supported correct audit completion by 180 seconds as a primary endpoint rather than only a component endpoint set;
+- include background/hidden elapsed time in the primary deadline with a prespecified hidden-time sensitivity analysis rather than automatically treating hidden time as paused active time;
+- use a separate misleading-Receipt robustness cohort rather than only integrated stale/incomplete/conflicting challenge strata.
+
+A machine-readable methodology ledger now records those alternatives together with unresolved reviewer-population and meaningful-effect/precision choices.
+
+Current status remains:
+
+```text
+methodology_decision_ledger = development_unresolved
+AR-P003 v0.3             = draft / not frozen / not executed
+```
+
+The freeze-readiness model now includes an explicit comparison-condition gate. Code implementing one current option must not be treated as a final preregistration choice merely because it already exists.
+
+No historical v0.2.3 result, human-benefit claim, ethics status, or commercial evidence changed in this update.
