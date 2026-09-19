@@ -11,11 +11,12 @@
     "reviewer_id",
     "session_started_at",
     "session_completed_at",
+    "comprehension",
     "cases"
   ],
   "properties": {
     "response_bundle_version": {
-      "const": "AR-P003-v0.3-dev-runner-response-v0.2"
+      "const": "AR-P003-v0.3-dev-runner-response-v0.3"
     },
     "protocol_version": {
       "type": "string",
@@ -57,6 +58,29 @@
     "assignment_sha256": {
       "type": "string",
       "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "comprehension": {
+      "type": "object",
+      "required": [
+        "gate_version",
+        "attempts",
+        "passed_at"
+      ],
+      "properties": {
+        "gate_version": {
+          "const": "AR-P003-v0.3-comprehension-v0.1"
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "passed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "$defs": {
