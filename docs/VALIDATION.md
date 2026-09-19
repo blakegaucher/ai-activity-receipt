@@ -54,6 +54,8 @@ This is continuity/preregistration discipline only. It does not make the missing
 
 The repository now includes a self-contained browser runner, reviewer-bundle/response schemas, a hidden analysis schema, static offline/no-network checks, and an analysis-side response merge utility.
 
+The runner now requires a pre-case comprehension gate before the first timed case. The gate checks neutral instruction understanding, records version/attempt count/pass time, and is rejected by the analysis merge if absent. It is instrument metadata rather than a scored endpoint.
+
 The runner records wall and active case time, manual pause/resume, browser hidden/visible events, technical issues, and inserts an untimed intermission between submitted cases. Reviewers use structured response controls rather than editing raw JSON.
 
 Gold labels, hidden challenge strata, Receipt-state labels, and analysis-only metadata are excluded from reviewer-facing bundles and are joined only after response export. The merge utility requires an explicit `--timing active|wall` choice before scorer-compatible JSONL is produced.
