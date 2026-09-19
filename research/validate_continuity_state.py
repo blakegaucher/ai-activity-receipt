@@ -9,20 +9,45 @@ and public claim boundaries.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / "research" / "project-continuity-state.json"
+REPRO = ROOT / "research" / "reproduce.py"
+RUNNER_BUNDLE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-bundle.schema.json"
+RUNNER_RESPONSE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-response.schema.json"
 EXPECTED_FREEZE = (
     "8a381f4ae20a5f6824e513c7f96920fdf3cfe6b00b0b8d301127f5e0b659d0fd"
 )
 
 
+def current_repro_suite_version() -> str:
+    text = REPRO.read_text(encoding="utf-8")
+    match = re.search(r'^SUITE_VERSION\s*=\s*["\\\']([^"\\\']+)["\\\']', text, re.MULTILINE)
+    if not match:
+        raise ValueError("unable to read SUITE_VERSION from research/reproduce.py")
+    return match.group(1)
+
+
+def schema_const(path: Path, property_name: str) -> str:
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    value = ((doc.get("properties") or {}).get(property_name) or {}).get("const")
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"{path}: missing string const for {property_name!r}")
+    return value
+
+
 def main() -> int:
     try:
         state = json.loads(STATE.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        actual_repro_version = current_repro_suite_version()
+        actual_bundle_contract = schema_const(RUNNER_BUNDLE_SCHEMA, "bundle_version")
+        actual_response_contract = schema_const(
+            RUNNER_RESPONSE_SCHEMA, "response_bundle_version"
+        )
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
         print(f"ERROR: unable to load continuity state: {exc}", file=sys.stderr)
         return 2
 
@@ -79,10 +104,18 @@ def main() -> int:
         errors.append("AR-P003 assignment case/order/condition verification unexpectedly disabled")
     if assignment_binding.get("incomplete_session_rejected") is not True:
         errors.append("AR-P003 incomplete-session scoring guard unexpectedly disabled")
-    if assignment_binding.get("bundle_contract") != "AR-P003-v0.3-dev-runner-bundle-v0.2":
-        errors.append("AR-P003 reviewer bundle contract version unexpectedly changed")
-    if assignment_binding.get("response_contract") != "AR-P003-v0.3-dev-runner-response-v0.4":
-        errors.append("AR-P003 reviewer response contract version unexpectedly changed")
+    if assignment_binding.get("bundle_contract") != actual_bundle_contract:
+        errors.append(
+            "AR-P003 reviewer bundle contract continuity is stale: "
+            f"state={assignment_binding.get('bundle_contract')!r}, "
+            f"schema={actual_bundle_contract!r}"
+        )
+    if assignment_binding.get("response_contract") != actual_response_contract:
+        errors.append(
+            "AR-P003 reviewer response contract continuity is stale: "
+            f"state={assignment_binding.get('response_contract')!r}, "
+            f"schema={actual_response_contract!r}"
+        )
 
     leakage = arp003.get("leakage_validation") or {}
     if leakage.get("status") != "prepared_not_complete":
@@ -106,8 +139,12 @@ def main() -> int:
         )
 
     repro = dev.get("reproducibility_runner") or {}
-    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.10":
-        errors.append("reproducibility suite version unexpectedly changed")
+    if repro.get("suite_version") != actual_repro_version:
+        errors.append(
+            "reproducibility suite continuity is stale: "
+            f"state={repro.get('suite_version')!r}, "
+            f"source={actual_repro_version!r}"
+        )
     if repro.get("exact_dependency_lock") is not True:
         errors.append("exact dependency-lock continuity flag unexpectedly changed")
     if repro.get("github_actions_commit_pinned") is not True:
