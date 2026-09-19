@@ -6,6 +6,18 @@ This document summarizes the current validation state of the **AI Activity Recei
 
 ---
 
+## AR-P003 v0.3 assignment-bound response integrity
+
+**Status:** Synthetic engineering integrity check
+
+Reviewer bundles now carry the exact assignment version and SHA-256 digest used to build them. The offline runner copies the binding into response exports, and the analysis-side merge requires the exact assignment file before producing scorer input.
+
+Automated tests reject wrong assignment digests, wrong assignment versions, reviewer/case/order mismatches, reviewer-edited condition labels, hidden-stratum mismatches, and incomplete sessions.
+
+This makes the frozen assignment authoritative for condition allocation rather than trusting a reviewer-editable export field. It does not authenticate the human reviewer or turn the pipeline into a production cryptographic trust system.
+
+---
+
 ## AR-P003 v0.3 pipeline integration and privacy hardening
 
 **Status:** Synthetic engineering integration test

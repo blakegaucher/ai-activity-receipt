@@ -34,7 +34,7 @@ BUNDLE_SCHEMA = BENCH / "runner-bundle.schema.json"
 ANALYSIS_SCHEMA = BENCH / "runner-analysis.schema.json"
 
 ASSIGNMENT_VERSION_PREFIX = "AR-P003-v0.3-draft-assignment-"
-BUILD_OUTPUT_VERSION = "AR-P003-v0.3-dev-runner-build-output-v0.1"
+BUILD_OUTPUT_VERSION = "AR-P003-v0.3-dev-runner-build-output-v0.2"
 
 
 def load_json(path: Path) -> Any:
@@ -178,6 +178,9 @@ def build(
     assignments = assignment.get("assignments")
     if not isinstance(assignments, list) or not assignments:
         raise ValueError("assignment file must contain non-empty assignments")
+
+    assignment_source = Path(assignment["_source_path"])
+    assignment_sha256 = sha256_file(assignment_source)
 
     config_root = config_path.parent
     case_schema = load_json(CASE_SCHEMA)
@@ -336,8 +339,10 @@ def build(
             )
 
         bundle = {
-            "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.1",
+            "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.2",
             "protocol_version": config["protocol_version"],
+            "assignment_version": assignment["assignment_version"],
+            "assignment_sha256": assignment_sha256,
             "reviewer_id": reviewer,
             "cases": cases,
         }
@@ -400,7 +405,7 @@ def build(
         "assignment_version": assignment["assignment_version"],
         "protocol_version": config["protocol_version"],
         "inputs": {
-            "assignment_sha256": sha256_file(Path(assignment["_source_path"])),
+            "assignment_sha256": assignment_sha256,
             "build_config_sha256": sha256_file(config_path),
         },
         "reviewer_bundles": reviewer_summaries,
@@ -568,6 +573,9 @@ def run_self_test() -> int:
         receipt = load_json(output_dir / "reviewer_bundles" / "R-receipt.json")
         hidden = load_json(output_dir / "analysis" / "runner-analysis.json")
 
+        assert control["assignment_version"] == assignment["assignment_version"]
+        assert control["assignment_sha256"] == sha256_file(assignment_path)
+        assert receipt["assignment_sha256"] == sha256_file(assignment_path)
         assert control["cases"][0]["receipt"] is None
         assert receipt["cases"][0]["receipt"]["label"] == "Activity Receipt"
         assert control["cases"][0]["evidence"] == receipt["cases"][0]["evidence"]

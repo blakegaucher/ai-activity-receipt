@@ -144,6 +144,8 @@ def runner_static_errors() -> list[str]:
         "beforeunload",
         "URL.createObjectURL",
         "textContent = artifact.content",
+        "assignment_version: bundle.assignment_version",
+        "assignment_sha256: bundle.assignment_sha256",
     ]
     for marker in required:
         if marker not in html:
@@ -204,8 +206,10 @@ def run_self_test() -> int:
     assert any("evidence labels must be unique" in error for error in errors)
 
     sample_response = {
-        "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.1",
+        "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.2",
         "protocol_version": bundle["protocol_version"],
+        "assignment_version": bundle["assignment_version"],
+        "assignment_sha256": bundle["assignment_sha256"],
         "reviewer_id": bundle["reviewer_id"],
         "session_started_at": "2026-09-18T12:00:00Z",
         "session_completed_at": "2026-09-18T12:03:00Z",
@@ -244,6 +248,11 @@ def run_self_test() -> int:
     }
     errors = validate_response(sample_response, response_schema)
     assert not errors, errors
+
+    bad_assignment_binding = copy.deepcopy(sample_response)
+    bad_assignment_binding["assignment_sha256"] = "sha256:" + "z" * 64
+    errors = validate_response(bad_assignment_binding, response_schema)
+    assert errors
 
     impossible_timing = copy.deepcopy(sample_response)
     impossible_timing["cases"][0]["elapsed_active_seconds"] = 61.0

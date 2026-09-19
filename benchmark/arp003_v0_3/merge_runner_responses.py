@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """Merge reviewer-side offline-runner exports with hidden analysis labels.
 
-Gold labels/strata stay outside the browser runner. This utility performs the
-analysis-side join and writes JSONL records accepted by score_responses.py.
+Gold labels/strata stay outside the browser runner. Reviewer-reported condition
+labels are not trusted by themselves: the response is bound to the exact frozen
+assignment file and checked against that assignment before scorer input is
+created.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -28,19 +32,112 @@ def load_json(path: Path) -> Any:
         return json.load(handle)
 
 
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return "sha256:" + digest.hexdigest()
+
+
 def errors_for(doc: Any, schema: dict[str, Any]) -> list[str]:
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     return [error.message for error in validator.iter_errors(doc)]
 
 
+def expected_rows_for_reviewer(
+    assignment: dict[str, Any],
+    reviewer_id: str,
+) -> list[dict[str, Any]]:
+    version = assignment.get("assignment_version")
+    if not isinstance(version, str) or not version:
+        raise ValueError("assignment file has no valid assignment_version")
+
+    rows = assignment.get("assignments")
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("assignment file has no non-empty assignments list")
+
+    selected: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ValueError("assignment rows must be objects")
+        if row.get("reviewer_id") == reviewer_id:
+            selected.append(row)
+
+    if not selected:
+        raise ValueError(
+            f"reviewer {reviewer_id!r} is not present in the assignment file"
+        )
+
+    orders: set[int] = set()
+    cases: set[str] = set()
+    for row in selected:
+        order = row.get("order")
+        case_id = row.get("case_id")
+        condition = row.get("condition")
+        stratum = row.get("stratum")
+
+        if not isinstance(order, int) or isinstance(order, bool) or order < 1:
+            raise ValueError(
+                f"assignment row for reviewer {reviewer_id!r} has invalid order"
+            )
+        if order in orders:
+            raise ValueError(
+                f"assignment duplicates order {order} for reviewer {reviewer_id!r}"
+            )
+        orders.add(order)
+
+        if not isinstance(case_id, str) or not case_id:
+            raise ValueError("assignment row has invalid case_id")
+        if case_id in cases:
+            raise ValueError(
+                f"assignment repeats case {case_id!r} for reviewer {reviewer_id!r}"
+            )
+        cases.add(case_id)
+
+        if condition not in {"control", "receipt"}:
+            raise ValueError(
+                f"assignment condition for case {case_id!r} is invalid"
+            )
+        if not isinstance(stratum, str) or not stratum:
+            raise ValueError(
+                f"assignment stratum for case {case_id!r} is invalid"
+            )
+
+    return sorted(selected, key=lambda row: row["order"])
+
+
 def merge(
     response: dict[str, Any],
     analysis: dict[str, Any],
+    assignment: dict[str, Any],
     *,
+    assignment_sha256: str,
     timing: str,
 ) -> list[dict[str, Any]]:
+    if response["session_completed_at"] is None:
+        raise ValueError("response export is incomplete; session_completed_at is null")
+
     if response["protocol_version"] != analysis["protocol_version"]:
         raise ValueError("response and analysis protocol_version values differ")
+
+    assignment_version = assignment.get("assignment_version")
+    if response["assignment_version"] != assignment_version:
+        raise ValueError(
+            "response assignment_version does not match the assignment file"
+        )
+    if response["assignment_sha256"] != assignment_sha256:
+        raise ValueError(
+            "response assignment_sha256 does not match the exact assignment file"
+        )
+
+    expected = expected_rows_for_reviewer(assignment, response["reviewer_id"])
+
+    response_cases = response["cases"]
+    if len(response_cases) != len(expected):
+        raise ValueError(
+            "response case count does not match the reviewer's frozen assignment"
+        )
 
     analysis_by_id: dict[str, dict[str, Any]] = {}
     for item in analysis["cases"]:
@@ -49,31 +146,48 @@ def merge(
             raise ValueError(f"analysis bundle duplicates case_id {case_id!r}")
         analysis_by_id[case_id] = item
 
-    seen: set[str] = set()
-    records: list[dict[str, Any]] = []
     timing_key = (
         "elapsed_active_seconds"
         if timing == "active"
         else "elapsed_wall_seconds"
     )
+    records: list[dict[str, Any]] = []
 
-    for item in response["cases"]:
+    for position, (item, expected_row) in enumerate(
+        zip(response_cases, expected, strict=True),
+        start=1,
+    ):
         case_id = item["case_id"]
-        if case_id in seen:
-            raise ValueError(f"response export duplicates case_id {case_id!r}")
-        seen.add(case_id)
+        expected_case_id = expected_row["case_id"]
+        if case_id != expected_case_id:
+            raise ValueError(
+                f"response case/order mismatch at position {position}: "
+                f"expected {expected_case_id!r}, got {case_id!r}"
+            )
+
+        expected_condition = expected_row["condition"]
+        if item["condition"] != expected_condition:
+            raise ValueError(
+                f"response condition mismatch for case {case_id!r}: "
+                f"expected {expected_condition!r}, got {item['condition']!r}"
+            )
 
         hidden = analysis_by_id.get(case_id)
         if hidden is None:
             raise ValueError(
                 f"response case {case_id!r} has no hidden analysis record"
             )
+        if hidden["stratum"] != expected_row["stratum"]:
+            raise ValueError(
+                f"hidden analysis stratum for case {case_id!r} does not match "
+                "the frozen assignment"
+            )
 
         records.append(
             {
                 "reviewer_id": response["reviewer_id"],
                 "case_id": case_id,
-                "condition": item["condition"],
+                "condition": expected_condition,
                 "stratum": hidden["stratum"],
                 "elapsed_seconds": item[timing_key],
                 "gold": hidden["gold"],
@@ -99,78 +213,190 @@ def run_self_test() -> int:
         "verification_state": "not_required",
         "missing_evidence": False,
     }
-    response = {
-        "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.1",
-        "protocol_version": "v0.3-development-only",
-        "reviewer_id": "dev-reviewer-001",
-        "session_started_at": "2026-09-18T12:00:00Z",
-        "session_completed_at": "2026-09-18T12:02:00Z",
-        "cases": [
+
+    assignment = {
+        "assignment_version": "AR-P003-v0.3-draft-assignment-v0.2",
+        "assignments": [
             {
-                "case_id": "DEV-RUNNER-001",
-                "condition": "control",
-                "started_at": "2026-09-18T12:00:00Z",
-                "submitted_at": "2026-09-18T12:01:00Z",
-                "elapsed_wall_seconds": 60.0,
-                "elapsed_active_seconds": 55.0,
-                "events": [],
-                "technical_issue": False,
-                "answer": {**reconstruction, "confidence": 4},
-            }
-        ],
-    }
-    analysis = {
-        "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.1",
-        "protocol_version": "v0.3-development-only",
-        "cases": [
-            {
+                "reviewer_id": "dev-reviewer-001",
                 "case_id": "DEV-RUNNER-001",
                 "stratum": "ordinary",
-                "gold": reconstruction,
+                "order": 1,
+                "condition": "control",
             }
         ],
     }
 
-    assert not errors_for(response, response_schema)
-    assert not errors_for(analysis, analysis_schema)
+    with tempfile.TemporaryDirectory() as tmp:
+        assignment_path = Path(tmp) / "assignment.json"
+        assignment_path.write_text(
+            json.dumps(assignment, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        assignment_digest = sha256_file(assignment_path)
 
-    active = merge(response, analysis, timing="active")
-    wall = merge(response, analysis, timing="wall")
-    assert active[0]["elapsed_seconds"] == 55.0
-    assert wall[0]["elapsed_seconds"] == 60.0
-    assert active[0]["stratum"] == "ordinary"
-    assert not errors_for(active[0], scoring_schema)
+        response = {
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.2",
+            "protocol_version": "v0.3-development-only",
+            "assignment_version": assignment["assignment_version"],
+            "assignment_sha256": assignment_digest,
+            "reviewer_id": "dev-reviewer-001",
+            "session_started_at": "2026-09-18T12:00:00Z",
+            "session_completed_at": "2026-09-18T12:02:00Z",
+            "cases": [
+                {
+                    "case_id": "DEV-RUNNER-001",
+                    "condition": "control",
+                    "started_at": "2026-09-18T12:00:00Z",
+                    "submitted_at": "2026-09-18T12:01:00Z",
+                    "elapsed_wall_seconds": 60.0,
+                    "elapsed_active_seconds": 55.0,
+                    "events": [],
+                    "technical_issue": False,
+                    "answer": {**reconstruction, "confidence": 4},
+                }
+            ],
+        }
+        analysis = {
+            "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.1",
+            "protocol_version": "v0.3-development-only",
+            "cases": [
+                {
+                    "case_id": "DEV-RUNNER-001",
+                    "stratum": "ordinary",
+                    "gold": reconstruction,
+                }
+            ],
+        }
 
-    bad_protocol = dict(analysis)
-    bad_protocol["protocol_version"] = "other"
-    try:
-        merge(response, bad_protocol, timing="active")
-    except ValueError as exc:
-        assert "protocol_version" in str(exc)
-    else:
-        raise AssertionError("protocol mismatch was accepted")
+        assert not errors_for(response, response_schema)
+        assert not errors_for(analysis, analysis_schema)
 
-    missing_case = {**analysis, "cases": []}
-    try:
-        merge(response, missing_case, timing="active")
-    except ValueError as exc:
-        assert "no hidden analysis record" in str(exc)
-    else:
-        raise AssertionError("missing hidden case was accepted")
+        active = merge(
+            response,
+            analysis,
+            assignment,
+            assignment_sha256=assignment_digest,
+            timing="active",
+        )
+        wall = merge(
+            response,
+            analysis,
+            assignment,
+            assignment_sha256=assignment_digest,
+            timing="wall",
+        )
+        assert active[0]["elapsed_seconds"] == 55.0
+        assert wall[0]["elapsed_seconds"] == 60.0
+        assert active[0]["stratum"] == "ordinary"
+        assert not errors_for(active[0], scoring_schema)
+
+        bad_condition = json.loads(json.dumps(response))
+        bad_condition["cases"][0]["condition"] = "receipt"
+        try:
+            merge(
+                bad_condition,
+                analysis,
+                assignment,
+                assignment_sha256=assignment_digest,
+                timing="active",
+            )
+        except ValueError as exc:
+            assert "condition mismatch" in str(exc)
+        else:
+            raise AssertionError("tampered response condition was accepted")
+
+        bad_hash = json.loads(json.dumps(response))
+        bad_hash["assignment_sha256"] = "sha256:" + "0" * 64
+        try:
+            merge(
+                bad_hash,
+                analysis,
+                assignment,
+                assignment_sha256=assignment_digest,
+                timing="active",
+            )
+        except ValueError as exc:
+            assert "assignment_sha256" in str(exc)
+        else:
+            raise AssertionError("wrong assignment hash was accepted")
+
+        incomplete = json.loads(json.dumps(response))
+        incomplete["session_completed_at"] = None
+        try:
+            merge(
+                incomplete,
+                analysis,
+                assignment,
+                assignment_sha256=assignment_digest,
+                timing="active",
+            )
+        except ValueError as exc:
+            assert "incomplete" in str(exc)
+        else:
+            raise AssertionError("incomplete session was accepted for scoring")
+
+        reordered = json.loads(json.dumps(response))
+        reordered["cases"][0]["case_id"] = "OTHER"
+        try:
+            merge(
+                reordered,
+                analysis,
+                assignment,
+                assignment_sha256=assignment_digest,
+                timing="active",
+            )
+        except ValueError as exc:
+            assert "case/order mismatch" in str(exc)
+        else:
+            raise AssertionError("wrong assigned case was accepted")
+
+        bad_protocol = dict(analysis)
+        bad_protocol["protocol_version"] = "other"
+        try:
+            merge(
+                response,
+                bad_protocol,
+                assignment,
+                assignment_sha256=assignment_digest,
+                timing="active",
+            )
+        except ValueError as exc:
+            assert "protocol_version" in str(exc)
+        else:
+            raise AssertionError("protocol mismatch was accepted")
+
+        missing_case = {**analysis, "cases": []}
+        try:
+            merge(
+                response,
+                missing_case,
+                assignment,
+                assignment_sha256=assignment_digest,
+                timing="active",
+            )
+        except ValueError as exc:
+            assert "no hidden analysis record" in str(exc)
+        else:
+            raise AssertionError("missing hidden case was accepted")
 
     print(
-        "AR-P003 runner merge self-test passed: hidden analysis labels remain "
-        "separate until scoring-side join."
+        "AR-P003 runner merge self-test passed: exact assignment binding, "
+        "condition/order integrity, and hidden-label separation are enforced."
     )
     return 0
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Join AR-P003 offline-runner responses to hidden analysis labels."
+        description=(
+            "Join AR-P003 offline-runner responses to hidden analysis labels "
+            "while checking the exact frozen assignment."
+        )
     )
     parser.add_argument("responses", nargs="?", help="Runner response JSON export")
     parser.add_argument("analysis", nargs="?", help="Hidden analysis JSON bundle")
+    parser.add_argument("assignment", nargs="?", help="Exact frozen assignment JSON")
     parser.add_argument(
         "--timing",
         choices=["active", "wall"],
@@ -184,10 +410,15 @@ def main() -> int:
         if args.self_test:
             return run_self_test()
 
-        if not args.responses or not args.analysis or not args.timing:
+        if (
+            not args.responses
+            or not args.analysis
+            or not args.assignment
+            or not args.timing
+        ):
             parser.error(
-                "provide responses, analysis, and --timing active|wall, "
-                "or use --self-test"
+                "provide responses, analysis, assignment, and "
+                "--timing active|wall, or use --self-test"
             )
 
         response_schema = load_json(RUNNER_RESPONSE_SCHEMA)
@@ -198,6 +429,8 @@ def main() -> int:
 
         response = load_json(Path(args.responses))
         analysis = load_json(Path(args.analysis))
+        assignment_path = Path(args.assignment)
+        assignment = load_json(assignment_path)
 
         response_errors = errors_for(response, response_schema)
         analysis_errors = errors_for(analysis, analysis_schema)
@@ -208,7 +441,13 @@ def main() -> int:
                 print(f"ERROR analysis: {error}", file=sys.stderr)
             return 1
 
-        records = merge(response, analysis, timing=args.timing)
+        records = merge(
+            response,
+            analysis,
+            assignment,
+            assignment_sha256=sha256_file(assignment_path),
+            timing=args.timing,
+        )
         for index, record in enumerate(records):
             record_errors = errors_for(record, scoring_schema)
             if record_errors:
