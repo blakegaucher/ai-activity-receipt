@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.1",
+  "snapshot_version": "project-continuity-v0.2",
   "snapshot_date": "2026-09-18",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -38,7 +38,10 @@
         "safe_intermission": true,
         "reviewer_analysis_data_separation": true,
         "manual_browser_smoke_test": "open",
-        "confirmatory_freeze": "not_frozen"
+        "confirmatory_freeze": "not_frozen",
+        "bundle_builder": "development_only_ci_green",
+        "gold_option_representability_guard": true,
+        "end_to_end_pipeline_smoke_test": true
       }
     },
     "public_record_profile": {
@@ -60,7 +63,12 @@
       "status": "research_only"
     },
     "reproducibility_runner": {
-      "status": "public_repository_local"
+      "status": "public_repository_local",
+      "suite_version": "ai-activity-receipt-repro-v0.2",
+      "ci_python": "3.12.14",
+      "exact_dependency_lock": true,
+      "github_actions_commit_pinned": true,
+      "report_artifact_uploaded": true
     }
   },
   "cross_project_boundaries": {
@@ -85,5 +93,14 @@
     "production_identity_key_revocation_infrastructure",
     "customer_demand_and_pricing_validation",
     "financing_readiness"
+  ],
+  "repository_governance": {
+    "contribution_guidance": true,
+    "local_private_output_gitignore": true,
+    "explicit_license_status": "not_selected"
+  },
+  "open_project_governance_gates": [
+    "explicit_repository_license_selection",
+    "manual_AR_P003_browser_device_smoke_testing"
   ]
 }
