@@ -74,22 +74,6 @@ def prohibited_key_paths(value: Any, prefix: str = "$") -> list[str]:
 def bundle_semantic_errors(doc: dict[str, Any]) -> list[str]:
     errors: list[str] = []
 
-    try:
-        passed_at = datetime.fromisoformat(
-            doc["comprehension"]["passed_at"].replace("Z", "+00:00")
-        )
-        session_started = datetime.fromisoformat(
-            doc["session_started_at"].replace("Z", "+00:00")
-        )
-        if passed_at.utcoffset() is None or session_started.utcoffset() is None:
-            errors.append("comprehension/session timestamps must include timezone offsets")
-        elif passed_at > session_started:
-            errors.append(
-                "comprehension.passed_at must not occur after session_started_at"
-            )
-    except (ValueError, TypeError, KeyError):
-        errors.append("comprehension/session timestamps are not valid date-times")
-
     case_ids = [case["case_id"] for case in doc["cases"]]
     if len(case_ids) != len(set(case_ids)):
         errors.append("case_id values must be unique within a runner bundle")
@@ -132,6 +116,22 @@ def validate_response(doc: Any, schema: dict[str, Any]) -> list[str]:
         return errors
     if not isinstance(doc, dict):
         return ["$: runner response export must be an object"]
+
+    try:
+        passed_at = datetime.fromisoformat(
+            doc["comprehension"]["passed_at"].replace("Z", "+00:00")
+        )
+        session_started = datetime.fromisoformat(
+            doc["session_started_at"].replace("Z", "+00:00")
+        )
+        if passed_at.utcoffset() is None or session_started.utcoffset() is None:
+            errors.append("comprehension/session timestamps must include timezone offsets")
+        elif passed_at > session_started:
+            errors.append(
+                "comprehension.passed_at must not occur after session_started_at"
+            )
+    except (ValueError, TypeError, KeyError):
+        errors.append("comprehension/session timestamps are not valid date-times")
 
     case_ids = [case["case_id"] for case in doc["cases"]]
     if len(case_ids) != len(set(case_ids)):
