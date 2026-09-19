@@ -38,6 +38,7 @@ The project is pre-commercial research. Version labels below describe repository
 - synchronize the machine-readable continuity state with reproducibility suite v0.10 and reviewer-response contract v0.4;
 - explicitly record automated leakage audit and bound manual case review as prepared development controls whose final-corpus executions remain not run;
 - strengthen the continuity guard to reject silent drift in reviewer bundle/response contract versions, reproducibility version, and leakage/manual-review evidence state;
+- derive current reproducibility and runner-contract versions from their authoritative source files rather than duplicating those expected values inside the guard;
 - preserve historical benchmark results and human-evidence gates unchanged.
 
 ### AR-P003 bound manual case-review guard
