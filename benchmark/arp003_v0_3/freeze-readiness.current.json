@@ -3,10 +3,21 @@
   "protocol_version": "v0.3-draft-2026-09-18",
   "study_status": "development_not_ready",
   "gates": {
+    "comparison_conditions": {
+      "status": "prepared",
+      "evidence_refs": [
+        "benchmark/arp003_v0_3/protocol.json",
+        "benchmark/arp003_v0_3/methodology-decisions.current.json",
+        "docs/AR-P003-V0.3-PROTOCOL.md",
+        "docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md"
+      ],
+      "notes": "The current repository implements a two-condition comparison, while the earlier research review recommended adding a neutral structured-log control. The final confirmatory condition design is explicitly unresolved and must be selected before freeze."
+    },
     "reviewer_population": {
       "status": "pending",
       "evidence_refs": [
-        "docs/AR-P003-V0.3-PROTOCOL.md"
+        "docs/AR-P003-V0.3-PROTOCOL.md",
+        "benchmark/arp003_v0_3/methodology-decisions.current.json"
       ],
       "notes": "Target reviewer population and eligibility/exclusion criteria are not frozen."
     },
@@ -14,14 +25,16 @@
       "status": "prepared",
       "evidence_refs": [
         "docs/AR-P003-V0.3-PROTOCOL.md",
-        "benchmark/arp003_v0_3/response-record.schema.json"
+        "benchmark/arp003_v0_3/response-record.schema.json",
+        "benchmark/arp003_v0_3/methodology-decisions.current.json"
       ],
       "notes": "Candidate component endpoints exist, but the confirmatory primary endpoint or small prespecified primary set is not frozen."
     },
     "effect_or_precision_target": {
       "status": "pending",
       "evidence_refs": [
-        "docs/AR-P003-V0.3-PLANNING.md"
+        "docs/AR-P003-V0.3-PLANNING.md",
+        "benchmark/arp003_v0_3/methodology-decisions.current.json"
       ],
       "notes": "No minimally meaningful effect or final precision target has been selected."
     },
@@ -63,7 +76,8 @@
       "status": "prepared",
       "evidence_refs": [
         "docs/AR-P003-V0.3-PROTOCOL.md",
-        "benchmark/arp003_v0_3/runner-analysis.schema.json"
+        "benchmark/arp003_v0_3/runner-analysis.schema.json",
+        "benchmark/arp003_v0_3/methodology-decisions.current.json"
       ],
       "notes": "Stale, incomplete, and conflicting Receipt strata are specified but no final sealed case counts are frozen."
     },
@@ -93,7 +107,8 @@
       "status": "prepared",
       "evidence_refs": [
         "docs/AR-P003-V0.3-OFFLINE-RUNNER.md",
-        "benchmark/arp003_v0_3/runner-response.schema.json"
+        "benchmark/arp003_v0_3/runner-response.schema.json",
+        "benchmark/arp003_v0_3/methodology-decisions.current.json"
       ],
       "notes": "Wall/active instrumentation exists; primary timing definition and technical-exclusion rules are not frozen."
     },
