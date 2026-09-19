@@ -33,6 +33,16 @@ The project is pre-commercial research. Version labels below describe repository
 - advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
 - correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
 
+### AR-P003 leakage/presentation audit hardening
+
+- add an analysis-side pre-freeze audit over generated reviewer bundles plus hidden gold;
+- fail closed when the shared reviewer evidence drifts across control/Receipt presentations for the same case;
+- flag literal gold incident labels in control evidence and report literal gold action/source labels for human review;
+- flag non-empty answer-option sets that exactly equal the gold set;
+- quantify Receipt presentation expansion relative to the same shared evidence and surface large expansion as a review signal;
+- add a machine-readable report schema, deterministic self-test, CI coverage, and aggregate reproducibility coverage;
+- keep the leakage-validation gate at `prepared`, not `complete`, until the final sealed corpus is audited and manually reviewed.
+
 ### AR-P003 methodology decision ledger
 
 - preserve material differences between the current executable v0.3 draft and the earlier project research-review recommendations instead of silently reconciling them;
