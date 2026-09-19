@@ -77,6 +77,68 @@
     </form>
   </section>
 
+  <section id="practice" class="card hidden">
+    <h2>Practice reconstruction</h2>
+    <p>This untimed synthetic practice case teaches the response controls. It is not part of the study dataset and is not scored as an outcome.</p>
+
+    <section class="card">
+      <h3>Practice evidence</h3>
+      <pre>Synthetic practice evidence: agent-practice read source-practice and analyzed it. Both actions completed within delegated authority. No external action was attempted. No incident occurred. Verification was not required. All relevant evidence needed for this reconstruction is present.</pre>
+    </section>
+
+    <form id="practiceForm">
+      <div class="grid">
+        <fieldset>
+          <legend>Material actions</legend>
+          <label class="option"><input type="checkbox" data-practice-group="actions" value="read"> read</label>
+          <label class="option"><input type="checkbox" data-practice-group="actions" value="analyze"> analyze</label>
+          <label class="option"><input type="checkbox" data-practice-group="actions" value="send_email"> send_email</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Authorization violation</legend>
+          <label class="option"><input type="radio" name="practice_authorization" value="true"> True</label>
+          <label class="option"><input type="radio" name="practice_authorization" value="false"> False</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Material sources</legend>
+          <label class="option"><input type="checkbox" data-practice-group="sources" value="source-practice"> source-practice</label>
+          <label class="option"><input type="checkbox" data-practice-group="sources" value="distractor-source"> distractor-source</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Incidents</legend>
+          <label class="option"><input type="checkbox" data-practice-group="incidents" value="tool_failure"> tool_failure</label>
+          <p class="section-note">Leave all incident options unselected if no incident applies.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Verification state</legend>
+          <select id="practiceVerification">
+            <option value="">— select —</option>
+            <option value="not_required">not_required</option>
+            <option value="pending">pending</option>
+            <option value="confirmed">confirmed</option>
+            <option value="failed">failed</option>
+            <option value="uncertain">uncertain</option>
+          </select>
+        </fieldset>
+
+        <fieldset>
+          <legend>Important evidence missing?</legend>
+          <label class="option"><input type="radio" name="practice_missing" value="true"> True</label>
+          <label class="option"><input type="radio" name="practice_missing" value="false"> False</label>
+        </fieldset>
+      </div>
+
+      <p id="practiceError" class="error hidden"></p>
+      <div class="toolbar">
+        <button type="submit" class="primary">Check practice answer</button>
+      </div>
+    </form>
+  </section>
+
   <section id="caseView" class="hidden">
     <div class="toolbar">
       <span id="progress" class="progress status"></span>
@@ -181,6 +243,7 @@
 const EXPECTED_VERSION = "AR-P003-v0.3-dev-runner-bundle-v0.2";
 const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.3";
 const COMPREHENSION_VERSION = "AR-P003-v0.3-comprehension-v0.1";
+const PRACTICE_VERSION = "AR-P003-v0.3-practice-v0.1";
 const MAX_BUNDLE_BYTES = 32 * 1024 * 1024;
 const MAX_CASES = 512;
 const MAX_EVIDENCE_ARTIFACTS = 16;
@@ -202,6 +265,8 @@ let sessionStartedAt = null;
 let sessionCompletedAt = null;
 let comprehensionAttempts = 0;
 let comprehensionPassedAt = null;
+let practiceAttempts = 0;
+let practicePassedAt = null;
 
 const $ = (id) => document.getElementById(id);
 const nowIso = () => new Date().toISOString();
@@ -455,6 +520,11 @@ function exportObject() {
       attempts: comprehensionAttempts,
       passed_at: comprehensionPassedAt
     },
+    practice: {
+      practice_version: PRACTICE_VERSION,
+      attempts: practiceAttempts,
+      passed_at: practicePassedAt
+    },
     cases: results
   };
 }
@@ -494,6 +564,8 @@ $("loadBtn").addEventListener("click", async () => {
     sessionCompletedAt = null;
     comprehensionAttempts = 0;
     comprehensionPassedAt = null;
+    practiceAttempts = 0;
+    practicePassedAt = null;
 
     $("setupStatus").textContent = "Bundle loaded successfully.";
     $("setupStatus").classList.remove("muted", "error");
@@ -542,8 +614,50 @@ $("comprehensionForm").addEventListener("submit", (event) => {
   }
 
   comprehensionPassedAt = nowIso();
-  sessionStartedAt = comprehensionPassedAt;
   $("comprehension").classList.add("hidden");
+  $("practice").classList.remove("hidden");
+  $("practiceForm").reset();
+  $("practiceError").classList.add("hidden");
+  window.scrollTo({top: 0, behavior: "auto"});
+});
+
+
+function selectedPracticeCheckboxes(groupName) {
+  return [...document.querySelectorAll(
+    'input[type="checkbox"][data-practice-group="' + groupName + '"]:checked'
+  )].map(x => x.value).sort();
+}
+
+$("practiceForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!bundle) return;
+
+  practiceAttempts += 1;
+  const actions = selectedPracticeCheckboxes("actions");
+  const sources = selectedPracticeCheckboxes("sources");
+  const incidents = selectedPracticeCheckboxes("incidents");
+  const authorization = selectedRadio("practice_authorization");
+  const missing = selectedRadio("practice_missing");
+  const verification = $("practiceVerification").value;
+
+  const correct =
+    JSON.stringify(actions) === JSON.stringify(["analyze", "read"]) &&
+    JSON.stringify(sources) === JSON.stringify(["source-practice"]) &&
+    incidents.length === 0 &&
+    authorization === "false" &&
+    verification === "not_required" &&
+    missing === "false";
+
+  if (!correct) {
+    $("practiceError").textContent =
+      "The practice reconstruction is not correct yet. Re-read the practice evidence and try again.";
+    $("practiceError").classList.remove("hidden");
+    return;
+  }
+
+  practicePassedAt = nowIso();
+  sessionStartedAt = practicePassedAt;
+  $("practice").classList.add("hidden");
   startCase(0);
 });
 

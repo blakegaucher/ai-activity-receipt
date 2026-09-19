@@ -324,3 +324,16 @@ The gate verifies understanding that the Receipt is not guaranteed ground truth,
 The reviewer export records gate version, attempt count, and pass timestamp. The analysis merge rejects responses lacking a valid gate record.
 
 This improves instrument preparation only. Reviewer instructions and the final runner remain unfrozen, and no human-study evidence changed status.
+
+
+---
+
+## Practice-case update — 2026-09-19
+
+The AR-P003 v0.3 development runner now includes an untimed fixed synthetic practice reconstruction after the comprehension gate and before the first timed study case.
+
+The practice uses the same structured response concepts as the study interface. Study timing starts only after a correct practice response.
+
+The response export records only practice version, attempt count, and pass timestamp. Practice answers are not exported into scorer input, and the analysis merge rejects responses without valid practice-gate metadata.
+
+This remains instrument preparation. Final practice content/reviewer instructions are unfrozen, and no human-study evidence changed status.

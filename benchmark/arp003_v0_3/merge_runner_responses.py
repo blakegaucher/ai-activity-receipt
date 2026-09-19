@@ -127,6 +127,19 @@ def merge(
     if not isinstance(attempts, int) or isinstance(attempts, bool) or attempts < 1:
         raise ValueError("response comprehension gate was not passed")
 
+    practice = response.get("practice")
+    if not isinstance(practice, dict):
+        raise ValueError("response export has no practice-gate record")
+    if practice.get("practice_version") != "AR-P003-v0.3-practice-v0.1":
+        raise ValueError("response practice gate version is unsupported")
+    practice_attempts = practice.get("attempts")
+    if (
+        not isinstance(practice_attempts, int)
+        or isinstance(practice_attempts, bool)
+        or practice_attempts < 1
+    ):
+        raise ValueError("response practice gate was not passed")
+
     if response["protocol_version"] != analysis["protocol_version"]:
         raise ValueError("response and analysis protocol_version values differ")
 
@@ -245,7 +258,7 @@ def run_self_test() -> int:
         assignment_digest = sha256_file(assignment_path)
 
         response = {
-            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.3",
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
             "protocol_version": "v0.3-development-only",
             "assignment_version": assignment["assignment_version"],
             "assignment_sha256": assignment_digest,
@@ -254,6 +267,11 @@ def run_self_test() -> int:
             "session_completed_at": "2026-09-18T12:02:00Z",
             "comprehension": {
                 "gate_version": "AR-P003-v0.3-comprehension-v0.1",
+                "attempts": 1,
+                "passed_at": "2026-09-18T11:59:00Z",
+            },
+            "practice": {
+                "practice_version": "AR-P003-v0.3-practice-v0.1",
                 "attempts": 1,
                 "passed_at": "2026-09-18T12:00:00Z",
             },
@@ -319,6 +337,21 @@ def run_self_test() -> int:
             assert "comprehension-gate" in str(exc)
         else:
             raise AssertionError("response without comprehension evidence was accepted")
+
+        missing_practice = json.loads(json.dumps(response))
+        missing_practice.pop("practice")
+        try:
+            merge(
+                missing_practice,
+                analysis,
+                assignment,
+                assignment_sha256=assignment_digest,
+                timing="active",
+            )
+        except ValueError as exc:
+            assert "practice-gate" in str(exc)
+        else:
+            raise AssertionError("response without practice evidence was accepted")
 
         bad_condition = json.loads(json.dumps(response))
         bad_condition["cases"][0]["condition"] = "receipt"

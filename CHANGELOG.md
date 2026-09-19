@@ -123,6 +123,17 @@ The project is pre-commercial research. Version labels below describe repository
 - refuse silent output-directory overwrite and fail on non-UTF-8 evidence in the current text-only runner profile;
 - add deterministic self-test, CI, and aggregate reproducibility coverage.
 
+### AR-P003 untimed structured practice case
+
+- add one fixed synthetic practice reconstruction after the comprehension gate and before the first timed study case;
+- use the same structured action/source/incident/authorization/verification/missing-evidence concepts as the study interface;
+- keep practice untimed and start session/case timing only after a correct response;
+- record only practice version, attempt count, and pass timestamp;
+- bump the development response export to v0.4 and require practice metadata;
+- reject scoring-side merges that lack valid practice-gate evidence;
+- keep practice answers outside scorer input and human-study outcome data;
+- document that final training content remains unfrozen and must be checked for coaching effects.
+
 ### AR-P003 pre-case comprehension gate
 
 - add a neutral three-question instruction check before the first timed case;
