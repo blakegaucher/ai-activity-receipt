@@ -102,6 +102,8 @@ Use only synthetic development bundles.
 
 **Status:** Open; human-study methodology decisions required.
 
+**Crossed-design planning tooling:** prepared. The repository now simulates the actual balanced reviewer/case assignment with reviewer/case random effects and two-way clustered uncertainty. This removes the earlier tooling gap but does not select the effect/precision target or freeze the sample size.
+
 **Machine-readable readiness guard:** published at `benchmark/arp003_v0_3/freeze-readiness.current.json` with validator `check_freeze_readiness.py`. The current state is `development_not_ready`; the guard rejects premature ready/frozen claims but does not make the missing decisions.
 
 Before confirmatory human execution:
@@ -109,7 +111,7 @@ Before confirmatory human execution:
 - define reviewer population/eligibility;
 - freeze primary endpoint(s);
 - define meaningful effect/precision target;
-- complete reviewer × case power/precision planning;
+- freeze the assumptions/endpoint target for reviewer × case power/precision planning (design-specific crossed simulation tooling is now prepared);
 - freeze sample size/allocation/stopping rule;
 - create fresh sealed corpus;
 - remove answer leakage from realistic heterogeneous logs;
