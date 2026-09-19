@@ -413,3 +413,46 @@ AR-P003 v0.3      = development_not_ready
 ```
 
 No human-study, ethics, external-validation, or commercial evidence changed.
+
+
+---
+
+## Continuity-state drift correction — 2026-09-19
+
+A source-first review of current `main` found that the machine-readable continuity file still recorded older development version strings even though the repository had already advanced.
+
+The correction is **forward-only** and does not rewrite historical benchmark evidence.
+
+Current development continuity is now synchronized to:
+
+```text
+reproducibility suite:
+ai-activity-receipt-repro-v0.10
+
+reviewer bundle contract:
+AR-P003-v0.3-dev-runner-bundle-v0.2
+
+reviewer response contract:
+AR-P003-v0.3-dev-runner-response-v0.4
+
+leakage validation:
+prepared_not_complete
+
+final sealed-corpus automated leakage audit:
+not_run
+
+final sealed-corpus manual case-methodology review:
+not_run
+```
+
+The continuity guard now checks those exact current development versions/boundaries so future version drift cannot remain silently hidden behind a still-green continuity test.
+
+The automated leakage audit and manual review **self-tests** are repository engineering checks only. They do not mean the final corpus has been audited or manually reviewed.
+
+AR-P003 v0.3 remains:
+
+```text
+draft / not frozen / not executed
+```
+
+No human-benefit, ethics, external-reproduction, licensing, production-security, customer-validation, or commercial status changed.
