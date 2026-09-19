@@ -24,6 +24,18 @@ ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "freeze-readiness.schema.json"
 CURRENT = ROOT / "benchmark" / "arp003_v0_3" / "freeze-readiness.current.json"
 PROTOCOL = ROOT / "benchmark" / "arp003_v0_3" / "protocol.json"
+METHODOLOGY = (
+    ROOT / "benchmark" / "arp003_v0_3" / "methodology-decisions.current.json"
+)
+
+METHODOLOGY_GATE_MAP = {
+    "comparison_conditions": "comparison_conditions",
+    "reviewer_population": "reviewer_population",
+    "primary_endpoints": "primary_endpoint",
+    "effect_or_precision_target": "effect_precision_target",
+    "challenge_strata": "challenge_design",
+    "timing_exclusions": "primary_timing_clock",
+}
 
 ALL_GATES = (
     "comparison_conditions",
@@ -70,9 +82,21 @@ def is_resolved(gate: dict[str, Any]) -> bool:
     return gate["status"] in {"complete", "not_applicable"}
 
 
+def methodology_status_map(methodology: dict[str, Any]) -> dict[str, str]:
+    decisions = methodology.get("decisions")
+    if not isinstance(decisions, list):
+        return {}
+    output: dict[str, str] = {}
+    for item in decisions:
+        if isinstance(item, dict) and isinstance(item.get("decision_id"), str):
+            output[item["decision_id"]] = str(item.get("status"))
+    return output
+
+
 def semantic_errors(
     readiness: dict[str, Any],
     protocol: dict[str, Any],
+    methodology: dict[str, Any],
 ) -> list[str]:
     errors: list[str] = []
 
@@ -80,6 +104,25 @@ def semantic_errors(
         errors.append(
             "readiness protocol_version does not match protocol.json version"
         )
+
+    if methodology.get("protocol_version") != protocol.get("version"):
+        errors.append(
+            "methodology ledger protocol_version does not match protocol.json version"
+        )
+
+    methodology_status = methodology_status_map(methodology)
+    for gate_id, decision_id in METHODOLOGY_GATE_MAP.items():
+        if decision_id not in methodology_status:
+            errors.append(
+                f"methodology ledger is missing decision {decision_id!r} "
+                f"required by freeze gate {gate_id!r}"
+            )
+            continue
+        if is_resolved(readiness["gates"][gate_id]) and methodology_status[decision_id] != "selected":
+            errors.append(
+                f"freeze gate {gate_id!r} is resolved but methodology decision "
+                f"{decision_id!r} is not selected"
+            )
 
     for gate_id, gate in readiness["gates"].items():
         if gate["status"] in {"complete", "not_applicable"}:
@@ -101,16 +144,33 @@ def semantic_errors(
         if not is_resolved(readiness["gates"][gate_id])
     ]
 
+    unresolved_methodology = sorted(
+        decision_id
+        for decision_id, decision_status in methodology_status.items()
+        if decision_status != "selected"
+        and decision_id in set(METHODOLOGY_GATE_MAP.values())
+    )
+
     if status == "ready_for_freeze" and unresolved_pre:
         errors.append(
             "study_status='ready_for_freeze' but pre-freeze gates remain unresolved: "
             + ", ".join(unresolved_pre)
+        )
+    if status == "ready_for_freeze" and unresolved_methodology:
+        errors.append(
+            "study_status='ready_for_freeze' but methodology decisions remain "
+            "unresolved: " + ", ".join(unresolved_methodology)
         )
 
     if status == "frozen" and unresolved_all:
         errors.append(
             "study_status='frozen' but gates remain unresolved: "
             + ", ".join(unresolved_all)
+        )
+    if status == "frozen" and unresolved_methodology:
+        errors.append(
+            "study_status='frozen' but methodology decisions remain unresolved: "
+            + ", ".join(unresolved_methodology)
         )
 
     protocol_frozen = protocol.get("frozen") is True
@@ -152,6 +212,7 @@ def validate(
     readiness: Any,
     schema: dict[str, Any],
     protocol: dict[str, Any],
+    methodology: Any,
 ) -> list[str]:
     errors = structural_errors(readiness, schema)
     if errors:
@@ -160,7 +221,9 @@ def validate(
         return ["$: readiness state must be an object"]
     if not isinstance(protocol, dict):
         return ["protocol.json must be an object"]
-    return semantic_errors(readiness, protocol)
+    if not isinstance(methodology, dict):
+        return ["methodology decision ledger must be an object"]
+    return semantic_errors(readiness, protocol, methodology)
 
 
 def synthetic_ready_state(
@@ -199,13 +262,28 @@ def synthetic_ready_state(
     return readiness, protocol_copy
 
 
+def synthetic_resolved_methodology(
+    methodology: dict[str, Any],
+) -> dict[str, Any]:
+    resolved = copy.deepcopy(methodology)
+    for decision in resolved["decisions"]:
+        if decision.get("pre_freeze_required") is True:
+            decision["status"] = "selected"
+            decision["selected_candidate"] = decision["candidates"][0]["candidate_id"]
+            decision["rationale"] = "Synthetic self-test selection only."
+            decision["evidence_refs"] = ["synthetic://methodology-selection"]
+    resolved["status"] = "methodology_resolved"
+    return resolved
+
+
 def run_self_test() -> int:
     schema = load_json(SCHEMA)
     current = load_json(CURRENT)
     protocol = load_json(PROTOCOL)
+    methodology = load_json(METHODOLOGY)
     Draft202012Validator.check_schema(schema)
 
-    errors = validate(current, schema, protocol)
+    errors = validate(current, schema, protocol, methodology)
     assert not errors, errors
     assert current["study_status"] == "development_not_ready"
     assert not all(
@@ -215,32 +293,39 @@ def run_self_test() -> int:
 
     premature = copy.deepcopy(current)
     premature["study_status"] = "ready_for_freeze"
-    errors = validate(premature, schema, protocol)
+    errors = validate(premature, schema, protocol, methodology)
     assert any("pre-freeze gates remain unresolved" in error for error in errors)
 
     premature_frozen = copy.deepcopy(current)
     premature_frozen["study_status"] = "frozen"
-    errors = validate(premature_frozen, schema, protocol)
+    errors = validate(premature_frozen, schema, protocol, methodology)
     assert any("gates remain unresolved" in error for error in errors)
     assert any("protocol.json still has frozen=false" in error for error in errors)
 
     complete_without_evidence = copy.deepcopy(current)
     complete_without_evidence["gates"]["reviewer_population"]["status"] = "complete"
     complete_without_evidence["gates"]["reviewer_population"]["evidence_refs"] = []
-    errors = validate(complete_without_evidence, schema, protocol)
+    errors = validate(complete_without_evidence, schema, protocol, methodology)
     assert any("has no evidence_refs" in error for error in errors)
 
     ready, ready_protocol = synthetic_ready_state(current, protocol, frozen=False)
-    errors = validate(ready, schema, ready_protocol)
+    errors = validate(ready, schema, ready_protocol, methodology)
+    assert any("methodology decision" in error for error in errors)
+
+    resolved_methodology = synthetic_resolved_methodology(methodology)
+    errors = validate(ready, schema, ready_protocol, resolved_methodology)
     assert not errors, errors
 
     frozen, frozen_protocol = synthetic_ready_state(current, protocol, frozen=True)
-    errors = validate(frozen, schema, frozen_protocol)
+    errors = validate(frozen, schema, frozen_protocol, methodology)
+    assert any("methodology decision" in error for error in errors)
+
+    errors = validate(frozen, schema, frozen_protocol, resolved_methodology)
     assert not errors, errors
 
     protocol_drift = copy.deepcopy(protocol)
     protocol_drift["version"] = "other-version"
-    errors = validate(current, schema, protocol_drift)
+    errors = validate(current, schema, protocol_drift, methodology)
     assert any("protocol_version does not match" in error for error in errors)
 
     print(
@@ -266,6 +351,11 @@ def main() -> int:
         help="Protocol JSON used for version/frozen-state cross-check.",
     )
     parser.add_argument(
+        "--methodology",
+        default=str(METHODOLOGY),
+        help="Methodology decision ledger used for freeze cross-check.",
+    )
+    parser.add_argument(
         "--require-ready",
         action="store_true",
         help="Exit non-zero unless all pre-freeze gates are resolved.",
@@ -283,14 +373,18 @@ def main() -> int:
         Draft202012Validator.check_schema(schema)
         readiness = load_json(Path(args.readiness))
         protocol = load_json(Path(args.protocol))
+        methodology = load_json(Path(args.methodology))
     except (OSError, json.JSONDecodeError, SchemaError) as exc:
-        print(f"ERROR: unable to load readiness/protocol/schema: {exc}", file=sys.stderr)
+        print(
+            f"ERROR: unable to load readiness/protocol/methodology/schema: {exc}",
+            file=sys.stderr,
+        )
         return 2
 
     if args.self_test:
         return run_self_test()
 
-    errors = validate(readiness, schema, protocol)
+    errors = validate(readiness, schema, protocol, methodology)
     if errors:
         for error in errors:
             print(f"ERROR: {error}", file=sys.stderr)
