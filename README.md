@@ -36,6 +36,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - [AR-P003 v0.2.3 Historical Frozen Baseline](docs/AR-P003-V0.2.3-HISTORICAL-BASELINE.md)
 - [Project Continuity Snapshot](docs/PROJECT-CONTINUITY-2026-09-19.md)
 - [One-Command Reproducibility Suite](docs/REPRODUCIBILITY.md)
+- [Independent Reproduction Handoff](docs/EXTERNAL-REPRODUCTION-HANDOFF.md)
 - [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)
 - [Machine-Readable Interoperability Crosswalk](docs/MACHINE-READABLE-MAPPINGS.md)
 - [OpenTelemetry GenAI Adapter Prototype](docs/OTEL-ADAPTER.md)
