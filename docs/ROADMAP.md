@@ -240,6 +240,7 @@ Determine which Receipt fields remain useful, redundant, missing, or impractical
 Preparation completed:
 
 - [x] Publish a one-command public reproducibility runner with machine-readable results and SHA-256 artifact manifest.
+- [x] Publish a clean-room external reproduction handoff and issue-reporting path.
 - [ ] Obtain at least one independent external reproduction attempt.
 
 Potential activities:
