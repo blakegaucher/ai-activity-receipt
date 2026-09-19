@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.4",
+  "snapshot_version": "project-continuity-v0.5",
   "snapshot_date": "2026-09-19",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -85,7 +85,9 @@
         "setup_python": "7.0.0",
         "upload_artifact": "7.0.1",
         "immutable_commit_pins": true
-      }
+      },
+      "external_reproduction_handoff": true,
+      "independent_external_reproduction": "open"
     }
   },
   "cross_project_boundaries": {
@@ -128,16 +130,27 @@
       "offline_runner_strict_csp": true,
       "offline_runner_resource_limits": true,
       "main_ruleset": "not_configured_detected_via_api",
-      "codeql_default_setup": "manual_admin_gate",
-      "private_vulnerability_reporting": "manual_admin_gate"
+      "codeql_default_setup": "not_used_advanced_setup_selected",
+      "private_vulnerability_reporting": "manual_admin_gate",
+      "codeql_advanced_setup": {
+        "status": "main_ci_green",
+        "languages": [
+          "python",
+          "javascript-typescript"
+        ],
+        "action_commit_pinned": true,
+        "workflow": ".github/workflows/codeql.yml",
+        "first_verified_main_run_date": "2026-09-19",
+        "alert_inventory": "unverified_connector_cannot_read_code_scanning_alerts"
+      }
     }
   },
   "open_project_governance_gates": [
     "explicit_repository_license_selection",
     "manual_AR_P003_browser_device_smoke_testing",
     "enable_main_branch_ruleset_or_protection",
-    "enable_codeql_default_setup",
     "enable_private_vulnerability_reporting",
-    "confirm_dependabot_security_alerts_and_updates"
+    "confirm_dependabot_security_alerts_and_updates",
+    "inspect_codeql_alerts_and_finish_security_admin_settings"
   ]
 }

@@ -160,7 +160,9 @@ The current CI reproduction profile is additionally hardened with:
 
 A project-authored passing run is **preparation for external reproducibility**, not independent validation.
 
-Phase 6 remains open until an independent party can reproduce, critique, or implement the work without undocumented project knowledge.
+A clean-room external reproduction handoff is now published at `docs/EXTERNAL-REPRODUCTION-HANDOFF.md`, including exact-lock instructions and a requirement to preserve favorable or unfavorable results.
+
+Phase 6 remains open until an independent party actually attempts reproduction, critique, or implementation without undocumented project knowledge.
 
 ## 7. Evidence and claim gates
 
@@ -223,9 +225,11 @@ The repository currently has **no explicit open-source license selected**. Publi
 
 Contribution guidance is published, and common local/private study outputs are ignored by Git as a backup control. Neither substitutes for access control over participant or hidden-analysis material.
 
-Repository-file security controls now include weekly Dependabot configuration, CODEOWNERS routing, least-privilege/pinned CI checks, checkout credential-persistence disablement, a deterministic security smoke test, and stricter offline-runner CSP/resource bounds.
+Repository-file security controls now include weekly Dependabot configuration, CODEOWNERS routing, least-privilege/pinned primary CI checks, checkout credential-persistence disablement, a deterministic security smoke test, stricter offline-runner CSP/resource bounds, and a separate pinned CodeQL advanced-setup workflow for Python and JavaScript/TypeScript.
 
-GitHub API inspection on 2026-09-19 returned **no repository rulesets**. The available connector cannot change branch-protection/ruleset or Advanced Security settings. Main-branch protection/ruleset configuration, CodeQL default setup, private vulnerability reporting, and confirmation of Dependabot security alerts/updates therefore remain explicit repository-admin tasks rather than completed controls.
+The first CodeQL pull-request and post-merge `main` scans completed successfully for both configured languages on 2026-09-19. This establishes that the configured static-analysis jobs ran successfully; the connector cannot inspect the CodeQL alert inventory, so no “zero alerts” or “no vulnerabilities” claim is made.
+
+GitHub API inspection on 2026-09-19 returned **no repository rulesets**. The available connector cannot change branch-protection/ruleset or the remaining repository-admin security settings. Main-branch protection/ruleset configuration, private vulnerability reporting, confirmation of Dependabot security alerts/updates, owner security-alert notifications, and manual inspection of CodeQL findings therefore remain explicit repository-admin tasks. CodeQL **default** setup is not pending because advanced setup is now the selected mode.
 
 These repository controls are defense-in-depth only. They do not establish production security, penetration-test coverage, standards conformance, or participant-data readiness.
 
@@ -244,8 +248,9 @@ The project can continue to improve:
 - reproducibility packaging;
 - manual browser/device smoke testing for the AR-P003 development runner;
 - repository-admin enablement of a main-branch ruleset/protection with required CI and no force-push/delete;
-- repository-admin enablement of CodeQL default setup and private vulnerability reporting;
-- confirmation of Dependabot security alerts/security updates;
+- repository-admin enablement of private vulnerability reporting;
+- confirmation of Dependabot security alerts/security updates and owner security-alert notifications;
+- manual inspection of CodeQL/code-scanning findings after successful advanced-setup runs;
 - explicit repository-license selection as a governance decision;
 - public documentation and evidence boundaries.
 

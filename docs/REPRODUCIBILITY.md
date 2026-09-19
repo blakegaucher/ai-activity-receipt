@@ -159,3 +159,10 @@ A public clean-room handoff is available at [EXTERNAL-REPRODUCTION-HANDOFF.md](E
 It asks an independent reviewer to record the exact commit/environment, install the exact dependency lock, run the aggregate suite without undocumented project help, preserve favorable or unfavorable results, and report the first mismatch or hidden prerequisite.
 
 The first independent reproduction remains an **external gate**. Publishing the handoff does not satisfy it.
+
+
+## Static-analysis environment
+
+The repository also runs a separate CodeQL advanced-setup workflow for Python and JavaScript/TypeScript. The first pull-request and post-merge `main` scans completed successfully on 2026-09-19.
+
+This is repository security infrastructure, not part of the deterministic reproduction result. The available connector cannot inspect the CodeQL alert inventory, so workflow success is not reported as proof of zero findings.

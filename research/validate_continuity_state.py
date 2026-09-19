@@ -84,11 +84,23 @@ def main() -> int:
             errors.append(
                 f"repository security continuity flag {key!r} changed unexpectedly"
             )
+    codeql = security.get("codeql_advanced_setup") or {}
+    if codeql.get("status") != "main_ci_green":
+        errors.append("CodeQL advanced-setup continuity status unexpectedly changed")
+    if codeql.get("action_commit_pinned") is not True:
+        errors.append("CodeQL immutable Action pin continuity flag unexpectedly changed")
+    if set(codeql.get("languages") or []) != {"python", "javascript-typescript"}:
+        errors.append("CodeQL language coverage continuity unexpectedly changed")
+    if security.get("codeql_default_setup") != "not_used_advanced_setup_selected":
+        errors.append("CodeQL setup mode changed without deliberate continuity update")
     if security.get("main_ruleset") != "not_configured_detected_via_api":
         errors.append(
             "main ruleset status changed; update continuity deliberately after "
             "repository-admin verification"
         )
+    if (dev.get("reproducibility_runner") or {}).get("external_reproduction_handoff") is not True:
+        errors.append("external reproduction handoff continuity flag unexpectedly changed")
+
     if governance.get("explicit_license_status") != "not_selected":
         errors.append(
             "repository license status changed; update continuity deliberately "
