@@ -118,20 +118,36 @@ def validate_response(doc: Any, schema: dict[str, Any]) -> list[str]:
         return ["$: runner response export must be an object"]
 
     try:
-        passed_at = datetime.fromisoformat(
+        comprehension_passed = datetime.fromisoformat(
             doc["comprehension"]["passed_at"].replace("Z", "+00:00")
+        )
+        practice_passed = datetime.fromisoformat(
+            doc["practice"]["passed_at"].replace("Z", "+00:00")
         )
         session_started = datetime.fromisoformat(
             doc["session_started_at"].replace("Z", "+00:00")
         )
-        if passed_at.utcoffset() is None or session_started.utcoffset() is None:
-            errors.append("comprehension/session timestamps must include timezone offsets")
-        elif passed_at > session_started:
+        if (
+            comprehension_passed.utcoffset() is None
+            or practice_passed.utcoffset() is None
+            or session_started.utcoffset() is None
+        ):
             errors.append(
-                "comprehension.passed_at must not occur after session_started_at"
+                "comprehension/practice/session timestamps must include timezone offsets"
             )
+        else:
+            if comprehension_passed > practice_passed:
+                errors.append(
+                    "comprehension.passed_at must not occur after practice.passed_at"
+                )
+            if practice_passed > session_started:
+                errors.append(
+                    "practice.passed_at must not occur after session_started_at"
+                )
     except (ValueError, TypeError, KeyError):
-        errors.append("comprehension/session timestamps are not valid date-times")
+        errors.append(
+            "comprehension/practice/session timestamps are not valid date-times"
+        )
 
     case_ids = [case["case_id"] for case in doc["cases"]]
     if len(case_ids) != len(set(case_ids)):
@@ -163,6 +179,8 @@ def runner_static_errors() -> list[str]:
         "file.size > MAX_BUNDLE_BYTES",
         'id="comprehensionForm"',
         "COMPREHENSION_VERSION",
+        'id="practiceForm"',
+        "PRACTICE_VERSION",
         'id="pauseBtn"',
         'id="downloadFinalBtn"',
         "visibilitychange",
@@ -248,7 +266,7 @@ def run_self_test() -> int:
     assert any("too long" in error for error in errors)
 
     sample_response = {
-        "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.3",
+        "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
         "protocol_version": bundle["protocol_version"],
         "assignment_version": bundle["assignment_version"],
         "assignment_sha256": bundle["assignment_sha256"],
@@ -257,6 +275,11 @@ def run_self_test() -> int:
         "session_completed_at": "2026-09-18T12:03:00Z",
         "comprehension": {
             "gate_version": "AR-P003-v0.3-comprehension-v0.1",
+            "attempts": 1,
+            "passed_at": "2026-09-18T11:59:00Z",
+        },
+        "practice": {
+            "practice_version": "AR-P003-v0.3-practice-v0.1",
             "attempts": 1,
             "passed_at": "2026-09-18T12:00:00Z",
         },
@@ -299,7 +322,18 @@ def run_self_test() -> int:
     late_comprehension = copy.deepcopy(sample_response)
     late_comprehension["comprehension"]["passed_at"] = "2026-09-18T12:00:01Z"
     errors = validate_response(late_comprehension, response_schema)
-    assert any("passed_at must not occur after" in error for error in errors)
+    assert any(
+        "comprehension.passed_at must not occur after practice.passed_at" in error
+        for error in errors
+    )
+
+    late_practice = copy.deepcopy(sample_response)
+    late_practice["practice"]["passed_at"] = "2026-09-18T12:00:01Z"
+    errors = validate_response(late_practice, response_schema)
+    assert any(
+        "practice.passed_at must not occur after session_started_at" in error
+        for error in errors
+    )
 
     bad_assignment_binding = copy.deepcopy(sample_response)
     bad_assignment_binding["assignment_sha256"] = "sha256:" + "z" * 64
