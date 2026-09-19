@@ -149,8 +149,8 @@
 <script>
 "use strict";
 
-const EXPECTED_VERSION = "AR-P003-v0.3-dev-runner-bundle-v0.1";
-const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.1";
+const EXPECTED_VERSION = "AR-P003-v0.3-dev-runner-bundle-v0.2";
+const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.2";
 const PROHIBITED_KEYS = new Set([
   "gold", "gold_labels", "analysis_files", "analysis_only", "hidden_stratum",
   "stratum", "receipt_state", "expected_answer", "answer_key"
@@ -187,6 +187,8 @@ function validateBundleBasic(doc) {
   if (!doc || typeof doc !== "object" || Array.isArray(doc)) throw new Error("Bundle must be a JSON object.");
   if (doc.bundle_version !== EXPECTED_VERSION) throw new Error("Unexpected bundle_version.");
   if (typeof doc.protocol_version !== "string" || !doc.protocol_version) throw new Error("protocol_version is required.");
+  if (typeof doc.assignment_version !== "string" || !doc.assignment_version) throw new Error("assignment_version is required.");
+  if (typeof doc.assignment_sha256 !== "string" || !/^sha256:[0-9a-f]{64}$/.test(doc.assignment_sha256)) throw new Error("assignment_sha256 is invalid.");
   if (typeof doc.reviewer_id !== "string" || !doc.reviewer_id) throw new Error("reviewer_id is required.");
   if (!Array.isArray(doc.cases) || doc.cases.length < 1) throw new Error("At least one case is required.");
   if (hasProhibitedKey(doc)) throw new Error("Bundle contains prohibited analysis-side keys.");
@@ -369,6 +371,8 @@ function exportObject() {
   return {
     response_bundle_version: RESPONSE_VERSION,
     protocol_version: bundle.protocol_version,
+    assignment_version: bundle.assignment_version,
+    assignment_sha256: bundle.assignment_sha256,
     reviewer_id: bundle.reviewer_id,
     session_started_at: sessionStartedAt,
     session_completed_at: sessionCompletedAt,
@@ -409,6 +413,7 @@ $("loadBtn").addEventListener("click", async () => {
     $("bundleSummary").textContent =
       "Reviewer: " + bundle.reviewer_id +
       " • Protocol: " + bundle.protocol_version +
+      " • Assignment: " + bundle.assignment_version +
       " • Cases: " + bundle.cases.length;
     $("bundleSummary").classList.remove("hidden");
     $("startBtn").classList.remove("hidden");
