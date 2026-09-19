@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.6",
+  "snapshot_version": "project-continuity-v0.7",
   "snapshot_date": "2026-09-19",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -45,7 +45,7 @@
         "assignment_binding": {
           "status": "development_only_ci_green",
           "bundle_contract": "AR-P003-v0.3-dev-runner-bundle-v0.2",
-          "response_contract": "AR-P003-v0.3-dev-runner-response-v0.2",
+          "response_contract": "AR-P003-v0.3-dev-runner-response-v0.4",
           "exact_assignment_sha256": true,
           "assignment_version": true,
           "condition_order_case_verification": true,
@@ -61,6 +61,21 @@
         "challenge_design": "unresolved",
         "reviewer_population": "unresolved",
         "effect_precision_target": "unresolved"
+      },
+      "leakage_validation": {
+        "status": "prepared_not_complete",
+        "automated_audit": {
+          "path": "benchmark/arp003_v0_3/audit_leakage.py",
+          "report_schema": "benchmark/arp003_v0_3/leakage-audit.schema.json",
+          "status": "development_only_ci_green",
+          "final_corpus_audit": "not_run"
+        },
+        "manual_case_review": {
+          "validator": "benchmark/arp003_v0_3/validate_case_methodology_review.py",
+          "schema": "benchmark/arp003_v0_3/case-methodology-review.schema.json",
+          "checked_in_record": "not_tested_template_only",
+          "final_corpus_review": "not_run"
+        }
       }
     },
     "public_record_profile": {
@@ -83,7 +98,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.8",
+      "suite_version": "ai-activity-receipt-repro-v0.10",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,
