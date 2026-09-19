@@ -87,6 +87,9 @@ jobs:
       - name: Run repository security smoke test
         run: python research/security_smoke_test.py
 
+      - name: Run third-party inventory preflight
+        run: python research/validate_third_party_inventory.py
+
       - name: Validate protocol JSON
         run: python -m json.tool benchmark/arp003_v0_3/protocol.json > /dev/null
 
