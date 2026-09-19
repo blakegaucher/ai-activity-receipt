@@ -70,6 +70,14 @@ The study-development pipeline now also includes an analysis-side assignment-to-
 
 This is instrumentation preparation only: manual browser/device testing, answer-option leakage review, and the remaining preregistration/freeze gates are still open.
 
+### Exact assignment binding
+
+The v0.3 development runner/bundle pipeline now binds each reviewer bundle and exported response to the exact assignment version and SHA-256 digest used during packaging. Analysis requires that exact assignment file and verifies reviewer membership, assigned case set/order, control-vs-Receipt condition, hidden stratum, and session completion before creating scorer input.
+
+This removes the response-export condition label as an analysis source of truth. The frozen assignment is authoritative.
+
+The binding is a development integrity control, not reviewer identity authentication or production cryptographic attestation.
+
 ## 3. Current public engineering stack
 
 The public repository currently includes:
@@ -92,7 +100,8 @@ The public repository currently includes:
 - AR-P003 development scoring, assignment, case-package linting, planning, and freeze-manifest tooling;
 - AR-P003 v0.3 development offline reviewer runner with structured responses, wall/active timing, pause/visibility instrumentation, safe intermissions, and reviewer/analysis data separation;
 - assignment-to-runner bundle builder with hidden gold/stratum separation, answer-option representability diagnostics, and SHA-256 build manifests;
-- end-to-end synthetic AR-P003 assignment → bundle → response → hidden-label merge → scoring integration test.
+- end-to-end synthetic AR-P003 assignment → bundle → response → hidden-label merge → scoring integration test;
+- exact assignment version/SHA-256 binding across reviewer bundles and response exports, with analysis-side case/order/condition verification.
 
 These are engineering/research capabilities. They do not establish human benefit or production readiness.
 
