@@ -23,7 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.10"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.11"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -322,7 +322,8 @@ CHECKS: list[dict[str, Any]] = [
     },
     {
         "id": "arp003-freeze-manifest",
-        "argv": ["benchmark/arp003_v0_3/freeze_manifest.py", "--self-test"],
+        "argv": ["benchmark/arp003_v0_3/freeze_manifest.py",
+            "benchmark/arp003_v0_3/freeze-manifest.schema.json", "--self-test"],
         "artifacts": ["benchmark/arp003_v0_3/freeze_manifest.py"],
     },
 ]
