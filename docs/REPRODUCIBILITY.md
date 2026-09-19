@@ -1,7 +1,7 @@
 # One-Command Reproducibility Suite
 
 > **Status:** Public engineering/research reproducibility helper.  
-> **Snapshot:** 2026-09-18  
+> **Snapshot:** 2026-09-19  
 > Passing this suite does not convert synthetic or development evidence into a human-study result, standards certificate, production security audit, or proof of real-world benefit.
 
 The repository now exposes one command that runs the current deterministic and synthetic checks in a fixed order and emits a machine-readable report:
@@ -36,7 +36,8 @@ The suite currently executes:
 - AR-P003 response/gold merge tests;
 - AR-P003 assignment-to-runner bundle-builder tests;
 - AR-P003 end-to-end assignment → bundle → merge → scoring smoke test;
-- AR-P003 freeze-manifest tests.
+- AR-P003 freeze-manifest tests;
+- repository security smoke checks for workflow permissions, immutable Action refs, checkout credentials, Dependabot/CODEOWNERS metadata, offline-runner boundaries, private-study ignore rules, and high-confidence secret markers.
 
 The AR-P003 protocol JSON is also parsed explicitly before the suite runs.
 
@@ -110,9 +111,11 @@ python research/reproduce.py --quiet
 
 ## CI hardening
 
-The public workflow pins the checkout/setup/upload actions to exact commit SHAs, pins CPython 3.12.14, installs the exact dependency snapshot, and uploads the machine-readable reproducibility report as a workflow artifact.
+The public workflow pins checkout/setup/upload Actions to exact commit SHAs, limits the primary workflow token to `contents: read`, disables checkout credential persistence, applies a 20-minute job timeout, cancels obsolete in-progress runs for the same ref, pins CPython 3.12.14, installs the exact dependency snapshot, runs the repository security smoke test, and uploads the machine-readable reproducibility report as a workflow artifact.
 
-This reduces avoidable environment drift. It does not make GitHub-hosted infrastructure or the dependency supply chain independently trusted.
+The repository also publishes weekly Dependabot version-update configuration for pip and GitHub Actions, plus CODEOWNERS metadata for security/evidence-sensitive paths.
+
+This reduces avoidable environment and repository-governance drift. It does not make GitHub-hosted infrastructure or the dependency supply chain independently trusted, and it does not replace CodeQL, secret scanning, private vulnerability reporting, or branch/ruleset administration.
 
 ---
 
