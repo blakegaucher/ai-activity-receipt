@@ -27,6 +27,17 @@ The project is pre-commercial research. Version labels below describe repository
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
 - preserve private-reasoning exclusion diagnostics.
 
+### Repository security hardening
+
+- add weekly Dependabot version-update configuration for pip dependencies and GitHub Actions;
+- add CODEOWNERS metadata for default and security/evidence-sensitive paths;
+- keep the primary validation workflow at `contents: read`, disable checkout credential persistence, apply a 20-minute job timeout, and cancel obsolete in-progress runs for the same ref;
+- add a deterministic repository security smoke test and include it in the aggregate reproducibility suite;
+- tighten the AR-P003 offline runner CSP to deny-by-default network/resource loading while retaining only required inline script/style execution;
+- add bounded reviewer-bundle/response/analysis cardinality and content sizes plus browser-side file/nesting/resource guards;
+- document manual GitHub-admin gates for main-branch ruleset/protection, CodeQL default setup, private vulnerability reporting, and Dependabot security alerts/updates;
+- preserve the boundary that repository hardening is not a production security audit or compliance claim.
+
 ### AR-P003 exact assignment binding
 
 - bump development reviewer-bundle and response-export contracts to v0.2;

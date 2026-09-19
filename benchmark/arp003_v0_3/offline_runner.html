@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; connect-src 'none'; img-src 'none'; object-src 'none'; frame-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; child-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
 <title>AR-P003 v0.3 Development Offline Runner</title>
 <style>
   :root { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color-scheme: light dark; }
@@ -151,6 +151,14 @@
 
 const EXPECTED_VERSION = "AR-P003-v0.3-dev-runner-bundle-v0.2";
 const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.2";
+const MAX_BUNDLE_BYTES = 32 * 1024 * 1024;
+const MAX_CASES = 512;
+const MAX_EVIDENCE_ARTIFACTS = 16;
+const MAX_ARTIFACT_CHARS = 2_000_000;
+const MAX_OPTIONS_PER_GROUP = 256;
+const MAX_ID_CHARS = 256;
+const MAX_LABEL_CHARS = 512;
+const MAX_NESTING_DEPTH = 16;
 const PROHIBITED_KEYS = new Set([
   "gold", "gold_labels", "analysis_files", "analysis_only", "hidden_stratum",
   "stratum", "receipt_state", "expected_answer", "answer_key"
@@ -172,38 +180,72 @@ function fail(message) {
   $("setupStatus").classList.add("error");
 }
 
-function hasProhibitedKey(value) {
-  if (Array.isArray(value)) return value.some(hasProhibitedKey);
+function hasProhibitedKey(value, depth=0) {
+  if (depth > MAX_NESTING_DEPTH) {
+    throw new Error("Bundle nesting exceeds the development runner limit.");
+  }
+  if (Array.isArray(value)) {
+    return value.some(item => hasProhibitedKey(item, depth + 1));
+  }
   if (value && typeof value === "object") {
     for (const [key, item] of Object.entries(value)) {
       if (PROHIBITED_KEYS.has(key)) return true;
-      if (hasProhibitedKey(item)) return true;
+      if (hasProhibitedKey(item, depth + 1)) return true;
     }
   }
   return false;
 }
 
+function boundedString(value, label, maxChars=MAX_ID_CHARS) {
+  if (typeof value !== "string" || value.length < 1 || value.length > maxChars) {
+    throw new Error(label + " must be a non-empty string within the size limit.");
+  }
+}
+
+function validateArtifact(artifact, label) {
+  if (!artifact || typeof artifact !== "object" || Array.isArray(artifact)) {
+    throw new Error(label + " must be an artifact object.");
+  }
+  boundedString(artifact.label, label + ".label", MAX_LABEL_CHARS);
+  if (!["text/plain", "text/markdown", "application/json"].includes(artifact.media_type)) {
+    throw new Error(label + ".media_type is unsupported.");
+  }
+  if (typeof artifact.content !== "string" || artifact.content.length > MAX_ARTIFACT_CHARS) {
+    throw new Error(label + ".content exceeds the development runner size limit.");
+  }
+}
+
 function validateBundleBasic(doc) {
   if (!doc || typeof doc !== "object" || Array.isArray(doc)) throw new Error("Bundle must be a JSON object.");
   if (doc.bundle_version !== EXPECTED_VERSION) throw new Error("Unexpected bundle_version.");
-  if (typeof doc.protocol_version !== "string" || !doc.protocol_version) throw new Error("protocol_version is required.");
-  if (typeof doc.assignment_version !== "string" || !doc.assignment_version) throw new Error("assignment_version is required.");
+  boundedString(doc.protocol_version, "protocol_version");
+  boundedString(doc.assignment_version, "assignment_version");
   if (typeof doc.assignment_sha256 !== "string" || !/^sha256:[0-9a-f]{64}$/.test(doc.assignment_sha256)) throw new Error("assignment_sha256 is invalid.");
-  if (typeof doc.reviewer_id !== "string" || !doc.reviewer_id) throw new Error("reviewer_id is required.");
-  if (!Array.isArray(doc.cases) || doc.cases.length < 1) throw new Error("At least one case is required.");
+  boundedString(doc.reviewer_id, "reviewer_id");
+  if (!Array.isArray(doc.cases) || doc.cases.length < 1 || doc.cases.length > MAX_CASES) throw new Error("Case count is outside the development runner limit.");
   if (hasProhibitedKey(doc)) throw new Error("Bundle contains prohibited analysis-side keys.");
 
   const ids = new Set();
   for (const item of doc.cases) {
-    if (!item || typeof item !== "object" || typeof item.case_id !== "string" || !item.case_id) throw new Error("Every case requires case_id.");
+    if (!item || typeof item !== "object") throw new Error("Every case must be an object.");
+    boundedString(item.case_id, "case_id");
     if (ids.has(item.case_id)) throw new Error("Duplicate case_id in bundle.");
     ids.add(item.case_id);
-    if (!Array.isArray(item.evidence) || item.evidence.length < 1) throw new Error("Every case requires reviewer evidence.");
-    if (!item.answer_options || typeof item.answer_options !== "object") throw new Error("Every case requires answer_options.");
+    if (!Array.isArray(item.evidence) || item.evidence.length < 1 || item.evidence.length > MAX_EVIDENCE_ARTIFACTS) throw new Error("Evidence artifact count is outside the development runner limit.");
+    item.evidence.forEach((artifact, index) => validateArtifact(artifact, "evidence[" + index + "]"));
+    if (!item.answer_options || typeof item.answer_options !== "object" || Array.isArray(item.answer_options)) throw new Error("Every case requires answer_options.");
     for (const key of ["material_actions", "material_sources", "incidents"]) {
-      if (!Array.isArray(item.answer_options[key])) throw new Error("Answer option arrays are required.");
+      const values = item.answer_options[key];
+      if (!Array.isArray(values) || values.length > MAX_OPTIONS_PER_GROUP) throw new Error("Answer option arrays exceed the development runner limit.");
+      const seen = new Set();
+      for (const value of values) {
+        boundedString(value, key + " option");
+        if (seen.has(value)) throw new Error("Duplicate answer option in " + key + ".");
+        seen.add(value);
+      }
     }
     if (!(item.receipt === null || (item.receipt && typeof item.receipt === "object"))) throw new Error("receipt must be null or an artifact.");
+    if (item.receipt) validateArtifact(item.receipt, "receipt");
   }
 }
 
@@ -398,7 +440,13 @@ $("loadBtn").addEventListener("click", async () => {
   const file = $("bundleFile").files[0];
   if (!file) return fail("Choose a JSON bundle first.");
   try {
+    if (file.size > MAX_BUNDLE_BYTES) {
+      throw new Error("Bundle file exceeds the 32 MiB development runner limit.");
+    }
     const text = await file.text();
+    if (text.length > MAX_BUNDLE_BYTES) {
+      throw new Error("Decoded bundle text exceeds the development runner limit.");
+    }
     const parsed = JSON.parse(text);
     validateBundleBasic(parsed);
     bundle = parsed;

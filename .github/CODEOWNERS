@@ -1,0 +1,9 @@
+# Default ownership for this independent research repository.
+* @blakegaucher
+
+# Security- and evidence-sensitive surfaces.
+/.github/ @blakegaucher
+/SECURITY.md @blakegaucher
+/research/dsse_prototype.py @blakegaucher
+/research/attestation-trust-policy.* @blakegaucher
+/benchmark/arp003_v0_3/ @blakegaucher

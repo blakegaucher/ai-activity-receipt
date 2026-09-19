@@ -81,6 +81,29 @@ The guard is not an external validator. It is a project discipline mechanism so 
 
 ---
 
+## Repository security smoke test
+
+**Status:** Repository-local defense-in-depth; not an independent security audit
+
+The repository now runs `research/security_smoke_test.py` directly in CI and through the aggregate reproducibility suite.
+
+The deterministic check verifies:
+
+- the primary validation workflow explicitly grants only `contents: read`;
+- `pull_request_target` is absent from the primary validation workflow;
+- external Actions are pinned to full commit SHAs;
+- checkout credential persistence is disabled;
+- a finite workflow timeout and stale-run cancellation are present;
+- Dependabot monitors pip and GitHub Actions;
+- CODEOWNERS names the repository owner;
+- private-study `.gitignore` guards remain present;
+- the offline runner keeps a strict no-network CSP/boundary and bounded local input sizes;
+- high-confidence private-key/token markers are absent from tracked text files.
+
+These checks do not replace CodeQL, secret scanning, branch protection, private vulnerability reporting, penetration testing, or production security review.
+
+---
+
 ## Aggregate reproducibility runner
 
 **Status:** Public repository-local reproducibility helper

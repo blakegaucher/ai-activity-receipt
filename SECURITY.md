@@ -40,3 +40,12 @@ This is an independently maintained research project, not a staffed security pro
 The repository currently develops one public candidate line plus separate versioned research profiles. Security fixes should target the current `main` branch unless a historical frozen artifact must remain unchanged for evidentiary reasons.
 
 Frozen benchmark history should not be rewritten. If a historical artifact contains a security-relevant limitation, document the limitation and create a new versioned artifact when a change is required.
+
+
+## Repository hardening status
+
+Repository-file controls and remaining GitHub-admin gates are documented in [Repository Security Hardening](docs/SECURITY-HARDENING.md).
+
+The repository now includes least-privilege/pinned primary CI, disabled checkout credential persistence, a finite CI timeout, stale-run cancellation, a deterministic security smoke test, weekly Dependabot version-update configuration, CODEOWNERS metadata, private-study ignore rules, and stricter offline-runner CSP/resource limits.
+
+GitHub API inspection on 2026-09-19 returned no repository rulesets. Main-branch ruleset/protection, CodeQL default setup, private vulnerability reporting, and confirmation of Dependabot security alerts/security updates remain repository-admin settings and must not be described as enabled until verified.
