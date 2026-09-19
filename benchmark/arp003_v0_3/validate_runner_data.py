@@ -137,7 +137,13 @@ def runner_static_errors() -> list[str]:
 
     errors: list[str] = []
     required = [
+        "default-src 'none'",
         "connect-src 'none'",
+        "worker-src 'none'",
+        "const MAX_BUNDLE_BYTES",
+        "const MAX_CASES",
+        "const MAX_ARTIFACT_CHARS",
+        "file.size > MAX_BUNDLE_BYTES",
         'id="pauseBtn"',
         'id="downloadFinalBtn"',
         "visibilitychange",
@@ -205,6 +211,23 @@ def run_self_test() -> int:
     errors = validate_bundle(duplicate_label, bundle_schema)
     assert any("evidence labels must be unique" in error for error in errors)
 
+    oversized_content = copy.deepcopy(bundle)
+    oversized_content["cases"][0]["evidence"][0]["content"] = "x" * 2_000_001
+    errors = validate_bundle(oversized_content, bundle_schema)
+    assert errors
+    assert any("too long" in error for error in errors)
+
+    too_many_cases = copy.deepcopy(bundle)
+    prototype = copy.deepcopy(bundle["cases"][0])
+    too_many_cases["cases"] = []
+    for index in range(513):
+        item = copy.deepcopy(prototype)
+        item["case_id"] = f"DEV-LIMIT-{index:04d}"
+        too_many_cases["cases"].append(item)
+    errors = validate_bundle(too_many_cases, bundle_schema)
+    assert errors
+    assert any("too long" in error for error in errors)
+
     sample_response = {
         "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.2",
         "protocol_version": bundle["protocol_version"],
@@ -266,10 +289,23 @@ def run_self_test() -> int:
     errors = validate_response(duplicate_response, response_schema)
     assert any("duplicate case_id" in error for error in errors)
 
+    event_overflow = copy.deepcopy(sample_response)
+    event_overflow["cases"][0]["events"] = [
+        {
+            "event": "pause_started",
+            "at": "2026-09-18T12:00:30Z",
+            "reason": "manual",
+        }
+        for _ in range(4097)
+    ]
+    errors = validate_response(event_overflow, response_schema)
+    assert errors
+    assert any("too long" in error for error in errors)
+
     print(
         "AR-P003 offline runner validation self-test passed: "
-        "offline/no-network static checks, reviewer-bundle separation, "
-        "and response timing checks."
+        "strict offline/no-network static checks, reviewer-bundle separation, "
+        "resource bounds, and response timing checks."
     )
     return 0
 
