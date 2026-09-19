@@ -33,6 +33,13 @@ The project is pre-commercial research. Version labels below describe repository
 - advance the supported `cryptography` range to `>=50.0.1,<51` and the exact CI lock to 50.0.1 after the DSSE, security, AR-P003, and aggregate reproducibility checks passed;
 - correct the dependency-snapshot metadata date to 2026-09-19 and record the tested dependency/action versions in machine-readable continuity state.
 
+### Continuity-state version drift correction
+
+- synchronize the machine-readable continuity state with reproducibility suite v0.10 and reviewer-response contract v0.4;
+- explicitly record automated leakage audit and bound manual case review as prepared development controls whose final-corpus executions remain not run;
+- strengthen the continuity guard to reject silent drift in reviewer bundle/response contract versions, reproducibility version, and leakage/manual-review evidence state;
+- preserve historical benchmark results and human-evidence gates unchanged.
+
 ### AR-P003 bound manual case-review guard
 
 - add a machine-readable analysis-side review record for semantic leakage, realism, framing neutrality, answer-option quality, and accept/revise/drop disposition;
