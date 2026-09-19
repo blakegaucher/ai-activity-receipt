@@ -102,7 +102,7 @@ CHECKS: list[dict[str, Any]] = [
         "artifacts": [
             "research/validate_continuity_state.py",
             "research/project-continuity-state.json",
-            "docs/PROJECT-CONTINUITY-2026-09-18.md",
+            "docs/PROJECT-CONTINUITY-2026-09-19.md",
             "docs/AR-P003-V0.2.3-HISTORICAL-BASELINE.md",
         ],
     },
