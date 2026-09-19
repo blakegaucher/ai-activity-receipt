@@ -62,6 +62,20 @@ This is continuity/preregistration discipline only. It does not make the missing
 
 ---
 
+## AR-P003 v0.3 leakage/presentation audit smoke test
+
+**Status:** Development-only pre-freeze methodology tooling
+
+The repository now includes `benchmark/arp003_v0_3/audit_leakage.py` and `leakage-audit.schema.json`. The analysis-side audit consumes generated reviewer bundles, hidden gold labels, and the build manifest after packaging.
+
+It checks that reviewer evidence is byte-equivalent across control/Receipt presentations for the same case, reports literal gold action/source/incident labels visible in the shared evidence, treats literal gold incident labels as high-risk because v0.2.3 exposed incident classes verbatim, reports answer-option sets that exactly equal the gold set, and quantifies Receipt presentation expansion relative to the shared evidence.
+
+The audit self-test requires an intentionally leaked incident label to be flagged and rejects cross-presentation evidence drift.
+
+Passing the audit does **not** prove absence of semantic leakage, framing effects, ecological-validity problems, or other human-study bias. Final sealed cases still require human pre-freeze review, and any high-risk flag must be resolved or explicitly justified before the leakage gate can be complete.
+
+---
+
 ## AR-P003 v0.3 offline runner smoke test
 
 **Status:** Development instrumentation only; not a frozen human-study instrument
