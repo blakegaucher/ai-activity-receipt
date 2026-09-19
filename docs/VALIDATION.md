@@ -62,6 +62,28 @@ This is continuity/preregistration discipline only. It does not make the missing
 
 ---
 
+## AR-P003 v0.3 manual case-methodology review guard
+
+**Status:** Development QA workflow prepared; no sealed-corpus manual review completed
+
+The repository now includes a structured analysis-side manual review record and validator for the final candidate corpus.
+
+A review marked `complete` must:
+
+- bind to the exact leakage-audit JSON by SHA-256;
+- match the leakage audit's build-manifest SHA-256;
+- cover exactly every audited case ID;
+- bind to an audit with no unresolved automated high-risk cases;
+- mark semantic leakage as `pass`;
+- mark realism, framing neutrality, and answer-option quality as `acceptable`;
+- mark each case decision `accept`.
+
+The checked-in example is explicitly `not_tested` and cannot satisfy a complete-review requirement.
+
+This turns the required human pre-freeze case review into a reproducible control without pretending that a template or self-test is evidence that the final corpus has been reviewed.
+
+---
+
 ## AR-P003 v0.3 leakage/presentation audit smoke test
 
 **Status:** Development-only pre-freeze methodology tooling
