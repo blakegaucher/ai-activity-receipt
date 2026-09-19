@@ -230,6 +230,7 @@ Determine which Receipt fields remain useful, redundant, missing, or impractical
 ---
 
 ## Phase 6 — External evaluation
+- [x] Publish repository health guidance for external reviewers: contribution rules, security-reporting boundary, citation metadata, PR checklist, and reproducibility issue form.
 
 **Goal:** Allow people outside the project to challenge the design.
 
