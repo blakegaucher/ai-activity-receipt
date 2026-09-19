@@ -13,6 +13,8 @@ This directory contains **development infrastructure** for the next human-center
 - `freeze_manifest.py` — SHA-256 manifest utility for protocol/corpus/scorer freeze artifacts.
 - `case-package.schema.json` — development manifest schema for reviewer-facing evidence, Receipt, and analysis-only files.
 - `lint_case_packages.py` — file-separation, path-safety, stratum/state, leakage-marker, and hash-report linter for development case packages.
+- `audit_leakage.py` — analysis-side heuristic audit for literal gold-label exposure, degenerate answer-option sets, cross-presentation evidence drift, and Receipt presentation expansion.
+- `leakage-audit.schema.json` — machine-readable report schema for the pre-freeze leakage/presentation audit.
 - `plan_sample_size.py` — development-only sample-size/precision screening approximations.
 - `planning-scenarios.example.json` — illustrative independent-observation sensitivity grid; not frozen study assumptions.
 - `plan_crossed_design.py` — development-only reviewer × case Monte Carlo sensitivity planner using the balanced assignment and two-way clustered uncertainty.
@@ -109,6 +111,7 @@ Run the development self-tests:
 python benchmark/arp003_v0_3/score_responses.py --self-test
 python benchmark/arp003_v0_3/generate_assignment.py --self-test
 python benchmark/arp003_v0_3/lint_case_packages.py --self-test
+python benchmark/arp003_v0_3/audit_leakage.py --self-test
 python benchmark/arp003_v0_3/plan_sample_size.py --self-test
 python benchmark/arp003_v0_3/validate_runner_data.py --self-test
 python benchmark/arp003_v0_3/merge_runner_responses.py --self-test
