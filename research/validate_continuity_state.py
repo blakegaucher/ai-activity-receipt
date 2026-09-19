@@ -59,7 +59,7 @@ def main() -> int:
         errors.append("AR-P003 incomplete-session scoring guard unexpectedly disabled")
 
     repro = dev.get("reproducibility_runner") or {}
-    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.4":
+    if repro.get("suite_version") != "ai-activity-receipt-repro-v0.5":
         errors.append("reproducibility suite version unexpectedly changed")
     if repro.get("exact_dependency_lock") is not True:
         errors.append("exact dependency-lock continuity flag unexpectedly changed")
@@ -106,6 +106,14 @@ def main() -> int:
             "repository license status changed; update continuity deliberately "
             "before changing public licensing claims"
         )
+
+    license_preflight = governance.get("license_preflight_inventory") or {}
+    if license_preflight.get("status") != "prepared_not_legal_clearance":
+        errors.append("license preflight inventory status changed unexpectedly")
+    if license_preflight.get("inventory_version") != "third-party-inventory-v0.1":
+        errors.append("third-party inventory version changed unexpectedly")
+    if license_preflight.get("direct_dependency_and_action_drift_check") is not True:
+        errors.append("license preflight drift check unexpectedly disabled")
 
     gates = state.get("claim_gates") or {}
     protected = {
