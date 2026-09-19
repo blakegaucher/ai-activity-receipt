@@ -27,6 +27,16 @@ The project is pre-commercial research. Version labels below describe repository
 - enforce the current direct-delegation profile (`authority.delegate == system.agent_id`);
 - preserve private-reasoning exclusion diagnostics.
 
+### Reproducibility and study-pipeline hardening
+
+- pin CI to CPython 3.12.14 and an exact tested dependency snapshot while retaining `requirements.txt` as the supported-range declaration;
+- pin GitHub Actions dependencies to exact commit SHAs and publish the machine-readable reproducibility report as a CI artifact;
+- add a root `.gitignore` covering Python/editor noise plus common AR-P003 reviewer, hidden-analysis, response, scorer-input, and private local output paths;
+- fail reviewer-bundle construction when a hidden gold set-valued answer cannot be expressed by the visible answer options;
+- emit analysis-side answer-option diagnostics so exact-gold option sets and distractor counts can be reviewed before freeze;
+- add an end-to-end synthetic AR-P003 integration test from seeded assignment through bundle build, reviewer response, hidden-label merge, and scoring;
+- add contribution/data-safety guidance and explicitly document that no repository license has yet been selected rather than silently assigning one.
+
 ### AR-P003 v0.3 reviewer-bundle build pipeline
 
 - connect seeded reviewer/case assignments and linted case-package manifests to the development offline runner;
