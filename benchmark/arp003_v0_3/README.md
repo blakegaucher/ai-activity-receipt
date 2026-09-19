@@ -25,6 +25,12 @@ This directory contains **development infrastructure** for the next human-center
 - `runner-build-config.schema.json` — analysis-side configuration for turning case packages + assignment rows into reviewer bundles.
 - `build_runner_bundles.py` — validates case packages, enforces assignment/manifest stratum agreement, checks that every set-valued gold answer is representable by the reviewer UI options, emits condition-specific reviewer bundles plus a separate hidden analysis bundle and SHA-256 build manifest.
 - `pipeline_smoke_test.py` — synthetic end-to-end assignment → bundle build → reviewer response → hidden-label merge → scoring integration test.
+- `freeze-readiness.schema.json` — machine-readable preregistration/freeze gate schema.
+- `freeze-readiness.current.json` — current gate state; intentionally development-not-ready.
+- `check_freeze_readiness.py` — fails closed on premature ready/frozen claims and cross-checks `protocol.json`.
+- `browser-smoke-record.schema.json` — structured record for real manual browser/device smoke tests.
+- `browser-smoke-record.example.json` — deliberately incomplete/not-run template; not smoke-test evidence.
+- `validate_browser_smoke.py` — prevents incomplete templates or major defects from masquerading as a passing manual smoke record.
 
 The human-readable preregistration draft is in:
 
@@ -106,6 +112,9 @@ python benchmark/arp003_v0_3/validate_runner_data.py --self-test
 python benchmark/arp003_v0_3/merge_runner_responses.py --self-test
 python benchmark/arp003_v0_3/build_runner_bundles.py --self-test
 python benchmark/arp003_v0_3/pipeline_smoke_test.py
+python benchmark/arp003_v0_3/check_freeze_readiness.py --self-test
+python benchmark/arp003_v0_3/check_freeze_readiness.py
+python benchmark/arp003_v0_3/validate_browser_smoke.py --self-test
 python benchmark/arp003_v0_3/freeze_manifest.py --self-test
 ```
 
