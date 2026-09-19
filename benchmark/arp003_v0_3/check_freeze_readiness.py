@@ -12,12 +12,16 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import SchemaError
+
+import validate_methodology_decisions as methodology_validator
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -83,14 +87,9 @@ def is_resolved(gate: dict[str, Any]) -> bool:
 
 
 def methodology_status_map(methodology: dict[str, Any]) -> dict[str, str]:
-    decisions = methodology.get("decisions")
-    if not isinstance(decisions, list):
-        return {}
-    output: dict[str, str] = {}
-    for item in decisions:
-        if isinstance(item, dict) and isinstance(item.get("decision_id"), str):
-            output[item["decision_id"]] = str(item.get("status"))
-    return output
+    # validate() checks the complete ledger before this projection. In
+    # particular, duplicate IDs must not be hidden by dictionary replacement.
+    return {item["decision_id"]: item["status"] for item in methodology["decisions"]}
 
 
 def semantic_errors(
@@ -145,11 +144,16 @@ def semantic_errors(
     ]
 
     unresolved_methodology = sorted(
-        decision_id
-        for decision_id, decision_status in methodology_status.items()
-        if decision_status != "selected"
-        and decision_id in set(METHODOLOGY_GATE_MAP.values())
+        item["decision_id"]
+        for item in methodology["decisions"]
+        if item["pre_freeze_required"] and item["status"] != "selected"
     )
+
+    if status in {"ready_for_freeze", "frozen"} and methodology["status"] != "methodology_resolved":
+        errors.append(
+            f"study_status={status!r} requires methodology ledger status "
+            "'methodology_resolved'"
+        )
 
     if status == "ready_for_freeze" and unresolved_pre:
         errors.append(
@@ -223,6 +227,20 @@ def validate(
         return ["protocol.json must be an object"]
     if not isinstance(methodology, dict):
         return ["methodology decision ledger must be an object"]
+
+    # A status string alone is not evidence of a valid decision. Reuse the
+    # canonical validator for candidate references, rationale, evidence, unique
+    # IDs, and mandatory decisions before consulting the selected statuses.
+    try:
+        methodology_schema = load_json(methodology_validator.SCHEMA_PATH)
+        Draft202012Validator.check_schema(methodology_schema)
+    except (OSError, json.JSONDecodeError, SchemaError) as exc:
+        return [f"unable to load methodology schema: {exc}"]
+    methodology_errors = methodology_validator.validate(
+        methodology, methodology_schema, protocol
+    )
+    if methodology_errors:
+        return [f"methodology ledger: {error}" for error in methodology_errors]
     return semantic_errors(readiness, protocol, methodology)
 
 
@@ -323,10 +341,89 @@ def run_self_test() -> int:
     errors = validate(frozen, schema, frozen_protocol, resolved_methodology)
     assert not errors, errors
 
+    # Regression: selected labels must not conceal an invalid ledger, including
+    # a custom ledger supplied through --methodology.
+    for key, value, expected in (
+        ("selected_candidate", "no_such_candidate", "LEDGER-05"),
+        ("rationale", " ", "LEDGER-06"),
+        ("evidence_refs", [], "LEDGER-07"),
+        ("pre_freeze_required", False, "LEDGER-12"),
+    ):
+        invalid = copy.deepcopy(resolved_methodology)
+        invalid["decisions"][0][key] = value
+        errors = validate(ready, schema, ready_protocol, invalid)
+        assert any(expected in error for error in errors), errors
+
+    duplicate = copy.deepcopy(resolved_methodology)
+    duplicate["decisions"].append(copy.deepcopy(duplicate["decisions"][0]))
+    errors = validate(ready, schema, ready_protocol, duplicate)
+    assert any("LEDGER-02" in error for error in errors), errors
+
+    missing = copy.deepcopy(resolved_methodology)
+    missing["decisions"] = missing["decisions"][1:]
+    errors = validate(ready, schema, ready_protocol, missing)
+    assert any("LEDGER-03" in error for error in errors), errors
+
+    malformed = copy.deepcopy(resolved_methodology)
+    malformed["decisions"] = "selected"
+    errors = validate(ready, schema, ready_protocol, malformed)
+    assert any("STRUCTURE" in error for error in errors), errors
+
+    stale_status = copy.deepcopy(resolved_methodology)
+    stale_status["status"] = "development_unresolved"
+    errors = validate(ready, schema, ready_protocol, stale_status)
+    assert any("requires methodology ledger status" in error for error in errors), errors
+
+    # Additional required decisions must also be resolved before readiness.
+    extra_required = copy.deepcopy(resolved_methodology)
+    extra = copy.deepcopy(methodology["decisions"][0])
+    extra["decision_id"] = "synthetic_additional_required_decision"
+    extra_required["decisions"].append(extra)
+    extra_required["status"] = "development_unresolved"
+    errors = validate(ready, schema, ready_protocol, extra_required)
+    assert any(extra["decision_id"] in error for error in errors), errors
+
+    # Every mapped gate is cross-checked even before an overall ready claim.
+    for gate_id in METHODOLOGY_GATE_MAP:
+        for gate_status in ("complete", "not_applicable"):
+            premature_gate = copy.deepcopy(current)
+            premature_gate["gates"][gate_id]["status"] = gate_status
+            premature_gate["gates"][gate_id]["evidence_refs"] = ["synthetic://gate"]
+            errors = validate(premature_gate, schema, protocol, methodology)
+            assert any("is not selected" in error for error in errors), errors
+
     protocol_drift = copy.deepcopy(protocol)
     protocol_drift["version"] = "other-version"
     errors = validate(current, schema, protocol_drift, methodology)
     assert any("protocol_version does not match" in error for error in errors)
+
+    # Exercise the actual CLI with a custom ledger; validating only the
+    # checked-in ledger in another CI step cannot protect this input path.
+    with tempfile.TemporaryDirectory(prefix="arp003-readiness-selftest-") as tmp:
+        directory = Path(tmp)
+        ready_path = directory / "readiness.json"
+        protocol_path = directory / "protocol.json"
+        methodology_path = directory / "methodology.json"
+        ready_path.write_text(json.dumps(ready), encoding="utf-8")
+        protocol_path.write_text(json.dumps(ready_protocol), encoding="utf-8")
+        methodology_path.write_text(json.dumps(resolved_methodology), encoding="utf-8")
+        command = [
+            sys.executable, str(Path(__file__).resolve()), str(ready_path),
+            "--protocol", str(protocol_path),
+            "--methodology", str(methodology_path), "--require-ready",
+        ]
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        assert result.returncode == 0, result.stderr
+
+        invalid = copy.deepcopy(resolved_methodology)
+        invalid["decisions"][0]["selected_candidate"] = "no_such_candidate"
+        methodology_path.write_text(json.dumps(invalid), encoding="utf-8")
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        assert result.returncode == 1 and "LEDGER-05" in result.stderr, result.stderr
+
+        methodology_path.unlink()
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        assert result.returncode == 2, result.stderr
 
     print(
         "AR-P003 freeze-readiness self-test passed: current draft remains "

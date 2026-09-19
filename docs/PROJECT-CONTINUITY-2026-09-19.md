@@ -373,3 +373,22 @@ AR-P003 v0.3             = draft / not frozen / not executed
 The freeze-readiness model now includes an explicit comparison-condition gate. Code implementing one current option must not be treated as a final preregistration choice merely because it already exists.
 
 No historical v0.2.3 result, human-benefit claim, ethics status, or commercial evidence changed in this update.
+
+---
+
+## Methodology/freeze cross-check update — 2026-09-19
+
+The readiness checker now validates the supplied methodology ledger before
+accepting completed gates or a ready/frozen state. Its six linked gates must
+agree with valid selections; mandatory decisions cannot be marked optional.
+Custom ledger files receive the same validation as the checked-in ledger.
+
+This continues the existing `arp003-freeze-methodology-crosscheck` work and is
+covered by synthetic negative tests and reproducibility suite v0.9. It corrects
+a metadata-consistency gap: selected status labels alone previously allowed an
+invalid candidate reference through the pending cross-check implementation.
+
+The current methodology ledger remains `development_unresolved`; AR-P003 v0.3
+remains `draft_not_frozen_not_executed`. The protocol, actual decision ledger,
+readiness declarations, and frozen v0.2.3 evidence are unchanged. The next study
+actions remain deliberate methodology decisions and real browser/device tests.
