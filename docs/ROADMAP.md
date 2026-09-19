@@ -73,6 +73,7 @@ A technically informed reader should be able to understand what an Activity Rece
 - [x] Bind reviewer bundles/responses to the exact assignment hash/version and reject case/order/condition drift during analysis.
 - [x] Ignore common local/private study outputs by default to reduce accidental Git commits.
 - [ ] Complete manual browser/device, pause/visibility, reload/download-loss, scrolling, and accessibility smoke tests for the intended study environment.
+- [x] Publish a third-party dependency/action inventory and license-decision preflight without selecting terms.
 - [ ] Choose and publish an explicit repository license before presenting the project as open-source licensed or inviting broad code redistribution.
 - [ ] Define target reviewer population.
 - [ ] Freeze primary endpoint(s) and meaningful effect/precision target.

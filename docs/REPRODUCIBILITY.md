@@ -37,9 +37,12 @@ The suite currently executes:
 - AR-P003 assignment-to-runner bundle-builder tests;
 - AR-P003 end-to-end assignment → bundle → merge → scoring smoke test;
 - AR-P003 freeze-manifest tests;
-- repository security smoke checks for workflow permissions, immutable Action refs, checkout credentials, Dependabot/CODEOWNERS metadata, offline-runner boundaries, private-study ignore rules, and high-confidence secret markers.
+- repository security smoke checks for workflow permissions, immutable Action refs, checkout credentials, Dependabot/CODEOWNERS metadata, offline-runner boundaries, private-study ignore rules, and high-confidence secret markers;
+- third-party dependency/action inventory preflight for direct requirements, workflow Action repositories, lock-package names, and the current no-license boundary.
 
 The AR-P003 protocol JSON is also parsed explicitly before the suite runs.
+
+The aggregate suite identifier is now `ai-activity-receipt-repro-v0.5`; the version changed because the license-preflight inventory check became part of the reproducibility path.
 
 ## Machine-readable report
 

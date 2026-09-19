@@ -17,6 +17,14 @@ Before a broader external-reproduction or contribution phase, the project should
 - whether any third-party-derived material requires notices or different terms;
 - how future human-study material will be licensed, if released at all.
 
+## License-decision preflight now available
+
+A dated dependency/action/protocol-reference inventory and owner decision checklist are available at [LICENSE-PREFLIGHT.md](LICENSE-PREFLIGHT.md).
+
+The machine-readable inventory is `research/third-party-inventory.json`, with a deterministic drift check at `research/validate_third_party_inventory.py`.
+
+This preparation does **not** select or grant a license. The owner decision remains open.
+
 ## Third-party material
 
 References to standards, protocols, specifications, or external projects do not transfer their licenses to this repository.

@@ -76,6 +76,7 @@ A passing run reproduces repository-local deterministic/synthetic checks only. I
 - [Repository Security Hardening](docs/SECURITY-HARDENING.md)
 - [Citation Metadata](CITATION.cff)
 - [Licensing Status](docs/LICENSING.md)
+- [License Decision Preflight](docs/LICENSE-PREFLIGHT.md)
 - [Executable validator](validate_receipts.py)
 ---
 ## The problem
