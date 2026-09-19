@@ -23,7 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.8"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.9"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -202,6 +202,16 @@ CHECKS: list[dict[str, Any]] = [
         "artifacts": [
             "benchmark/arp003_v0_3/lint_case_packages.py",
             "benchmark/arp003_v0_3/case-package.schema.json",
+        ],
+    },
+    {
+        "id": "arp003-leakage-audit",
+        "argv": ["benchmark/arp003_v0_3/audit_leakage.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/audit_leakage.py",
+            "benchmark/arp003_v0_3/leakage-audit.schema.json",
+            "benchmark/arp003_v0_3/build_runner_bundles.py",
+            "benchmark/arp003_v0_3/runner-analysis.schema.json",
         ],
     },
     {
