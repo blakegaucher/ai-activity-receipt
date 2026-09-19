@@ -70,6 +70,8 @@ A technically informed reader should be able to understand what an Activity Rece
 - [x] Publish an analysis-side reviewer-bundle builder that packages seeded assignments + linted case packages while keeping gold/strata hidden and hashing generated artifacts.
 - [x] Add a gold-to-answer-option representability guard and pre-freeze option diagnostics.
 - [x] Add an end-to-end assignment → bundle → reviewer-response → hidden-label merge → scoring smoke test.
+- [x] Publish a machine-readable freeze-readiness guard that distinguishes pending/prepared/complete/not-applicable gates and rejects premature ready/frozen states.
+- [x] Publish a structured manual browser/device smoke-record schema and validator without treating the checked-in template as real smoke evidence.
 - [x] Bind reviewer bundles/responses to the exact assignment hash/version and reject case/order/condition drift during analysis.
 - [x] Ignore common local/private study outputs by default to reduce accidental Git commits.
 - [ ] Complete manual browser/device, pause/visibility, reload/download-loss, scrolling, and accessibility smoke tests for the intended study environment.

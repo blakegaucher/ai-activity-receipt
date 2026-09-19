@@ -23,7 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.5"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.6"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -247,6 +247,36 @@ CHECKS: list[dict[str, Any]] = [
             "benchmark/arp003_v0_3/runner-analysis.schema.json",
             "benchmark/arp003_v0_3/runner-response.schema.json",
             "benchmark/arp003_v0_3/response-record.schema.json",
+        ],
+    },
+    {
+        "id": "arp003-freeze-readiness",
+        "argv": ["benchmark/arp003_v0_3/check_freeze_readiness.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/check_freeze_readiness.py",
+            "benchmark/arp003_v0_3/freeze-readiness.schema.json",
+            "benchmark/arp003_v0_3/freeze-readiness.current.json",
+            "benchmark/arp003_v0_3/protocol.json",
+            "docs/AR-P003-V0.3-FREEZE-READINESS.md",
+        ],
+    },
+    {
+        "id": "arp003-freeze-readiness-current",
+        "argv": ["benchmark/arp003_v0_3/check_freeze_readiness.py"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/check_freeze_readiness.py",
+            "benchmark/arp003_v0_3/freeze-readiness.current.json",
+            "benchmark/arp003_v0_3/protocol.json",
+        ],
+    },
+    {
+        "id": "arp003-browser-smoke-record",
+        "argv": ["benchmark/arp003_v0_3/validate_browser_smoke.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/validate_browser_smoke.py",
+            "benchmark/arp003_v0_3/browser-smoke-record.schema.json",
+            "benchmark/arp003_v0_3/browser-smoke-record.example.json",
+            "benchmark/arp003_v0_3/offline_runner.html",
         ],
     },
     {

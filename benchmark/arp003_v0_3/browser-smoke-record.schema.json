@@ -1,0 +1,465 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Manual Browser Smoke-Test Record",
+  "description": "Manual environment-specific record for development runner behavior. A passing record is instrument evidence only, not human-benefit evidence.",
+  "type": "object",
+  "required": [
+    "smoke_record_version",
+    "runner_commit",
+    "runner_sha256",
+    "tester_role",
+    "environment",
+    "started_at",
+    "completed_at",
+    "overall_status",
+    "checks",
+    "defects"
+  ],
+  "properties": {
+    "smoke_record_version": {
+      "const": "AR-P003-v0.3-browser-smoke-v0.1"
+    },
+    "runner_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "runner_sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "tester_role": {
+      "type": "string",
+      "enum": [
+        "project_owner",
+        "independent_tester",
+        "study_staff"
+      ]
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "device_class",
+        "operating_system",
+        "browser",
+        "browser_version"
+      ],
+      "properties": {
+        "device_class": {
+          "type": "string",
+          "enum": [
+            "desktop",
+            "laptop",
+            "tablet",
+            "phone"
+          ]
+        },
+        "operating_system": {
+          "type": "string",
+          "minLength": 1
+        },
+        "browser": {
+          "type": "string",
+          "minLength": 1
+        },
+        "browser_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "viewport": {
+          "type": "string"
+        },
+        "input_method": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "overall_status": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail",
+        "incomplete"
+      ]
+    },
+    "checks": {
+      "type": "object",
+      "required": [
+        "load_valid_bundle",
+        "reject_invalid_or_oversized_bundle",
+        "structured_answer_controls",
+        "manual_pause_resume_timing",
+        "visibility_pause_timing",
+        "intermission_timer_boundary",
+        "mid_session_download",
+        "final_download",
+        "reload_navigation_warning",
+        "long_evidence_scrolling",
+        "keyboard_only_navigation",
+        "visible_focus",
+        "text_zoom_responsive_layout",
+        "no_case_revisit",
+        "export_schema_validation"
+      ],
+      "properties": {
+        "load_valid_bundle": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "reject_invalid_or_oversized_bundle": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "structured_answer_controls": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "manual_pause_resume_timing": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "visibility_pause_timing": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "intermission_timer_boundary": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "mid_session_download": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "final_download": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "reload_navigation_warning": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "long_evidence_scrolling": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "keyboard_only_navigation": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "visible_focus": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "text_zoom_responsive_layout": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "no_case_revisit": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "export_schema_validation": {
+          "type": "object",
+          "required": [
+            "status",
+            "notes"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail",
+                "not_tested"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "defects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "severity",
+          "summary",
+          "requires_new_runner_version"
+        ],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": [
+              "minor",
+              "major",
+              "blocking"
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requires_new_runner_version": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

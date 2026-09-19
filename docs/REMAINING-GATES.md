@@ -84,6 +84,8 @@ The remaining action is the owner's explicit choice for project-authored code, d
 
 **Status:** Open; requires real browser/device interaction.
 
+A structured smoke-test record schema and validator now exist so each tested environment can be preserved with exact runner commit/hash, browser/OS/device details, per-check status, and defects. The checked-in example is an incomplete template and is not evidence that any environment passed.
+
 Automated tests cannot establish:
 
 - pause/resume behavior in actual browsers;
@@ -99,6 +101,8 @@ Use only synthetic development bundles.
 ### Preregistration/freeze decisions — issue #47
 
 **Status:** Open; human-study methodology decisions required.
+
+**Machine-readable readiness guard:** published at `benchmark/arp003_v0_3/freeze-readiness.current.json` with validator `check_freeze_readiness.py`. The current state is `development_not_ready`; the guard rejects premature ready/frozen claims but does not make the missing decisions.
 
 Before confirmatory human execution:
 

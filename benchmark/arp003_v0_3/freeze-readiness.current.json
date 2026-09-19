@@ -1,0 +1,118 @@
+{
+  "readiness_version": "AR-P003-v0.3-freeze-readiness-v0.1",
+  "protocol_version": "v0.3-draft-2026-09-18",
+  "study_status": "development_not_ready",
+  "gates": {
+    "reviewer_population": {
+      "status": "pending",
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-PROTOCOL.md"
+      ],
+      "notes": "Target reviewer population and eligibility/exclusion criteria are not frozen."
+    },
+    "primary_endpoints": {
+      "status": "prepared",
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-PROTOCOL.md",
+        "benchmark/arp003_v0_3/response-record.schema.json"
+      ],
+      "notes": "Candidate component endpoints exist, but the confirmatory primary endpoint or small prespecified primary set is not frozen."
+    },
+    "effect_or_precision_target": {
+      "status": "pending",
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-PLANNING.md"
+      ],
+      "notes": "No minimally meaningful effect or final precision target has been selected."
+    },
+    "crossed_design_power": {
+      "status": "prepared",
+      "evidence_refs": [
+        "benchmark/arp003_v0_3/plan_sample_size.py",
+        "docs/AR-P003-V0.3-PLANNING.md"
+      ],
+      "notes": "Independent-observation screening exists; reviewer-by-case design-specific planning remains open."
+    },
+    "sample_allocation_stopping": {
+      "status": "pending",
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-PROTOCOL.md"
+      ],
+      "notes": "Reviewer count, case count, cases per reviewer, allocation, and stopping rule are not frozen."
+    },
+    "sealed_corpus": {
+      "status": "pending",
+      "evidence_refs": [
+        "benchmark/arp003_v0_3/case-package.schema.json",
+        "benchmark/arp003_v0_3/lint_case_packages.py"
+      ],
+      "notes": "Development corpus tooling exists; no fresh sealed confirmatory corpus has been created."
+    },
+    "leakage_validation": {
+      "status": "prepared",
+      "evidence_refs": [
+        "benchmark/arp003_v0_3/lint_case_packages.py",
+        "docs/AR-P003-V0.3-PROTOCOL.md"
+      ],
+      "notes": "Mechanical leakage checks exist; realistic heterogeneous confirmatory logs still require construction and review."
+    },
+    "challenge_strata": {
+      "status": "prepared",
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-PROTOCOL.md",
+        "benchmark/arp003_v0_3/runner-analysis.schema.json"
+      ],
+      "notes": "Stale, incomplete, and conflicting Receipt strata are specified but no final sealed case counts are frozen."
+    },
+    "browser_smoke": {
+      "status": "pending",
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-OFFLINE-RUNNER.md"
+      ],
+      "notes": "Automated/static runner checks pass, but real browser/device/accessibility smoke testing remains open."
+    },
+    "reviewer_instructions": {
+      "status": "prepared",
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md"
+      ],
+      "notes": "Neutral reviewer instructions exist as a draft and are not frozen."
+    },
+    "assignment": {
+      "status": "prepared",
+      "evidence_refs": [
+        "benchmark/arp003_v0_3/generate_assignment.py",
+        "benchmark/arp003_v0_3/build_runner_bundles.py"
+      ],
+      "notes": "Balanced seeded assignment tooling exists; final seed/config/order are not frozen."
+    },
+    "timing_exclusions": {
+      "status": "prepared",
+      "evidence_refs": [
+        "docs/AR-P003-V0.3-OFFLINE-RUNNER.md",
+        "benchmark/arp003_v0_3/runner-response.schema.json"
+      ],
+      "notes": "Wall/active instrumentation exists; primary timing definition and technical-exclusion rules are not frozen."
+    },
+    "scorer_analysis_plan": {
+      "status": "prepared",
+      "evidence_refs": [
+        "benchmark/arp003_v0_3/score_responses.py",
+        "docs/AR-P003-V0.3-PROTOCOL.md"
+      ],
+      "notes": "Component scorer exists; final statistical analysis handling reviewer/case dependence is not frozen."
+    },
+    "ethics_determination": {
+      "status": "pending",
+      "evidence_refs": [],
+      "notes": "No ethics/REB/IRB review or documented determination has been recorded."
+    },
+    "freeze_manifest": {
+      "status": "prepared",
+      "evidence_refs": [
+        "benchmark/arp003_v0_3/freeze_manifest.py"
+      ],
+      "notes": "Manifest tooling exists; no final confirmatory freeze manifest can be produced until all preceding gates are resolved."
+    }
+  }
+}

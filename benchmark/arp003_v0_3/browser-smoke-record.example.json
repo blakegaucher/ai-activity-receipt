@@ -1,0 +1,79 @@
+{
+  "smoke_record_version": "AR-P003-v0.3-browser-smoke-v0.1",
+  "runner_commit": "0000000000000000000000000000000000000000",
+  "runner_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "tester_role": "project_owner",
+  "environment": {
+    "device_class": "desktop",
+    "operating_system": "NOT_RUN",
+    "browser": "NOT_RUN",
+    "browser_version": "NOT_RUN",
+    "notes": "Template/example only. Replace all environment and result fields after a real manual smoke test."
+  },
+  "started_at": "2026-09-19T00:00:00Z",
+  "completed_at": "2026-09-19T00:00:00Z",
+  "overall_status": "incomplete",
+  "checks": {
+    "load_valid_bundle": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "reject_invalid_or_oversized_bundle": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "structured_answer_controls": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "manual_pause_resume_timing": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "visibility_pause_timing": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "intermission_timer_boundary": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "mid_session_download": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "final_download": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "reload_navigation_warning": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "long_evidence_scrolling": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "keyboard_only_navigation": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "visible_focus": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "text_zoom_responsive_layout": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "no_case_revisit": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    },
+    "export_schema_validation": {
+      "status": "not_tested",
+      "notes": "Not run; template value."
+    }
+  },
+  "defects": []
+}

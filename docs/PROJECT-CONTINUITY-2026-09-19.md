@@ -292,3 +292,22 @@ Before changing a frozen benchmark, public schema version, claim boundary, or cr
 6. update this continuity snapshot or its dated successor.
 
 This keeps later conversations from silently collapsing historical results, research prototypes, business hypotheses, and current public claims into one state.
+
+
+---
+
+## Freeze-readiness guard update — 2026-09-19
+
+AR-P003 v0.3 now has a machine-readable readiness control that records each major preregistration/freeze gate as pending, prepared, complete, or not applicable.
+
+The current tracked status remains:
+
+```text
+development_not_ready
+```
+
+The guard rejects premature `ready_for_freeze` / `frozen` status and cross-checks the protocol version/frozen flag.
+
+A separate structured browser/device smoke-record schema now exists for issue #38. The checked-in smoke record is explicitly a not-run template and is not browser evidence.
+
+No human-study, ethics, customer, or external-validation gate changed status in this update.
