@@ -21,7 +21,7 @@ This directory contains **development infrastructure** for the next human-center
 - `runner-analysis.schema.json` — hidden analysis-side gold/stratum schema.
 - `runner-bundle.example.json` — synthetic development-only runner bundle.
 - `validate_runner_data.py` — bundle/response validation plus static offline/no-network runner checks.
-- `merge_runner_responses.py` — analysis-side join from reviewer export + hidden gold bundle into scorer-compatible JSONL.
+- `merge_runner_responses.py` — analysis-side join from reviewer export + hidden gold bundle + exact frozen assignment into scorer-compatible JSONL; rejects assignment-hash/version, case/order, condition, stratum, and incomplete-session mismatches.
 - `runner-build-config.schema.json` — analysis-side configuration for turning case packages + assignment rows into reviewer bundles.
 - `build_runner_bundles.py` — validates case packages, enforces assignment/manifest stratum agreement, checks that every set-valued gold answer is representable by the reviewer UI options, emits condition-specific reviewer bundles plus a separate hidden analysis bundle and SHA-256 build manifest.
 - `pipeline_smoke_test.py` — synthetic end-to-end assignment → bundle build → reviewer response → hidden-label merge → scoring integration test.
@@ -165,6 +165,14 @@ python benchmark/arp003_v0_3/freeze_manifest.py \
 ```
 
 Do not treat a development manifest as the final confirmatory freeze unless it also includes the final corpus, instructions, assignments, exclusions, and analysis artifacts required by the protocol.
+
+### Assignment-bound response integrity
+
+Generated reviewer bundles now carry the exact assignment version and SHA-256 digest. The offline runner propagates those fields into response exports.
+
+The analysis-side merge requires the exact assignment JSON and treats it—not the reviewer export—as authoritative for reviewer membership, case order, and control/Receipt condition. Final scorer input is rejected if the response was edited or mixed with a different assignment.
+
+This is an integrity control for the development study pipeline. It is not cryptographic signer authentication and does not prevent a malicious party who can replace every analysis artifact consistently.
 
 ### Answer-option representability guard
 
