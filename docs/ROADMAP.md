@@ -66,7 +66,11 @@ A technically informed reader should be able to understand what an Activity Rece
 - [x] Publish a development sample-size/precision planner and illustrative sensitivity grid without freezing assumptions.
 - [x] Publish a development-only offline reviewer runner with structured responses, pause/visibility timing, safe intermissions, and reviewer/analysis data separation.
 - [x] Publish an analysis-side reviewer-bundle builder that packages seeded assignments + linted case packages while keeping gold/strata hidden and hashing generated artifacts.
+- [x] Add a gold-to-answer-option representability guard and pre-freeze option diagnostics.
+- [x] Add an end-to-end assignment → bundle → reviewer-response → hidden-label merge → scoring smoke test.
+- [x] Ignore common local/private study outputs by default to reduce accidental Git commits.
 - [ ] Complete manual browser/device, pause/visibility, reload/download-loss, scrolling, and accessibility smoke tests for the intended study environment.
+- [ ] Choose and publish an explicit repository license before presenting the project as open-source licensed or inviting broad code redistribution.
 - [ ] Define target reviewer population.
 - [ ] Freeze primary endpoint(s) and meaningful effect/precision target.
 - [ ] Complete sample-size or precision analysis.
