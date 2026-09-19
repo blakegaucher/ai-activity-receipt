@@ -1,4 +1,4 @@
-# Tested dependency snapshot from GitHub Actions on 2026-09-18.
+# Tested dependency snapshot from GitHub Actions on 2026-09-19.
 # Python: CPython 3.12.14
 # Keep requirements.txt as the supported-range declaration; use this file for
 # repository CI / exact reproduction of the tested dependency set.

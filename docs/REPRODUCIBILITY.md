@@ -113,6 +113,8 @@ python research/reproduce.py --quiet
 
 The public workflow pins checkout/setup/upload Actions to exact commit SHAs, limits the primary workflow token to `contents: read`, disables checkout credential persistence, applies a 20-minute job timeout, cancels obsolete in-progress runs for the same ref, pins CPython 3.12.14, installs the exact dependency snapshot, runs the repository security smoke test, and uploads the machine-readable reproducibility report as a workflow artifact.
 
+Current tested dependency/action refresh (2026-09-19): `cryptography==50.0.1`, checkout 7.0.1, setup-python 7.0.0, and upload-artifact 7.0.1. The Actions are still referenced by full immutable commit SHA in the workflow; version numbers here are readability metadata.
+
 The repository also publishes weekly Dependabot version-update configuration for pip and GitHub Actions, plus CODEOWNERS metadata for security/evidence-sensitive paths.
 
 This reduces avoidable environment and repository-governance drift. It does not make GitHub-hosted infrastructure or the dependency supply chain independently trusted, and it does not replace CodeQL, secret scanning, private vulnerability reporting, or branch/ruleset administration.
