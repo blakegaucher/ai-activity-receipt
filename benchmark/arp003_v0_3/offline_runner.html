@@ -48,6 +48,35 @@
     <button id="startBtn" class="primary hidden">Start session</button>
   </section>
 
+  <section id="comprehension" class="card hidden">
+    <h2>Instructions check</h2>
+    <p>Answer all three questions correctly before the first timed case begins.</p>
+    <form id="comprehensionForm">
+      <fieldset>
+        <legend>1. If an Activity Receipt conflicts with the underlying source evidence, what should you do?</legend>
+        <label class="option"><input type="radio" name="cq1" value="trust_receipt"> Treat the Receipt as automatically correct.</label>
+        <label class="option"><input type="radio" name="cq1" value="reconstruct_from_evidence"> Reconstruct from the available evidence and report missing/conflicting evidence as applicable.</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Should you provide private chain-of-thought or hidden reasoning?</legend>
+        <label class="option"><input type="radio" name="cq2" value="yes"> Yes.</label>
+        <label class="option"><input type="radio" name="cq2" value="no"> No. Submit only the structured reconstruction requested by the task.</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. When can active case timing pause in this development runner?</legend>
+        <label class="option"><input type="radio" name="cq3" value="never"> It never pauses.</label>
+        <label class="option"><input type="radio" name="cq3" value="pause_or_hidden"> During explicit Pause/Resume or while the page is hidden.</label>
+      </fieldset>
+
+      <p id="comprehensionError" class="error hidden"></p>
+      <div class="toolbar">
+        <button type="submit" class="primary">Check answers and begin</button>
+      </div>
+    </form>
+  </section>
+
   <section id="caseView" class="hidden">
     <div class="toolbar">
       <span id="progress" class="progress status"></span>
@@ -150,7 +179,8 @@
 "use strict";
 
 const EXPECTED_VERSION = "AR-P003-v0.3-dev-runner-bundle-v0.2";
-const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.2";
+const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.3";
+const COMPREHENSION_VERSION = "AR-P003-v0.3-comprehension-v0.1";
 const MAX_BUNDLE_BYTES = 32 * 1024 * 1024;
 const MAX_CASES = 512;
 const MAX_EVIDENCE_ARTIFACTS = 16;
@@ -170,6 +200,8 @@ let currentIndex = -1;
 let caseState = null;
 let sessionStartedAt = null;
 let sessionCompletedAt = null;
+let comprehensionAttempts = 0;
+let comprehensionPassedAt = null;
 
 const $ = (id) => document.getElementById(id);
 const nowIso = () => new Date().toISOString();
@@ -418,6 +450,11 @@ function exportObject() {
     reviewer_id: bundle.reviewer_id,
     session_started_at: sessionStartedAt,
     session_completed_at: sessionCompletedAt,
+    comprehension: {
+      gate_version: COMPREHENSION_VERSION,
+      attempts: comprehensionAttempts,
+      passed_at: comprehensionPassedAt
+    },
     cases: results
   };
 }
@@ -455,6 +492,8 @@ $("loadBtn").addEventListener("click", async () => {
     caseState = null;
     sessionStartedAt = null;
     sessionCompletedAt = null;
+    comprehensionAttempts = 0;
+    comprehensionPassedAt = null;
 
     $("setupStatus").textContent = "Bundle loaded successfully.";
     $("setupStatus").classList.remove("muted", "error");
@@ -474,8 +513,37 @@ $("loadBtn").addEventListener("click", async () => {
 
 $("startBtn").addEventListener("click", () => {
   if (!bundle) return;
-  sessionStartedAt = nowIso();
   $("setup").classList.add("hidden");
+  $("comprehension").classList.remove("hidden");
+  $("comprehensionForm").reset();
+  $("comprehensionError").classList.add("hidden");
+  window.scrollTo({top: 0, behavior: "auto"});
+});
+
+$("comprehensionForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!bundle) return;
+
+  comprehensionAttempts += 1;
+  const q1 = selectedRadio("cq1");
+  const q2 = selectedRadio("cq2");
+  const q3 = selectedRadio("cq3");
+
+  const correct =
+    q1 === "reconstruct_from_evidence" &&
+    q2 === "no" &&
+    q3 === "pause_or_hidden";
+
+  if (!correct) {
+    $("comprehensionError").textContent =
+      "One or more answers are incorrect. Review the instructions and try again.";
+    $("comprehensionError").classList.remove("hidden");
+    return;
+  }
+
+  comprehensionPassedAt = nowIso();
+  sessionStartedAt = comprehensionPassedAt;
+  $("comprehension").classList.add("hidden");
   startCase(0);
 });
 
