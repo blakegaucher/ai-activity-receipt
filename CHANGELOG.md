@@ -123,6 +123,16 @@ The project is pre-commercial research. Version labels below describe repository
 - refuse silent output-directory overwrite and fail on non-UTF-8 evidence in the current text-only runner profile;
 - add deterministic self-test, CI, and aggregate reproducibility coverage.
 
+### AR-P003 pre-case comprehension gate
+
+- add a neutral three-question instruction check before the first timed case;
+- require reviewers to understand Receipt/source-evidence conflict handling, private chain-of-thought exclusion, and pause/visibility timing behavior;
+- start session/case timing only after the comprehension gate is passed;
+- record only gate version, attempt count, and pass timestamp in reviewer response exports;
+- bump the development response-export schema to v0.3 and require comprehension metadata;
+- reject analysis-side merges that lack valid comprehension-gate evidence;
+- extend runner validation and end-to-end pipeline tests.
+
 ### AR-P003 freeze-readiness and smoke-evidence guards
 
 - add a machine-readable v0.3 freeze-readiness state for all major preregistration, corpus, browser, analysis, ethics, assignment, timing, and freeze-manifest gates;
