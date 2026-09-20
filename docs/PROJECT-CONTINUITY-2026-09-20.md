@@ -567,7 +567,7 @@ A source-first review of current `main` confirms that the repository has now add
 The aggregate reproducibility profile is now:
 
 ```text
-ai-activity-receipt-repro-v0.16
+ai-activity-receipt-repro-v0.17
 ```
 
 The machine-readable continuity snapshot advances to:
