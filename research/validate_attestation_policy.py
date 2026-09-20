@@ -345,7 +345,7 @@ def run_self_test(schema: dict[str, Any], example: dict[str, Any]) -> int:
         "https://example.invalid/no-such-payload-type"
     ]
     errors = validate(unknown_role_payload, schema)
-    assert any("references unknown payload type" in error for error in errors)
+    assert any("unknown payload type" in error for error in errors)
 
     too_many_signatures = copy.deepcopy(example)
     too_many_signatures["verification"]["minimum_signatures"] = 2
