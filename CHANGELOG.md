@@ -4,6 +4,13 @@ This changelog tracks public candidate-schema and validation changes for the AI 
 
 The project is pre-commercial research. Version labels below describe repository artifacts, not standards releases.
 
+### Documentation state synchronization — 2026-09-20
+
+- refresh Canonical Record next-work text so already-completed multi-hop, external-evidence, C2PA, trust-policy, and DSSE research is no longer described as not yet started;
+- update the C2PA integration gate to acknowledge that the standalone evidence index and exact record binding already exist;
+- clarify that remaining attestation work is production identity/key/revocation/trusted-time infrastructure rather than creation of the already-tested research signature prototype;
+- align the roadmap and interoperability next-work wording with the current repository state while preserving realistic-trace and public-version decisions as open.
+
 ### AR-P003 methodology decision-support map — 2026-09-20
 
 - preserve the research review's proposed +5pp benefit / 3pp speed-claim accuracy margin / +2pp critical-false-clearance guardrail as an explicit **unresolved candidate**, not a selected threshold;
