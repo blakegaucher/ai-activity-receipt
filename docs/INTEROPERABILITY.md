@@ -343,8 +343,8 @@ This is evidence of normalization consistency on one synthetic paired scenario, 
 ## Next interoperability work
 
 - extend the machine-readable crosswalk when external specifications or adapter semantics change;
-- add richer evidence-substrate references beyond the current trace/event/source fields;
-- decide whether the standalone external evidence-reference index becomes part of a future canonical-record version or remains a separately content-bound artifact;
+- integrate richer real evidence-substrate/ingestion references into adapters and the separately bound evidence-index path;
+- decide whether the standalone external evidence-reference index remains a companion artifact or becomes part of a future canonical-record version;
 - prototype an A2A evidence adapter only after the task/identity mapping and authenticated-context boundary are sufficiently clear;
 - monitor NIST AI-agent identity/authorization work and emerging industry standards;
 - avoid any standards-conformance claim until an explicit conformance target and test method exist.
