@@ -95,6 +95,11 @@ jobs:
           python research/validate_markdown_links.py --self-test
           python research/validate_markdown_links.py
 
+      - name: Validate repository JSON assets
+        run: |
+          python research/validate_repository_json.py --self-test
+          python research/validate_repository_json.py
+
       - name: Validate protocol JSON
         run: python -m json.tool benchmark/arp003_v0_3/protocol.json > /dev/null
 
