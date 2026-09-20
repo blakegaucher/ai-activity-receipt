@@ -199,3 +199,49 @@ Issue #36 — `Repository admin: protect main with required validation and CodeQ
 The closure does **not** collapse the remaining security evidence into that issue. Issue #37 stays open for the post-remediation CodeQL alert-dashboard check and owner security-alert notification verification if still outstanding.
 
 No security control was weakened for the closure, and no zero-alert state was inferred from green CodeQL execution.
+
+
+## 10. Authenticated CodeQL inventory superseding update — alert #1 remains open
+
+Newer authenticated owner evidence from GitHub Security supersedes the earlier inventory-pending wording for the actual alert state.
+
+Filter:
+
+`is:open branch:main`
+
+Verified result before the second remediation attempt:
+
+- open: **1**;
+- closed: **1**;
+- remaining open original alert: **#1**;
+- rule: **Clear-text logging of sensitive information**;
+- severity: **High**;
+- file: `research/security_smoke_test.py`;
+- alert #2 is closed.
+
+This creates an explicit source conflict with older implementation-status prose that described both findings as remediated in code. Preserve both facts:
+
+- PR #72 and later green CodeQL runs are valid historical remediation/execution evidence;
+- the authenticated alert inventory is the authority for whether an original alert is actually still open.
+
+### Allowed action taken
+
+A fresh narrow branch was created:
+
+`codeql-alert-1-detection-state-separation`
+
+First code commit:
+
+`8b387a314500c1436dded92832cc8084229470e7`
+
+The remaining tracked-secret path was refactored so repository text influences only a fixed detection-state bitmask. Scanned text, regex matches, and dynamic paths are not returned to the diagnostic layer. The generic stderr sink receives only fixed allowlisted secret-category messages for this scanner.
+
+Synthetic regression coverage requires detection to remain active while preventing the synthetic secret, arbitrary source text, and dynamic source filename from appearing in diagnostics.
+
+### Current protected boundary
+
+Issue #37 remains open.
+
+Do not infer closure from green CodeQL runs. After this branch is merged through protected `main`, the owner must re-check authenticated Code scanning with `is:open branch:main` and record the exact resulting inventory.
+
+Owner Security-alert notification confirmation remains an independent acceptance item.
