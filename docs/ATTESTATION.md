@@ -325,7 +325,9 @@ A future implementation should include at least:
 - previous-record-hash lineage mismatch;
 - content-equivalent JSON with different bytes, to make the exact-byte semantics explicit.
 
-No cryptographic trust claim should be published until these cases are automated and reproducible.
+The current research prototype automates most of these local/adversarial cases, including exact-byte mutation, payload-type/signature/key mutation, malformed envelopes, duplicate signatures, invalid records, Receipt mismatch, and signer validity windows. Real revocation services, protected production keys, trusted timestamps, and deployment trust roots remain external/production gates.
+
+No production cryptographic trust claim should be published until those operational layers are implemented and reproducibly verified.
 
 ---
 
@@ -338,9 +340,8 @@ For the present research stage:
 - **do not claim JCS**;
 - **do not add custom signature fields**;
 - **treat DSSE/in-toto-style external envelopes as the leading candidate for future authenticated records**;
-- **keep production signing deferred until real identity issuance, protected key storage, revocation/status infrastructure, and deployment trust roots exist**;
-- **implement and continuously test a research-only DSSE signing/verification prototype using ephemeral test keys and the candidate trust policy**;
-- **keep production signing blocked until real identity issuance, protected key storage, revocation/status infrastructure, and deployment trust roots exist**.
+- **keep production signing blocked until real identity issuance, protected key storage, revocation/status infrastructure, deployment trust roots, and an appropriate trusted-time/history strategy exist**;
+- **continue testing the research-only DSSE signing/verification prototype with ephemeral test keys and the candidate trust policy**.
 
 This is intentionally conservative. The next implementation should add cryptography only when the project can test the trust semantics around it, not merely because producing a signature is technically easy.
 

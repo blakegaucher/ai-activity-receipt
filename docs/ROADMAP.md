@@ -133,7 +133,7 @@ A positive result is **not** required for this phase to be successful.
 - [x] Add pre-derivation canonical-record governance checks that mirror key Receipt invariants for material actions.
 - [x] Publish a standalone external evidence-reference schema/validator prototype with record-subject resolution and explicit validation state.
 - [x] Content-bind the standalone external evidence-reference index to the exact canonical record under the existing project-local SHA-256 serialization profile.
-- [ ] Integrate richer evidence-substrate/ingestion references into a versioned canonical record or separately bound evidence index.
+- [ ] Decide whether to retain the separately bound external evidence-reference index as a companion artifact or integrate it into a future canonical-record version, then implement richer real ingestion references accordingly.
 - [x] Exercise the canonical record as the target of a synthetic OTLP/JSON GenAI adapter.
 - [x] Define candidate multi-agent and multi-hop delegation-chain semantics, invariants, and standards boundaries.
 - [x] Publish a standalone multi-hop delegation-chain validator/schema/example with adversarial invariant tests, without changing candidate-record-v0.1.
@@ -185,7 +185,9 @@ A positive result is **not** required for this phase to be successful.
 
 ### Exit condition
 
-The **synthetic candidate prototype** now demonstrates deterministic derivation from a canonical record and a hash binding back to that exact record. Phase 3 remains open for evidence-substrate ingestion, richer delegation, authenticated attestation implementation, and realistic-workflow testing.
+The **synthetic candidate prototype** now demonstrates deterministic derivation from a canonical record and a hash binding back to that exact record. Separate research artifacts also cover multi-hop delegation, external evidence indexing, trust-policy definition, and test-only DSSE/Ed25519 attestation.
+
+Phase 3 remains open for real evidence-substrate/source-to-record ingestion, a public-version decision for the multi-hop profile, production identity/key/revocation infrastructure, and realistic-workflow testing.
 
 ---
 

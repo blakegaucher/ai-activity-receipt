@@ -26,7 +26,7 @@ For the closest reproduction of the tested CI environment:
 
 ```bash
 python -m pip install -r requirements-lock.txt
-python research/reproduce.py --output reproducibility-report.json
+python research/reproduce.py --require-clean-git --output reproducibility-report.json
 ```
 
 For an independent clean-room attempt, see [Independent Reproduction Handoff](docs/EXTERNAL-REPRODUCTION-HANDOFF.md).
@@ -121,8 +121,8 @@ The current prototype/design work includes:
 
 - run / trace identity;
 - agent, human, organization, and tool actors;
-- principal-to-agent delegated authority in the current direct-delegation profile;
-- multi-hop delegation is defined as a future versioned extension, not silently implemented in candidate-record-v0.1;
+- principal-to-agent delegated authority in the current public direct-delegation profile;
+- a separate research-only `candidate-record-v0.2` / `candidate-receipt-v0.3` multi-hop profile with loss-aware migration tests; it has **not** been silently promoted into candidate-record-v0.1;
 - bounded scope and time-limited authorization;
 - material source and resource provenance;
 - tool and action events;
@@ -233,7 +233,7 @@ The first auxiliary AI-reviewer work was useful mainly because it exposed benchm
 
 That means the current AR-P003 auxiliary results **do not support a claim that the Receipt improves auditability or productivity**.
 
-A candidate **AR-P003 v0.3 preregistration draft and scoring workspace are now published**. They specify:
+A candidate **AR-P003 v0.3 preregistration draft and scoring workspace are now published**. The current development implementation includes:
 
 - fresh sealed cases distinct from development fixtures;
 - randomized balanced incomplete-block assignment;
@@ -246,7 +246,9 @@ A candidate **AR-P003 v0.3 preregistration draft and scoring workspace are now p
 - freeze hashes for protocol/corpus/scorer artifacts;
 - independent human reviewers as the evidence arm required for any human-benefit claim.
 
-The v0.3 protocol is **not frozen or executed**. Reviewer population, primary endpoint/effect target, sample size or precision analysis, final corpus, ethics determination as applicable, and final freeze manifest still must be completed before confirmatory human data collection.
+The v0.3 protocol is **not frozen or executed**. Material methodology choices are still unresolved, including two versus three comparison conditions, primary endpoint, active versus wall-clock timing semantics, integrated versus separate misleading-Receipt evaluation, reviewer population, and meaningful effect/precision target. These conflicts are preserved in the [Methodology Decision Ledger](docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md) and [Decision Support](docs/AR-P003-V0.3-DECISION-SUPPORT.md) rather than being resolved by implementation drift.
+
+Sample-size/power planning, final corpus, final reviewer instructions, ethics/REB/IRB review or documented determination as applicable, assignment/analysis freeze, and final hashes still must be completed before confirmatory human data collection.
 
 ---
 
@@ -285,12 +287,12 @@ These remain research mappings and synthetic engineering tests. No standards-con
 
 Near-term work:
 
-1. refine the published candidate Canonical Activity Record and test deterministic Receipt derivation on more realistic traces;
-2. expand deterministic schema/invariant examples;
-3. freeze and run the next human-centered AR-P003 benchmark;
-4. publish null, negative, and positive results together;
-5. develop interoperability mappings;
-6. test the approach with realistic agent workflows and, later, external pilot partners.
+1. test source-to-record fidelity and deterministic Receipt derivation on realistic heterogeneous traces while preserving raw evidence;
+2. decide whether the multi-hop v0.2 profile and separately bound external evidence index remain research companions or graduate through explicit future schema versions;
+3. resolve the AR-P003 v0.3 methodology ledger, complete manual instrument/ethics/freeze gates, and only then run the human-centered benchmark;
+4. obtain at least one independent external reproduction attempt and preserve favorable or unfavorable results;
+5. extend the existing interoperability mappings/adapters against richer real evidence while keeping standards-conformance claims separate;
+6. publish null, negative, and positive results together and pursue external pilots only when the relevant evidence gate is actually satisfied.
 
 ---
 

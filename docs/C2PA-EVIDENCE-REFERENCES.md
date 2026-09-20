@@ -182,15 +182,20 @@ Instead, the standalone external-reference prototype is the preferred direction 
 
 ## Future integration gate
 
-Before external references are added to the canonical schema, the project should define:
+Two earlier design questions are now answered at the **research-prototype** level:
 
-1. whether references live directly in the Activity Record or in a separately bound evidence index;
-2. how the evidence index is itself content-bound to the record;
-3. which evidence kinds require validation metadata;
-4. how revocation/staleness is represented;
-5. how trust profiles are named and versioned;
-6. whether the compact Receipt exposes only an evidence count/summary or selected references;
-7. privacy and retention requirements for external evidence locations.
+- the current prototype uses a **separate evidence index**, not C2PA-specific fields inside candidate-record-v0.1;
+- that index is content-bound to the exact canonical record using the documented project-local SHA-256 serialization profile.
+
+Before any future canonical-schema integration, the remaining decisions are:
+
+1. whether the separately bound index should remain an external companion artifact or become a field/reference in a new canonical-record version;
+2. which evidence kinds require validation metadata beyond the current generic `validation.state`;
+3. how revocation, supersession, freshness, and temporarily unavailable evidence are represented;
+4. how trust profiles and external validator identities are named/versioned;
+5. whether the compact Receipt exposes an evidence count/summary, selected references, or no external-reference detail;
+6. privacy, access-control, retention, and redaction requirements for external evidence locations;
+7. how a real external validator's result is captured without treating a locator or signature as factual truth.
 
 ## Evidence boundary
 
