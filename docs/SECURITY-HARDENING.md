@@ -202,3 +202,69 @@ Repository security controls were hardened and the configured static-analysis fi
 - supply-chain certification;
 - production key-management validation;
 - legal or regulatory compliance.
+
+
+## 2026-09-20 authenticated CodeQL inventory correction and alert #1 second remediation
+
+Newer authenticated owner evidence from **Security → Code scanning**, filtered with `is:open branch:main`, supersedes the earlier pending inventory wording.
+
+Verified inventory before this second remediation:
+
+- **1 open**;
+- **1 closed**;
+- remaining open finding: alert **#1**, High, **Clear-text logging of sensitive information**;
+- file: `research/security_smoke_test.py`;
+- GitHub showed the generic stderr sink around the former line ~290;
+- alert #2 in `research/validate_attestation_policy.py` is closed.
+
+This conflicts with any earlier prose that could be read as implying both original findings were already closed. The earlier remediation work remains historical implementation evidence; the authenticated dashboard is the authority for actual alert state.
+
+### Remaining alert #1 dataflow
+
+Current source inspection identified the remaining secret-dependent path as:
+
+```text
+tracked repository text
+→ path.read_text(...)
+→ pattern.search(text)
+→ tracked_secret_errors() creates a diagnostic after a secret-pattern match
+→ errors.extend(...)
+→ generic stderr loop
+```
+
+The previous implementation did not echo the matched secret bytes, but it still coupled secret detection with construction of a diagnostic carrying fixed pattern-label text and a dynamic repository path before returning that string into the generic error sink.
+
+### Second remediation principle
+
+Branch:
+
+`codeql-alert-1-detection-state-separation`
+
+First code commit:
+
+`8b387a314500c1436dded92832cc8084229470e7`
+
+The scanner now returns only a fixed integer **detection-state bitmask**. It does not return scanned text, match objects, or scanned paths.
+
+User-facing diagnostics are generated separately from a fixed allowlist keyed by those bits.
+
+The high-confidence patterns, repository-wide tracked-text scan, and failure semantics are preserved.
+
+Synthetic regression coverage now requires:
+
+- a constructed GitHub-token-looking value to be detected;
+- a safe failure diagnostic to be produced;
+- the exact synthetic value not to appear in diagnostics;
+- arbitrary scanned source text not to appear;
+- the dynamic source filename not to appear.
+
+This is a code-remediation attempt only. Alert #1 remains open until authenticated post-merge CodeQL inventory evidence shows otherwise.
+
+### Acceptance boundary
+
+Do not close issue #37 until both conditions are independently verified:
+
+1. no unresolved original CodeQL alert remains on `main`;
+2. the repository owner's Security-alert notification setting/delivery is confirmed.
+
+Green CodeQL workflow execution alone is not evidence of a zero-alert inventory.

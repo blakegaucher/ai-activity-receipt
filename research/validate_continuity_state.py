@@ -55,7 +55,7 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.11":
+    if state.get("snapshot_version") != "project-continuity-v0.12":
         errors.append("machine-readable continuity snapshot_version is stale")
     if state.get("snapshot_date") != "2026-09-20":
         errors.append("machine-readable continuity snapshot_date is stale")
@@ -240,9 +240,25 @@ def main() -> int:
         errors.append("post-remediation Python CodeQL status is stale")
     if codeql.get("post_remediation_javascript_typescript") != "success":
         errors.append("post-remediation JavaScript/TypeScript CodeQL status is stale")
-    if codeql.get("alert_inventory") != "post_remediation_owner_ui_verification_pending":
+    if codeql.get("alert_inventory") != (
+        "owner_ui_verified_1_open_1_closed_alert_1_open_2026-09-20"
+    ):
         errors.append(
-            "CodeQL alert-inventory status changed without explicit dashboard evidence"
+            "CodeQL alert-inventory continuity is stale relative to authenticated "
+            "owner dashboard evidence"
+        )
+    if codeql.get("post_remediation_open_high_alert_count") != 1:
+        errors.append("CodeQL open-High alert count continuity is stale")
+    if codeql.get("open_original_alerts") != [1]:
+        errors.append("CodeQL remaining original-alert continuity is stale")
+    if codeql.get("closed_original_alerts") != [2]:
+        errors.append("CodeQL closed original-alert continuity is stale")
+    if codeql.get("alert_1_post_second_remediation_dashboard_verification") != (
+        "pending_owner_ui_after_main_merge"
+    ):
+        errors.append(
+            "CodeQL alert #1 second-remediation dashboard gate changed without "
+            "authenticated owner evidence"
         )
     if (dev.get("reproducibility_runner") or {}).get("external_reproduction_handoff") is not True:
         errors.append("external reproduction handoff continuity flag unexpectedly changed")

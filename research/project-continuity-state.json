@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.11",
+  "snapshot_version": "project-continuity-v0.12",
   "snapshot_date": "2026-09-20",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -163,7 +163,7 @@
     "local_private_output_gitignore": true,
     "explicit_license_status": "not_selected",
     "security_hardening": {
-      "status": "admin_controls_verified_codeql_remediation_merged_alert_ui_verification_pending",
+      "status": "admin_controls_verified_codeql_alert1_second_remediation_in_progress",
       "dependabot_version_updates_configured": true,
       "codeowners_present": true,
       "primary_ci_contents_read_only": true,
@@ -186,14 +186,26 @@
         "action_commit_pinned": true,
         "workflow": ".github/workflows/codeql.yml",
         "first_verified_main_run_date": "2026-09-19",
-        "alert_inventory": "post_remediation_owner_ui_verification_pending",
+        "alert_inventory": "owner_ui_verified_1_open_1_closed_alert_1_open_2026-09-20",
         "pre_remediation_open_high_alert_count": 2,
         "remediation_pr": 72,
         "remediation_merge_commit": "4788dc4f39a19b01e68e89c2f39a7e7c6dce7fb4",
         "post_remediation_main_run": 73,
         "post_remediation_python": "success",
         "post_remediation_javascript_typescript": "success",
-        "diagnostics_hardened": true
+        "diagnostics_hardened": true,
+        "post_remediation_open_high_alert_count": 1,
+        "closed_original_alerts": [
+          2
+        ],
+        "open_original_alerts": [
+          1
+        ],
+        "alert_1_current_file": "research/security_smoke_test.py",
+        "alert_1_second_remediation_branch": "codeql-alert-1-detection-state-separation",
+        "alert_1_second_remediation_first_commit": "8b387a314500c1436dded92832cc8084229470e7",
+        "alert_1_second_remediation_strategy": "separate_detection_state_from_allowlisted_diagnostics",
+        "alert_1_post_second_remediation_dashboard_verification": "pending_owner_ui_after_main_merge"
       },
       "dependabot_alerts_enabled": true,
       "dependabot_security_updates_enabled": true,
