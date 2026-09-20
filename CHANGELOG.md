@@ -4,6 +4,16 @@ This changelog tracks public candidate-schema and validation changes for the AI 
 
 The project is pre-commercial research. Version labels below describe repository artifacts, not standards releases.
 
+
+### Project continuity snapshot v0.10 — 2026-09-20
+
+- add a new dated `docs/PROJECT-CONTINUITY-2026-09-20.md` snapshot while preserving the prior dated snapshot;
+- advance machine-readable continuity to `project-continuity-v0.10` and the aggregate reproducibility profile to `ai-activity-receipt-repro-v0.17`;
+- explicitly guard the current Markdown-link and repository-JSON integrity control states;
+- bind the aggregate reproducibility artifact set to the newest dated continuity snapshot;
+- record that remaining material gates require owner/admin action, real browser/device testing, deliberate study decisions, external/realistic evidence, independent reproduction, ethics determination, or production trust infrastructure rather than unattended repository coding;
+- leave the frozen AR-P003 v0.2.3 baseline, unfrozen/unexecuted v0.3 status, claim gates, licensing status, and production-security boundaries unchanged.
+
 ### Repository JSON integrity — 2026-09-20
 
 - add a deterministic repository-wide JSON parser using duplicate-key rejection rather than permissive last-key-wins semantics;

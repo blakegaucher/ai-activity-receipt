@@ -57,7 +57,7 @@ A passing run reproduces repository-local deterministic/synthetic checks only. I
 - [Fixture expectation manifest](examples/fixture-manifest.json)
 - [Validation Record](docs/VALIDATION.md)
 - [AR-P003 v0.2.3 Historical Frozen Baseline](docs/AR-P003-V0.2.3-HISTORICAL-BASELINE.md)
-- [Project Continuity Snapshot](docs/PROJECT-CONTINUITY-2026-09-19.md)
+- [Project Continuity Snapshot](docs/PROJECT-CONTINUITY-2026-09-20.md)
 - [One-Command Reproducibility Suite](docs/REPRODUCIBILITY.md)
 - [Independent Reproduction Handoff](docs/EXTERNAL-REPRODUCTION-HANDOFF.md)
 - [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)

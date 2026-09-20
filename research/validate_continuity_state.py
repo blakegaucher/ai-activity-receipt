@@ -18,6 +18,7 @@ STATE = ROOT / "research" / "project-continuity-state.json"
 REPRO = ROOT / "research" / "reproduce.py"
 RUNNER_BUNDLE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-bundle.schema.json"
 RUNNER_RESPONSE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-response.schema.json"
+LATEST_CONTINUITY = ROOT / "docs" / "PROJECT-CONTINUITY-2026-09-20.md"
 EXPECTED_FREEZE = (
     "8a381f4ae20a5f6824e513c7f96920fdf3cfe6b00b0b8d301127f5e0b659d0fd"
 )
@@ -47,11 +48,19 @@ def main() -> int:
         actual_response_contract = schema_const(
             RUNNER_RESPONSE_SCHEMA, "response_bundle_version"
         )
+        latest_continuity_text = LATEST_CONTINUITY.read_text(encoding="utf-8")
     except (OSError, json.JSONDecodeError, ValueError) as exc:
         print(f"ERROR: unable to load continuity state: {exc}", file=sys.stderr)
         return 2
 
     errors: list[str] = []
+
+    if state.get("snapshot_version") != "project-continuity-v0.10":
+        errors.append("machine-readable continuity snapshot_version is stale")
+    if state.get("snapshot_date") != "2026-09-20":
+        errors.append("machine-readable continuity snapshot_date is stale")
+    if "**Snapshot date:** 2026-09-20" not in latest_continuity_text:
+        errors.append("latest human-readable continuity snapshot date is stale")
 
     hist = ((state.get("historical") or {}).get("arp003_v0_2_3") or {})
     if hist.get("status") != "frozen_append_only":
@@ -213,6 +222,30 @@ def main() -> int:
             "repository license status changed; update continuity deliberately "
             "before changing public licensing claims"
         )
+
+    markdown_integrity = governance.get("markdown_link_integrity") or {}
+    if markdown_integrity.get("status") != "ci_and_reproducibility_guard":
+        errors.append("Markdown-link integrity continuity status changed unexpectedly")
+    if markdown_integrity.get("remote_url_checks") is not False:
+        errors.append("Markdown-link guard unexpectedly claims remote URL checking")
+    if markdown_integrity.get("local_target_existence") is not True:
+        errors.append("Markdown-link local target existence guard unexpectedly disabled")
+    if markdown_integrity.get("repository_escape_rejected") is not True:
+        errors.append("Markdown-link repository-escape guard unexpectedly disabled")
+
+    json_integrity = governance.get("json_integrity") or {}
+    required_json_integrity = {
+        "status": "ci_and_reproducibility_guard",
+        "utf8_json_required": True,
+        "duplicate_keys_rejected": True,
+        "declared_draft_2020_12_schemas_meta_validated": True,
+        "instance_semantics_delegated_to_specialized_validators": True,
+    }
+    for key, expected in required_json_integrity.items():
+        if json_integrity.get(key) != expected:
+            errors.append(
+                f"repository JSON-integrity continuity field {key!r} changed unexpectedly"
+            )
 
     license_preflight = governance.get("license_preflight_inventory") or {}
     if license_preflight.get("status") != "prepared_not_legal_clearance":
