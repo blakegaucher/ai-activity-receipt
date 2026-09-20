@@ -190,3 +190,12 @@ It does not support:
 - customer validation.
 
 Frozen AR-P003 v0.2.3 evidence, AR-P003 v0.3 human-study status, business evidence, and ARC/Julia/DGAP lane boundaries are unchanged.
+
+
+## 9. Repository-admin issue disposition
+
+Issue #36 — `Repository admin: protect main with required validation and CodeQL checks` — was closed as completed on 2026-09-20 after the newer verified state above satisfied its acceptance conditions.
+
+The closure does **not** collapse the remaining security evidence into that issue. Issue #37 stays open for the post-remediation CodeQL alert-dashboard check and owner security-alert notification verification if still outstanding.
+
+No security control was weakened for the closure, and no zero-alert state was inferred from green CodeQL execution.

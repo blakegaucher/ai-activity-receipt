@@ -246,7 +246,8 @@ Determine which Receipt fields remain useful, redundant, missing, or impractical
 - [x] Continuity snapshot/guard now explicitly covers repository-wide Markdown-link and JSON-integrity controls.
 - [x] Add repository-file security hardening: least-privilege/pinned CI checks, checkout credential-persistence disablement, finite timeout/stale-run cancellation, Dependabot version updates, CODEOWNERS, deterministic security smoke checks, and stricter offline-runner resource/CSP bounds.
 - [x] Add and verify pinned CodeQL advanced setup for Python and JavaScript/TypeScript.
-- [ ] Enable/verify remaining repository-admin security settings: main-branch ruleset/protection, private vulnerability reporting, Dependabot security alerts/updates, owner security-alert notifications, and CodeQL alert inspection.
+- [x] Verify main-branch protection/ruleset, private vulnerability reporting, Dependabot alerts/security updates, code-scanning alerts, secret-scanning/secret-protection, and push protection.
+- [ ] Verify the post-remediation CodeQL alert-dashboard state for alerts #1/#2 and confirm owner security-alert notification delivery if it has not already been independently checked.
 
 **Goal:** Allow people outside the project to challenge the design.
 
