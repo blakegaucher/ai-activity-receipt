@@ -27,7 +27,7 @@ Do **not** place the following in a public issue:
 - private chain-of-thought;
 - exploit material that would unnecessarily expose another system.
 
-If GitHub private vulnerability reporting is available for this repository, use that path. Otherwise contact the repository owner through a private channel before sharing sensitive details.
+GitHub **Private vulnerability reporting is enabled** for this repository. Use that path for sensitive vulnerability reports.
 
 For non-sensitive bugs and reproducibility mismatches, a normal GitHub issue is appropriate.
 
@@ -41,13 +41,44 @@ The repository currently develops one public candidate line plus separate versio
 
 Frozen benchmark history should not be rewritten. If a historical artifact contains a security-relevant limitation, document the limitation and create a new versioned artifact when a change is required.
 
-
 ## Repository hardening status
 
-Repository-file controls and remaining GitHub-admin gates are documented in [Repository Security Hardening](docs/SECURITY-HARDENING.md).
+Repository controls are documented in [Repository Security Hardening](docs/SECURITY-HARDENING.md).
 
-The repository now includes least-privilege/pinned primary CI, disabled checkout credential persistence, a finite CI timeout, stale-run cancellation, a deterministic security smoke test, weekly Dependabot version-update configuration, CODEOWNERS metadata, private-study ignore rules, and stricter offline-runner CSP/resource limits.
+Verified repository/admin state on 2026-09-20 includes:
 
-GitHub API inspection on 2026-09-19 returned no repository rulesets. Main-branch ruleset/protection, private vulnerability reporting, confirmation of Dependabot security alerts/security updates, owner security-alert notifications, and manual inspection of the CodeQL alert inventory remain repository-admin settings and must not be described as enabled until verified.
+- active `Protect main` ruleset targeting `refs/heads/main`;
+- pull requests required before merging;
+- required GitHub Actions checks:
+  - `Schema, invariant, and benchmark smoke tests`;
+  - `Analyze python`;
+  - `Analyze javascript-typescript`;
+- branch deletion and force-push/non-fast-forward updates blocked;
+- no bypass actors configured;
+- private vulnerability reporting enabled;
+- Dependabot alerts enabled;
+- Dependabot security updates enabled;
+- weekly Dependabot version updates retained from `.github/dependabot.yml`;
+- code scanning enabled with CodeQL **Advanced Setup** retained for Python and JavaScript/TypeScript;
+- secret scanning alerts enabled;
+- secret protection and push protection enabled;
+- repository Security policy and Security advisories enabled.
 
-CodeQL **advanced setup** is already active and green for Python and JavaScript/TypeScript. CodeQL default setup is therefore not a pending task unless the project deliberately decides to replace the advanced workflow.
+The CodeQL Advanced Setup workflow remains pinned and least-privilege. Default setup has **not** replaced it.
+
+On 2026-09-20, two High CodeQL findings for clear-text logging of sensitive information were investigated separately and addressed through PR #72. The change sanitized input-derived policy diagnostics and source-controlled security-smoke diagnostics without weakening secret detection. The protected PR checks and the post-merge `main` validation/CodeQL runs completed successfully.
+
+A successful CodeQL run means the configured analysis completed. It does **not** prove that no vulnerabilities remain. The connected repository tooling cannot read the authenticated CodeQL alert inventory, so the final open/closed state of those two dashboard alerts requires explicit GitHub Security UI verification before it is recorded as closed.
+
+## Evidence boundary
+
+Repository security controls were hardened and the configured static-analysis findings were addressed in code. This is not:
+
+- a penetration test;
+- an independent security audit;
+- proof of vulnerability-free software;
+- CodeQL or security certification;
+- production key-management validation;
+- standards certification;
+- legal or regulatory compliance;
+- production-security readiness.
