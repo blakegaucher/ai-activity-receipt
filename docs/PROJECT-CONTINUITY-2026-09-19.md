@@ -550,6 +550,6 @@ The repository now has a neutral methodology impact map and completeness guard. 
 
 The project-research review's proposed +5pp supported-completion benefit threshold, 3pp accuracy noninferiority margin for a separate speed claim, and +2pp maximum critical-false-clearance increase are preserved as an explicit unresolved candidate. They remain decision assumptions, not industry norms and not estimates from v0.2.3.
 
-The aggregate reproducibility profile is now `ai-activity-receipt-repro-v0.15`, which also checks repository-local Markdown link integrity without network access.
+The aggregate reproducibility profile is now `ai-activity-receipt-repro-v0.16`, which checks repository-local Markdown link integrity and repository-wide JSON syntax/duplicate-key/declared-schema integrity without network access.
 
 Protected boundary unchanged: AR-P003 v0.3 remains development / not frozen / not executed, and no human-benefit or commercial evidence gate changed status.
