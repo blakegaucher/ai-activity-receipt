@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR-P003 v0.3 Methodology Candidate Impact Map",
+  "description": "Decision-support only. Maps every methodology-ledger candidate to implementation/planning consequences without selecting a candidate.",
+  "type": "object",
+  "required": [
+    "impact_map_version",
+    "protocol_version",
+    "ledger_version",
+    "status",
+    "decisions"
+  ],
+  "properties": {
+    "impact_map_version": {
+      "const": "AR-P003-v0.3-methodology-impact-map-v0.1"
+    },
+    "protocol_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ledger_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "decision_support_only_no_selection"
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "decision_id",
+          "candidates"
+        ],
+        "properties": {
+          "decision_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "candidates": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "candidate_id",
+                "implementation_class",
+                "impacted_artifacts",
+                "required_before_execution",
+                "notes"
+              ],
+              "properties": {
+                "candidate_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "implementation_class": {
+                  "type": "string",
+                  "enum": [
+                    "current_native",
+                    "requires_versioned_change",
+                    "scope_decision",
+                    "planning_assumption"
+                  ]
+                },
+                "impacted_artifacts": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required_before_execution": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
