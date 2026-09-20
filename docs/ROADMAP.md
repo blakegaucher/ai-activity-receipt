@@ -241,6 +241,7 @@ Determine which Receipt fields remain useful, redundant, missing, or impractical
 
 ## Phase 6 — External evaluation
 - [x] Publish repository health guidance for external reviewers: contribution rules, security-reporting boundary, citation metadata, PR checklist, and reproducibility issue form.
+- [x] Add deterministic repository-local Markdown link integrity checks to CI and the reproducibility suite.
 - [x] Add repository-file security hardening: least-privilege/pinned CI checks, checkout credential-persistence disablement, finite timeout/stale-run cancellation, Dependabot version updates, CODEOWNERS, deterministic security smoke checks, and stricter offline-runner resource/CSP bounds.
 - [x] Add and verify pinned CodeQL advanced setup for Python and JavaScript/TypeScript.
 - [ ] Enable/verify remaining repository-admin security settings: main-branch ruleset/protection, private vulnerability reporting, Dependabot security alerts/updates, owner security-alert notifications, and CodeQL alert inspection.

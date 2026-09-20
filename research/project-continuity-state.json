@@ -113,7 +113,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.14",
+      "suite_version": "ai-activity-receipt-repro-v0.15",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,
@@ -193,6 +193,12 @@
       "status": "prepared_not_legal_clearance",
       "inventory_version": "third-party-inventory-v0.1",
       "direct_dependency_and_action_drift_check": true
+    },
+    "markdown_link_integrity": {
+      "status": "ci_and_reproducibility_guard",
+      "remote_url_checks": false,
+      "local_target_existence": true,
+      "repository_escape_rejected": true
     }
   },
   "open_project_governance_gates": [

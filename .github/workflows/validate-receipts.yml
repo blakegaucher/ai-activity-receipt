@@ -90,6 +90,11 @@ jobs:
       - name: Run third-party inventory preflight
         run: python research/validate_third_party_inventory.py
 
+      - name: Validate repository-local Markdown links
+        run: |
+          python research/validate_markdown_links.py --self-test
+          python research/validate_markdown_links.py
+
       - name: Validate protocol JSON
         run: python -m json.tool benchmark/arp003_v0_3/protocol.json > /dev/null
 

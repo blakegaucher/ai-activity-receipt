@@ -24,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.14"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.15"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -135,6 +135,16 @@ CHECKS: list[dict[str, Any]] = [
             "requirements-lock.txt",
             ".github/workflows/validate-receipts.yml",
             ".github/workflows/codeql.yml",
+        ],
+    },
+    {
+        "id": "markdown-link-integrity",
+        "argv": ["research/validate_markdown_links.py"],
+        "artifacts": [
+            "research/validate_markdown_links.py",
+            "README.md",
+            "docs/ROADMAP.md",
+            "docs/VALIDATION.md",
         ],
     },
     {

@@ -6,6 +6,18 @@ This document summarizes the current validation state of the **AI Activity Recei
 
 ---
 
+## Repository Markdown-link integrity
+
+**Status:** Deterministic repository-local documentation check
+
+The repository now validates local Markdown link targets without network access. The checker ignores fenced code blocks and non-file targets such as external URLs, mail/tel/data/sandbox links, and anchor-only links; it verifies that relative or repository-root-relative file targets remain inside the checkout and exist.
+
+The self-test covers ordinary links, reference-style definitions, URL-encoded paths, code-fence exclusion, missing targets, and repository-root escape attempts.
+
+This reduces stale local documentation references and improves clean-room reproducibility. It does not validate remote URL availability or Markdown heading-anchor correctness.
+
+---
+
 ## AR-P003 v0.3 assignment-bound response integrity
 
 **Status:** Synthetic engineering integrity check
