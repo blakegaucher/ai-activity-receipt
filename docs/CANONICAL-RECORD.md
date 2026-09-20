@@ -192,7 +192,7 @@ If the self-test and CI pass, the repository demonstrates that:
 
 This prototype does not establish:
 
-- cryptographic signing or non-repudiation;
+- production cryptographic signing, non-repudiation, or deployed trust roots (a separate research-only DSSE/Ed25519 prototype exists);
 - tamper-proof storage;
 - RFC 8785/JCS conformance;
 - complete capture of provider logs;
@@ -203,13 +203,26 @@ This prototype does not establish:
 
 Those require separate implementation and evaluation.
 
+## Current completed research extensions
+
+Several items that were originally future work now exist as separate, versioned research artifacts rather than silent changes to candidate-record-v0.1:
+
+- a separately content-bound external evidence-reference index with explicit validation state;
+- explicit multi-hop delegation semantics plus a research-only `candidate-record-v0.2` / `candidate-receipt-v0.3` profile and loss-aware v0.1 migration;
+- a machine-readable signer/key/payload/trust/revocation policy;
+- a research-only DSSE v1 + Ed25519 signing/verification prototype with ephemeral test keys and adversarial cases;
+- a C2PA 2.4 external-reference evaluation;
+- a heterogeneous synthetic derivation pilot across direct, OpenTelemetry, and MCP inputs.
+
+These artifacts do not change the current public canonical profile unless a later versioned promotion decision is made.
+
 ## Next record work
 
-The strongest next technical steps are:
+The strongest remaining technical steps are:
 
-- add explicit evidence-substrate references and ingestion provenance;
-- decide how multi-agent delegation chains are represented;
-- define signer identity, key-management, payload-type, trust, revocation, and freshness policy before implementing the documented attestation-envelope direction;
-- extend the existing OpenTelemetry and MCP adapters to preserve richer evidence-substrate references;
-- evaluate optional C2PA references for content-producing events;
-- test derivation on heterogeneous realistic workflow traces.
+- decide whether the standalone external evidence index remains separate or is integrated into a future canonical-record version;
+- extend OpenTelemetry/MCP and future adapters to carry richer evidence-substrate/ingestion references without promoting descriptive metadata into authenticated evidence;
+- decide whether/when the multi-hop v0.2 research profile should graduate into the public canonical schema path;
+- validate the research attestation design against a real protected identity/key/revocation environment before any production-signing claim;
+- test derivation and source-to-record fidelity on heterogeneous realistic workflow traces;
+- preserve the direct-delegation v0.1 profile until any replacement has an explicit migration/versioning decision.
