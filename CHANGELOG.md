@@ -4,6 +4,15 @@ This changelog tracks public candidate-schema and validation changes for the AI 
 
 The project is pre-commercial research. Version labels below describe repository artifacts, not standards releases.
 
+### AR-P003 methodology decision-support map — 2026-09-20
+
+- preserve the research review's proposed +5pp benefit / 3pp speed-claim accuracy margin / +2pp critical-false-clearance guardrail as an explicit **unresolved candidate**, not a selected threshold;
+- add a machine-readable impact map covering every methodology-ledger candidate;
+- record which current artifacts already support a candidate and which choices require a versioned protocol/runner/scorer/assignment/planning change;
+- add a completeness validator that fails when a ledger candidate lacks an impact entry or an impact entry invents an unknown candidate;
+- add a neutral decision-support brief explaining dependency order and evidence boundaries;
+- include the impact map in CI and reproducibility profile v0.14 without changing AR-P003's draft/not-frozen/not-executed state.
+
 ### Reproducibility provenance hardening — 2026-09-20
 
 - bump the aggregate reproducibility profile to `ai-activity-receipt-repro-v0.13`;

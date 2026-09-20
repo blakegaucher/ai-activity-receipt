@@ -104,6 +104,8 @@ Use only synthetic development bundles.
 
 **Status:** Open; human-study methodology decisions required.
 
+**Decision-support map:** prepared. Every current ledger candidate is now mapped to its implementation/planning consequences in [AR-P003-V0.3-DECISION-SUPPORT.md](AR-P003-V0.3-DECISION-SUPPORT.md), with a machine guard that prevents silent candidate omission or invention. The research review's proposed +5pp / 3pp / +2pp thresholds are preserved as a candidate only; no methodology choice has been made.
+
 **Crossed-design planning tooling:** prepared. The repository now simulates the actual balanced reviewer/case assignment with reviewer/case random effects and two-way clustered uncertainty. This removes the earlier tooling gap but does not select the effect/precision target or freeze the sample size.
 
 **Machine-readable readiness guard:** published at `benchmark/arp003_v0_3/freeze-readiness.current.json` with validator `check_freeze_readiness.py`. The current state is `development_not_ready`; the guard rejects premature ready/frozen claims but does not make the missing decisions.

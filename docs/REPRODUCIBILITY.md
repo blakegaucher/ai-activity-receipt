@@ -28,6 +28,7 @@ The suite currently executes:
 - external evidence-reference / C2PA reference checks;
 - attestation trust-policy validation;
 - research-only DSSE signing/verification checks;
+- AR-P003 methodology decision-ledger and impact-map consistency checks;
 - AR-P003 scorer tests;
 - AR-P003 assignment balance tests;
 - AR-P003 case-package linting;
@@ -42,7 +43,7 @@ The suite currently executes:
 
 The AR-P003 protocol JSON is also parsed explicitly before the suite runs.
 
-The aggregate suite identifier is now `ai-activity-receipt-repro-v0.13`; the version changed because the license-preflight inventory check became part of the reproducibility path.
+The aggregate suite identifier is now `ai-activity-receipt-repro-v0.14`; the version changed because the license-preflight inventory check became part of the reproducibility path.
 
 ## Machine-readable report
 
