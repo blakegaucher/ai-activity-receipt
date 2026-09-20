@@ -24,9 +24,9 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_DIRS = {".git", ".venv", "venv", "__pycache__", ".pytest_cache"}
 
-INLINE_RE = re.compile(r"!?\\[[^\\]]*\\]\\(([^)]+)\\)")
-REFERENCE_RE = re.compile(r"^\\s*\\[[^\\]]+\\]:\\s*(\\S+)")
-FENCE_RE = re.compile(r"^\\s*(```|~~~)")
+INLINE_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
+REFERENCE_RE = re.compile(r"^\s*\[[^\]]+\]:\s*(\S+)")
+FENCE_RE = re.compile(r"^\s*(```|~~~)")
 
 
 def markdown_files(root: Path) -> list[Path]:
