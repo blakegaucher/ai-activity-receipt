@@ -9,7 +9,8 @@ The project is pre-commercial research. Version labels below describe repository
 - refresh Canonical Record next-work text so already-completed multi-hop, external-evidence, C2PA, trust-policy, and DSSE research is no longer described as not yet started;
 - update the C2PA integration gate to acknowledge that the standalone evidence index and exact record binding already exist;
 - clarify that remaining attestation work is production identity/key/revocation/trusted-time infrastructure rather than creation of the already-tested research signature prototype;
-- align the roadmap and interoperability next-work wording with the current repository state while preserving realistic-trace and public-version decisions as open.
+- align the roadmap and interoperability next-work wording with the current repository state while preserving realistic-trace and public-version decisions as open;
+- refresh README reproduction instructions, multi-hop status, unresolved AR-P003 methodology boundaries, and near-term work so the public landing page matches the current evidence state.
 
 ### AR-P003 methodology decision-support map — 2026-09-20
 
