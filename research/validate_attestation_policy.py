@@ -24,6 +24,70 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SCHEMA = ROOT / "research" / "attestation-trust-policy.schema.json"
 DEFAULT_EXAMPLE = ROOT / "research" / "attestation-trust-policy.example.json"
 
+SAFE_POLICY_PATH_KEYS = frozenset(
+    {
+        "policy_version",
+        "environment",
+        "envelope_profile",
+        "payload_types",
+        "payload_type",
+        "record_schema_version",
+        "payload_semantics",
+        "roles",
+        "role_id",
+        "description",
+        "may_attest_payload_types",
+        "trusted_signers",
+        "signer_id",
+        "role",
+        "identity_type",
+        "identity",
+        "key_id",
+        "verification_material",
+        "type",
+        "uri",
+        "valid_from",
+        "valid_until",
+        "status",
+        "revocation_ref",
+        "notes",
+        "verification",
+        "required_roles",
+        "minimum_signatures",
+        "reject_unknown_payload_type",
+        "reject_untrusted_signers",
+        "reject_revoked_signers",
+        "require_record_schema_match",
+        "keyid_is_hint_only",
+        "signature_validity_is_not_authorization",
+        "key_management",
+        "private_keys_must_not_be_stored_in_repository",
+        "rotation_required",
+        "compromise_response_required",
+        "preferred_identity_model",
+        "revocation",
+        "unknown_status_behavior",
+        "evaluate_at_verification_time",
+        "historical_validation_policy",
+    }
+)
+
+SAFE_SCHEMA_VALIDATORS = frozenset(
+    {
+        "additionalProperties",
+        "const",
+        "enum",
+        "format",
+        "minItems",
+        "minLength",
+        "minimum",
+        "pattern",
+        "required",
+        "type",
+        "uniqueItems",
+    }
+)
+
 
 def load_json(path: Path) -> Any:
     with path.open("r", encoding="utf-8") as handle:
@@ -40,17 +104,35 @@ def parse_time(value: str, label: str) -> datetime:
     return parsed
 
 
+def safe_policy_path(parts: Any) -> str:
+    """Render a policy location without echoing arbitrary input property names."""
+    path = "$"
+    for part in parts:
+        if isinstance(part, int):
+            path += f"[{part}]"
+        elif isinstance(part, str) and part in SAFE_POLICY_PATH_KEYS:
+            path += f".{part}"
+        else:
+            path += ".<field>"
+    return path
+
+
 def structural_errors(doc: Any, schema: dict[str, Any]) -> list[str]:
+    """Return structural diagnostics without echoing input-derived values."""
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     output: list[str] = []
     for error in sorted(
         validator.iter_errors(doc),
         key=lambda item: list(item.absolute_path),
     ):
-        path = "$"
-        for part in error.absolute_path:
-            path += f"[{part}]" if isinstance(part, int) else f".{part}"
-        output.append(f"{path}: {error.message}")
+        path = safe_policy_path(error.absolute_path)
+        rule = (
+            error.validator
+            if isinstance(error.validator, str)
+            and error.validator in SAFE_SCHEMA_VALIDATORS
+            else "schema_rule"
+        )
+        output.append(f"{path}: validation failed ({rule})")
     return output
 
 
@@ -86,7 +168,7 @@ def semantic_errors(doc: dict[str, Any]) -> list[str]:
         unknown = sorted(set(role["may_attest_payload_types"]) - known_payloads)
         if unknown:
             errors.append(
-                f"roles[{index}] references unknown payload type(s): {unknown!r}"
+                f"roles[{index}] references {len(unknown)} unknown payload type(s)"
             )
 
     signers = doc["trusted_signers"]
@@ -100,7 +182,7 @@ def semantic_errors(doc: dict[str, Any]) -> list[str]:
     for index, signer in enumerate(signers):
         if signer["role"] not in known_roles:
             errors.append(
-                f"trusted_signers[{index}].role {signer['role']!r} is unknown"
+                f"trusted_signers[{index}].role is unknown"
             )
 
         valid_from = parse_time(
@@ -135,9 +217,11 @@ def semantic_errors(doc: dict[str, Any]) -> list[str]:
                 )
 
     required_roles = doc["verification"]["required_roles"]
-    for role in required_roles:
+    for required_index, role in enumerate(required_roles):
         if role not in known_roles:
-            errors.append(f"verification.required_roles contains unknown role {role!r}")
+            errors.append(
+                f"verification.required_roles[{required_index}] is unknown"
+            )
 
     eligible_statuses = {"active"}
     if doc["environment"] == "research":
@@ -147,7 +231,7 @@ def semantic_errors(doc: dict[str, Any]) -> list[str]:
         signer for signer in signers if signer["status"] in eligible_statuses
     ]
 
-    for required_role in required_roles:
+    for required_index, required_role in enumerate(required_roles):
         candidates = [
             signer
             for signer in eligible_signers
@@ -155,7 +239,8 @@ def semantic_errors(doc: dict[str, Any]) -> list[str]:
         ]
         if not candidates:
             errors.append(
-                f"required role {required_role!r} has no eligible trusted signer"
+                f"verification.required_roles[{required_index}] has no "
+                "eligible trusted signer"
             )
             continue
 
@@ -164,7 +249,8 @@ def semantic_errors(doc: dict[str, Any]) -> list[str]:
         )
         if not role_payloads:
             errors.append(
-                f"required role {required_role!r} has no allowed payload types"
+                f"verification.required_roles[{required_index}] has no "
+                "allowed payload types"
             )
 
     if doc["verification"]["minimum_signatures"] > len(eligible_signers):
@@ -211,6 +297,14 @@ def run_self_test(schema: dict[str, Any], example: dict[str, Any]) -> int:
     missing_required_role["trusted_signers"][0]["role"] = "independent_verifier"
     errors = validate(missing_required_role, schema)
     assert any("has no eligible trusted signer" in error for error in errors)
+
+    synthetic_sensitive = "sk-" + ("A" * 32)
+    sensitive_role = copy.deepcopy(example)
+    sensitive_role["trusted_signers"][0]["role"] = synthetic_sensitive
+    errors = validate(sensitive_role, schema)
+    rendered = "\n".join(f"ERROR: {error}" for error in errors)
+    assert synthetic_sensitive not in rendered
+    assert any("trusted_signers[0].role is unknown" in error for error in errors)
 
     inverted_window = copy.deepcopy(example)
     inverted_window["trusted_signers"][0]["valid_from"] = "2027-09-19T00:00:00Z"
@@ -259,9 +353,11 @@ def run_self_test(schema: dict[str, Any], example: dict[str, Any]) -> int:
     assert any("minimum_signatures exceeds" in error for error in errors)
 
     private_key_field = copy.deepcopy(example)
-    private_key_field["trusted_signers"][0]["private_key"] = "SHOULD_NOT_BE_HERE"
+    private_key_field["trusted_signers"][0]["private_key"] = synthetic_sensitive
     errors = validate(private_key_field, schema)
-    assert any("Additional properties are not allowed" in error for error in errors)
+    rendered = "\n".join(f"ERROR: {error}" for error in errors)
+    assert synthetic_sensitive not in rendered
+    assert any("validation failed (additionalProperties)" in error for error in errors)
 
     print(
         "Attestation trust-policy self-test passed: "
@@ -292,8 +388,14 @@ def main() -> int:
         schema = load_json(Path(args.schema))
         Draft202012Validator.check_schema(schema)
         policy = load_json(Path(args.policy))
-    except (OSError, json.JSONDecodeError, SchemaError) as exc:
-        print(f"ERROR: unable to load policy/schema: {exc}", file=sys.stderr)
+    except OSError:
+        print("ERROR: unable to load policy/schema (I/O error)", file=sys.stderr)
+        return 2
+    except json.JSONDecodeError:
+        print("ERROR: unable to load policy/schema (invalid JSON)", file=sys.stderr)
+        return 2
+    except SchemaError:
+        print("ERROR: unable to load policy/schema (invalid schema)", file=sys.stderr)
         return 2
 
     if args.self_test:
