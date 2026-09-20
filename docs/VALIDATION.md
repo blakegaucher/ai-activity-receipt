@@ -6,6 +6,18 @@ This document summarizes the current validation state of the **AI Activity Recei
 
 ---
 
+## Repository JSON integrity
+
+**Status:** Deterministic repository-local syntax/schema integrity check
+
+The repository now scans all checked-in JSON assets, requires UTF-8 JSON parsing with duplicate object keys rejected, and meta-validates files that explicitly declare JSON Schema draft 2020-12.
+
+The self-test covers valid JSON, a valid draft-2020-12 schema, duplicate keys, malformed JSON, and an invalid schema.
+
+This catches structural repository drift that specialized benchmark/schema validators might not touch. It does not replace instance-specific validation, semantic invariants, or external evidence validation.
+
+---
+
 ## Repository Markdown-link integrity
 
 **Status:** Deterministic repository-local documentation check

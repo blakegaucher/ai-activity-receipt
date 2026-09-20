@@ -24,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.15"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.16"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -145,6 +145,16 @@ CHECKS: list[dict[str, Any]] = [
             "README.md",
             "docs/ROADMAP.md",
             "docs/VALIDATION.md",
+        ],
+    },
+    {
+        "id": "repository-json-integrity",
+        "argv": ["research/validate_repository_json.py"],
+        "artifacts": [
+            "research/validate_repository_json.py",
+            "activity-record.schema.json",
+            "activity-receipt.schema.json",
+            "research/project-continuity-state.json",
         ],
     },
     {
