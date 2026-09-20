@@ -270,7 +270,8 @@ def main() -> int:
     synthetic_sensitive = "ghp_" + ("A" * 36)
     synthetic_workflow = (
         "steps:\n"
-        f"  - uses: owner/{synthetic_sensitive}@main\n"
+        "  - name: synthetic\n"
+        f"    uses: owner/{synthetic_sensitive}@main\n"
     )
     synthetic_errors = external_action_errors(synthetic_workflow)
     if not synthetic_errors:
