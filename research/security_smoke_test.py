@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,17 +33,41 @@ TEXT_SUFFIXES = {
     ".cff",
 }
 
+SECRET_PATTERN_BITS = {
+    "private_key_pem": 1 << 0,
+    "github_classic_token": 1 << 1,
+    "github_fine_grained_token": 1 << 2,
+    "openai_style_secret_key": 1 << 3,
+}
+
 HIGH_CONFIDENCE_SECRET_PATTERNS = [
     (
-        "private-key PEM block",
+        "private_key_pem",
         re.compile(
             r"-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----"
         ),
     ),
-    ("GitHub classic token", re.compile(r"\bghp_[A-Za-z0-9]{30,}\b")),
-    ("GitHub fine-grained token", re.compile(r"\bgithub_pat_[A-Za-z0-9_]{30,}\b")),
-    ("OpenAI-style secret key", re.compile(r"\bsk-[A-Za-z0-9_-]{24,}\b")),
+    ("github_classic_token", re.compile(r"\bghp_[A-Za-z0-9]{30,}\b")),
+    (
+        "github_fine_grained_token",
+        re.compile(r"\bgithub_pat_[A-Za-z0-9_]{30,}\b"),
+    ),
+    (
+        "openai_style_secret_key",
+        re.compile(r"\bsk-[A-Za-z0-9_-]{24,}\b"),
+    ),
 ]
+
+SAFE_SECRET_DIAGNOSTICS = {
+    SECRET_PATTERN_BITS["private_key_pem"]:
+        "tracked text contains a private-key PEM marker",
+    SECRET_PATTERN_BITS["github_classic_token"]:
+        "tracked text contains a GitHub classic-token marker",
+    SECRET_PATTERN_BITS["github_fine_grained_token"]:
+        "tracked text contains a GitHub fine-grained-token marker",
+    SECRET_PATTERN_BITS["openai_style_secret_key"]:
+        "tracked text contains an OpenAI-style secret-key marker",
+}
 
 
 def read(path: Path) -> str:
@@ -85,10 +110,11 @@ def checkout_hardening_errors(workflow: str) -> list[str]:
     return errors
 
 
-def tracked_secret_errors() -> list[str]:
-    errors: list[str] = []
+def tracked_secret_detection_mask(root: Path = ROOT) -> int:
+    """Return only fixed detection-state bits, never scanned text or paths."""
+    detected = 0
     skip_parts = {".git", ".venv", "venv", "__pycache__"}
-    for path in ROOT.rglob("*"):
+    for path in root.rglob("*"):
         if not path.is_file():
             continue
         if any(part in skip_parts for part in path.parts):
@@ -99,12 +125,61 @@ def tracked_secret_errors() -> list[str]:
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
             continue
-        for label, pattern in HIGH_CONFIDENCE_SECRET_PATTERNS:
+        for pattern_id, pattern in HIGH_CONFIDENCE_SECRET_PATTERNS:
             if pattern.search(text):
+                detected |= SECRET_PATTERN_BITS[pattern_id]
+    return detected
+
+
+def append_safe_secret_diagnostics(errors: list[str], detection_mask: int) -> None:
+    """Render only allowlisted fixed diagnostics from a detection bitmask."""
+    for bit, message in SAFE_SECRET_DIAGNOSTICS.items():
+        if detection_mask & bit:
+            errors.append(message)
+
+
+def secret_diagnostic_regression_errors() -> list[str]:
+    """Prove synthetic secret/source text never reaches rendered diagnostics."""
+    errors: list[str] = []
+    synthetic_sensitive = "ghp_" + ("A" * 36)
+    arbitrary_source_text = "ARBITRARY_SOURCE_TEXT_MUST_NOT_BE_ECHOED"
+
+    with TemporaryDirectory() as temp_dir:
+        temp_root = Path(temp_dir)
+        dynamic_name = "source-controlled-name-must-not-be-echoed.txt"
+        test_path = temp_root / dynamic_name
+        test_path.write_text(
+            synthetic_sensitive + "\n" + arbitrary_source_text + "\n",
+            encoding="utf-8",
+        )
+
+        detection_mask = tracked_secret_detection_mask(temp_root)
+        expected_bit = SECRET_PATTERN_BITS["github_classic_token"]
+        if not detection_mask & expected_bit:
+            errors.append(
+                "secret diagnostic regression test did not detect the synthetic "
+                "GitHub classic-token marker"
+            )
+
+        rendered: list[str] = []
+        append_safe_secret_diagnostics(rendered, detection_mask)
+        if not rendered:
+            errors.append(
+                "secret diagnostic regression test produced no safe diagnostic "
+                "for a detected synthetic secret"
+            )
+
+        diagnostic_text = "\n".join(rendered)
+        for prohibited_value in (
+            synthetic_sensitive,
+            arbitrary_source_text,
+            dynamic_name,
+        ):
+            if prohibited_value in diagnostic_text:
                 errors.append(
-                    f"{label} marker found in tracked text path "
-                    f"{path.relative_to(ROOT)}"
+                    "secret diagnostic regression test echoed scanned source data"
                 )
+
     return errors
 
 
@@ -265,7 +340,9 @@ def main() -> int:
                 f"offline runner missing defensive input/rendering marker {marker!r}"
             )
 
-    errors.extend(tracked_secret_errors())
+    secret_detection_mask = tracked_secret_detection_mask()
+    append_safe_secret_diagnostics(errors, secret_detection_mask)
+    errors.extend(secret_diagnostic_regression_errors())
 
     synthetic_sensitive = "ghp_" + ("A" * 36)
     synthetic_workflow = (
