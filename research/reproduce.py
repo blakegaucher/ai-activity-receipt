@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -23,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.12"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.13"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -329,9 +330,11 @@ CHECKS: list[dict[str, Any]] = [
     },
     {
         "id": "arp003-freeze-manifest",
-        "argv": ["benchmark/arp003_v0_3/freeze_manifest.py",
-            "benchmark/arp003_v0_3/freeze-manifest.schema.json", "--self-test"],
-        "artifacts": ["benchmark/arp003_v0_3/freeze_manifest.py"],
+        "argv": ["benchmark/arp003_v0_3/freeze_manifest.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/freeze_manifest.py",
+            "benchmark/arp003_v0_3/freeze-manifest.schema.json",
+        ],
     },
 ]
 
@@ -375,6 +378,68 @@ def artifact_manifest() -> list[dict[str, Any]]:
     return output
 
 
+def sha256_json(value: Any) -> str:
+    rendered = json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
+    return "sha256:" + hashlib.sha256(rendered.encode("utf-8")).hexdigest()
+
+
+def run_git(*args: str) -> str:
+    completed = subprocess.run(
+        ["git", *args],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or completed.stdout.strip()
+        raise ValueError(
+            f"git {' '.join(args)} failed with exit code "
+            f"{completed.returncode}: {detail}"
+        )
+    return completed.stdout.strip()
+
+
+def git_provenance() -> dict[str, Any]:
+    commit = run_git("rev-parse", "HEAD")
+    branch = run_git("rev-parse", "--abbrev-ref", "HEAD")
+    status = run_git("status", "--porcelain=v1", "--untracked-files=normal")
+    status_lines = [line for line in status.splitlines() if line.strip()]
+    return {
+        "commit": commit,
+        "branch": branch,
+        "dirty": bool(status_lines),
+        "status_entry_count": len(status_lines),
+    }
+
+
+def pip_version() -> str:
+    completed = subprocess.run(
+        [sys.executable, "-m", "pip", "--version"],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or completed.stdout.strip()
+        raise ValueError(
+            f"unable to read pip version: exit {completed.returncode}: {detail}"
+        )
+    return completed.stdout.strip()
+
+
 def run_check(check: dict[str, Any]) -> dict[str, Any]:
     command = [sys.executable, *check["argv"]]
     completed = subprocess.run(
@@ -397,7 +462,7 @@ def run_check(check: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def run_suite() -> dict[str, Any]:
+def run_suite(*, require_clean_git: bool = False) -> dict[str, Any]:
     # Validate protocol JSON explicitly; the individual benchmark utilities may
     # not all read it during self-test.
     protocol_path = ROOT / "benchmark" / "arp003_v0_3" / "protocol.json"
@@ -406,21 +471,57 @@ def run_suite() -> dict[str, Any]:
     if not isinstance(protocol, dict):
         raise ValueError("AR-P003 protocol.json must contain a JSON object")
 
+    repository = git_provenance()
+    if require_clean_git and repository["dirty"]:
+        raise ValueError(
+            "working tree is not clean; exact reproduction requires a clean "
+            "checkout before the suite starts"
+        )
+
+    expected_ci_sha = str(os.environ.get("GITHUB_SHA") or "").strip()
+    if expected_ci_sha and repository["commit"] != expected_ci_sha:
+        raise ValueError(
+            "GITHUB_SHA does not match git HEAD "
+            f"({expected_ci_sha!r} != {repository['commit']!r})"
+        )
+
     results = [run_check(check) for check in CHECKS]
     passed = all(item["passed"] for item in results)
+
+    artifacts = artifact_manifest()
+    check_plan = [
+        {
+            "id": item["id"],
+            "argv": list(item["argv"]),
+        }
+        for item in CHECKS
+    ]
 
     return {
         "suite_version": SUITE_VERSION,
         "status": "passed" if passed else "failed",
-        "python": {
-            "version": platform.python_version(),
-            "implementation": platform.python_implementation(),
+        "repository": repository,
+        "runtime": {
+            "python_version": platform.python_version(),
+            "python_implementation": platform.python_implementation(),
+            "pip_version": pip_version(),
+            "platform_system": platform.system(),
+            "platform_release": platform.release(),
+            "machine": platform.machine(),
+        },
+        "integrity": {
+            "requirements_lock_sha256": sha256_file(
+                ROOT / "requirements-lock.txt"
+            ),
+            "artifact_set_sha256": sha256_json(artifacts),
+            "check_plan_sha256": sha256_json(check_plan),
         },
         "n_checks": len(results),
         "n_passed": sum(1 for item in results if item["passed"]),
         "n_failed": sum(1 for item in results if not item["passed"]),
+        "check_plan": check_plan,
         "checks": results,
-        "artifact_manifest": artifact_manifest(),
+        "artifact_manifest": artifacts,
         "evidence_boundary": (
             "This report reproduces repository-local deterministic/synthetic "
             "checks only. It is not a human-study result, standards certificate, "
@@ -442,10 +543,18 @@ def main() -> int:
         action="store_true",
         help="Suppress per-check terminal summaries; JSON output is unchanged.",
     )
+    parser.add_argument(
+        "--require-clean-git",
+        action="store_true",
+        help=(
+            "Fail before running checks if git reports tracked or untracked "
+            "working-tree changes."
+        ),
+    )
     args = parser.parse_args()
 
     try:
-        report = run_suite()
+        report = run_suite(require_clean_git=args.require_clean_git)
     except (OSError, json.JSONDecodeError, ValueError) as exc:
         print(f"ERROR: reproducibility suite setup failed: {exc}", file=sys.stderr)
         return 2
