@@ -1,6 +1,7 @@
 # Repository Security Hardening
 
 > **Status:** Repository-level defense-in-depth for an early-stage research project.  
+> **Verified state date:** 2026-09-20  
 > These controls do not make AI Activity Receipt a production security product, compliance control, or certified secure implementation.
 
 ## Threats this repository can realistically reduce
@@ -15,11 +16,33 @@ The public repository can reduce risk from:
 - unintended network access from the offline runner;
 - accidental reviewer/gold-analysis data mixing;
 - stale Python or GitHub Actions dependencies;
-- direct changes to sensitive files without an explicit reviewer/owner signal.
+- direct or unreviewed changes to protected `main`;
+- avoidable clear-text diagnostic exposure from malformed/adversarial inputs.
 
 It cannot, by repository configuration alone, establish the truth of captured AI activity, protect production signing keys, authenticate external evidence, or secure a deployment that does not yet exist.
 
 ## Implemented repository controls
+
+### Protected main branch
+
+The repository ruleset `Protect main` is active and targets `refs/heads/main`.
+
+Verified rules:
+
+- pull request required before merge;
+- required approving reviews: 0;
+- no Code Owner approval requirement;
+- no most-recent-push approval requirement;
+- no extra approval for unattributed Copilot PRs;
+- required status checks:
+  - `Schema, invariant, and benchmark smoke tests`;
+  - `Analyze python`;
+  - `Analyze javascript-typescript`;
+- branch deletion blocked;
+- non-fast-forward / force-push updates blocked;
+- bypass actors: none.
+
+The ruleset is intentionally not weakened to simplify development.
 
 ### GitHub Actions
 
@@ -35,65 +58,118 @@ The primary validation workflow:
 - runs a repository security smoke test;
 - uploads the aggregate reproducibility report.
 
-GitHub documents least-privilege `GITHUB_TOKEN` permissions and full-SHA Action pinning as workflow-hardening practices.
+### CodeQL Advanced Setup
+
+`.github/workflows/codeql.yml` remains the repository's CodeQL **Advanced Setup** for:
+
+- Python;
+- JavaScript/TypeScript.
+
+The workflow:
+
+- uses immutable Action commit pins;
+- disables checkout credential persistence;
+- grants only `contents: read` plus the CodeQL-required `security-events: write`;
+- runs on pull requests, pushes to `main`, schedule, and manual dispatch.
+
+Do not enable CodeQL default setup on top of this workflow unless there is a deliberate migration away from Advanced Setup.
+
+### 2026-09-20 CodeQL diagnostic hardening
+
+Before the change, GitHub Security showed two open High findings on `main`, both under **Clear-text logging of sensitive information**:
+
+- alert #2 — `research/validate_attestation_policy.py`;
+- alert #1 — `research/security_smoke_test.py`.
+
+They were investigated separately.
+
+#### Attestation-policy validator
+
+The policy CLI accepts malformed/adversarial policy/schema inputs. Its earlier structural diagnostics used raw `jsonschema.ValidationError.message`, and several semantic diagnostics reproduced unknown role/payload values. Those paths could carry input-derived values into stderr.
+
+PR #72 changed that path to:
+
+- emit a whitelisted structural location and validator category instead of raw `ValidationError.message`;
+- avoid echoing unknown role/payload values;
+- use fixed load-error categories rather than raw exception text;
+- test that synthetic sensitive-looking input is absent from rendered diagnostics.
+
+This was treated as a real diagnostic-exposure hardening issue, not dismissed as a false positive.
+
+#### Repository security smoke test
+
+The high-confidence tracked-secret scanner already reported only:
+
+- fixed secret type/label;
+- tracked relative file path.
+
+It did **not** append the matched secret value.
+
+The same generic stderr sink, however, also received other source-controlled workflow fragments such as Action names and unexpected permission lines. PR #72 removed those unnecessary raw echoes while preserving secret detection and useful structural context. A regression test now injects a synthetic sensitive-looking source-controlled Action name and requires the diagnostic not to reproduce it.
+
+This was fixed conservatively rather than weakening or deleting the scanner.
+
+#### Verification
+
+PR #72 merged as commit:
+
+`4788dc4f39a19b01e68e89c2f39a7e7c6dce7fb4`
+
+Required protected-branch checks passed on the final PR head:
+
+- `Schema, invariant, and benchmark smoke tests`;
+- `Analyze python`;
+- `Analyze javascript-typescript`.
+
+Post-merge `main` runs also completed successfully for the validation workflow and both CodeQL language jobs.
+
+The connected repository tooling does not expose the authenticated CodeQL alert list. Therefore successful SARIF upload and green jobs are recorded as execution evidence, but the dashboard alert count is not inferred. The two alerts require final GitHub Security UI verification before issue #37 can be closed.
 
 ### Dependency maintenance
 
-`.github/dependabot.yml` schedules weekly grouped update checks for:
+`.github/dependabot.yml` remains unchanged:
 
-- Python/pip dependency files;
-- GitHub Actions references.
+- pip: weekly Monday 06:00 `America/Toronto`;
+- GitHub Actions: weekly Monday 06:15 `America/Toronto`;
+- open PR limit: 5;
+- grouped version updates;
+- commit prefix: `deps`.
 
-Dependabot-generated changes still require normal test/review discipline. An automated update PR is not evidence that the new dependency set is safe.
+Dependabot alerts and Dependabot security updates are enabled. Grouped security updates remain off because no concrete need to alter that setting was established.
+
+### Secret scanning / vulnerability reporting
+
+Verified owner/admin state includes:
+
+- Private vulnerability reporting enabled;
+- Security advisories enabled;
+- Secret scanning alerts enabled;
+- secret protection enabled;
+- push protection enabled.
+
+The repository security smoke test remains a narrow deterministic supplement, not a replacement for GitHub secret scanning.
 
 ### Ownership metadata
 
 `.github/CODEOWNERS` names the repository owner for all files and repeats ownership for security/evidence-sensitive paths.
 
-CODEOWNERS is reviewer-routing metadata. It does **not** enforce approval unless repository branch/ruleset settings require code-owner review.
+The current ruleset does not require Code Owner review. CODEOWNERS therefore remains routing/ownership metadata rather than an approval gate.
 
 ### Offline AR-P003 runner
 
-The development runner now uses a stricter CSP and explicit local resource limits.
-
-The reviewer bundle/response/analysis schemas also have bounded case, event, evidence, label, option, and content sizes.
+The development runner uses a strict CSP and explicit local resource limits. Reviewer bundle/response/analysis schemas have bounded case, event, evidence, label, option, and content sizes.
 
 These are defensive resource limits for a local development runner; they are not a browser sandbox guarantee.
 
-### Secret/private-key smoke checks
+## Remaining admin verification
 
-The repository security smoke test rejects high-confidence private-key/token markers in tracked text files and checks the expected private-study `.gitignore` protections.
+The owner/admin configuration work is materially complete.
 
-This is a narrow deterministic guard, not a substitute for GitHub secret scanning or a dedicated secrets scanner.
+One evidence item remains deliberately open in repository documentation:
 
-### CodeQL advanced setup
+- verify the post-remediation CodeQL dashboard state for alerts #1 and #2 after the successful `main` CodeQL run.
 
-A separate `.github/workflows/codeql.yml` now runs CodeQL advanced setup for:
-
-- Python;
-- JavaScript/TypeScript.
-
-The workflow is pinned to immutable Action commit SHAs, uses checkout with credential persistence disabled, and grants only `contents: read` plus the CodeQL-required `security-events: write`.
-
-The first pull-request and post-merge `main` runs completed successfully for both configured languages on 2026-09-19.
-
-The available connector cannot inspect the CodeQL alert inventory, so a successful workflow run must **not** be described as “zero vulnerabilities” or “no alerts.” The alert page still requires manual inspection.
-
-## Manual GitHub settings still required
-
-Repository files cannot themselves enable every GitHub security feature.
-
-Current API inspection found no repository rulesets on `main`. The GitHub connector used for this work also cannot change branch-protection/ruleset or the remaining repository-admin security settings.
-
-Repository administration should therefore separately evaluate and enable/verify:
-
-1. a `main` ruleset/branch protection requiring pull requests and the validation status check, while blocking force-pushes and branch deletion;
-2. private vulnerability reporting;
-3. Dependabot security alerts/security updates if they are not already enabled;
-4. security-alert notifications for the repository owner;
-5. the CodeQL/code-scanning alert inventory after the successful advanced-setup scans.
-
-Because advanced setup is now intentionally present, do **not** also enable CodeQL default setup unless the project deliberately replaces the advanced workflow.
+If owner security-alert notification delivery has not already been explicitly checked, record that separately; do not infer it from the other enabled settings.
 
 ## Human-study data boundary
 
@@ -111,16 +187,17 @@ The AR-P003 development runner remains unfrozen. Security hardening must not be 
 
 ## Incident handling
 
-When a vulnerability is sensitive, use GitHub private vulnerability reporting if the repository administrator has enabled it. Otherwise establish a private contact channel before sharing exploit details.
+Use GitHub Private vulnerability reporting for sensitive repository vulnerability reports.
 
 Non-sensitive reproducibility or correctness bugs may use normal GitHub issues.
 
 ## Evidence boundary
 
-A green CI/security smoke test means only that the checked repository controls behaved as encoded at that commit. It is not:
+Repository security controls were hardened and the configured static-analysis findings were addressed in code. Green CI and CodeQL execution are not:
 
 - penetration testing;
 - an independent security audit;
+- proof that no vulnerabilities remain;
 - CodeQL certification;
 - supply-chain certification;
 - production key-management validation;

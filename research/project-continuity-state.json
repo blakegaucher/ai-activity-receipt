@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.10",
+  "snapshot_version": "project-continuity-v0.11",
   "snapshot_date": "2026-09-20",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -113,7 +113,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.17",
+      "suite_version": "ai-activity-receipt-repro-v0.18",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,
@@ -163,7 +163,7 @@
     "local_private_output_gitignore": true,
     "explicit_license_status": "not_selected",
     "security_hardening": {
-      "status": "repository_controls_added_admin_settings_open",
+      "status": "admin_controls_verified_codeql_remediation_merged_alert_ui_verification_pending",
       "dependabot_version_updates_configured": true,
       "codeowners_present": true,
       "primary_ci_contents_read_only": true,
@@ -174,9 +174,9 @@
       "security_smoke_test": true,
       "offline_runner_strict_csp": true,
       "offline_runner_resource_limits": true,
-      "main_ruleset": "not_configured_detected_via_api",
+      "main_ruleset": "protect_main_active_verified_2026-09-20",
       "codeql_default_setup": "not_used_advanced_setup_selected",
-      "private_vulnerability_reporting": "manual_admin_gate",
+      "private_vulnerability_reporting": "enabled_owner_verified_2026-09-20",
       "codeql_advanced_setup": {
         "status": "main_ci_green",
         "languages": [
@@ -186,8 +186,23 @@
         "action_commit_pinned": true,
         "workflow": ".github/workflows/codeql.yml",
         "first_verified_main_run_date": "2026-09-19",
-        "alert_inventory": "unverified_connector_cannot_read_code_scanning_alerts"
-      }
+        "alert_inventory": "post_remediation_owner_ui_verification_pending",
+        "pre_remediation_open_high_alert_count": 2,
+        "remediation_pr": 72,
+        "remediation_merge_commit": "4788dc4f39a19b01e68e89c2f39a7e7c6dce7fb4",
+        "post_remediation_main_run": 73,
+        "post_remediation_python": "success",
+        "post_remediation_javascript_typescript": "success",
+        "diagnostics_hardened": true
+      },
+      "dependabot_alerts_enabled": true,
+      "dependabot_security_updates_enabled": true,
+      "code_scanning_alerts_enabled": true,
+      "secret_scanning_alerts_enabled": true,
+      "secret_protection_enabled": true,
+      "push_protection_enabled": true,
+      "security_advisories_enabled": true,
+      "security_policy_enabled": true
     },
     "license_preflight_inventory": {
       "status": "prepared_not_legal_clearance",
@@ -211,9 +226,7 @@
   "open_project_governance_gates": [
     "explicit_repository_license_selection",
     "manual_AR_P003_browser_device_smoke_testing",
-    "enable_main_branch_ruleset_or_protection",
-    "enable_private_vulnerability_reporting",
-    "confirm_dependabot_security_alerts_and_updates",
-    "inspect_codeql_alerts_and_finish_security_admin_settings"
+    "verify_post_remediation_codeql_alert_state",
+    "confirm_owner_security_alert_notifications_if_not_already_verified"
   ]
 }

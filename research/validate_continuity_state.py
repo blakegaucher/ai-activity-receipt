@@ -18,7 +18,7 @@ STATE = ROOT / "research" / "project-continuity-state.json"
 REPRO = ROOT / "research" / "reproduce.py"
 RUNNER_BUNDLE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-bundle.schema.json"
 RUNNER_RESPONSE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-response.schema.json"
-LATEST_CONTINUITY = ROOT / "docs" / "PROJECT-CONTINUITY-2026-09-20.md"
+LATEST_CONTINUITY = ROOT / "docs" / "PROJECT-CONTINUITY-2026-09-20-SECURITY.md"
 EXPECTED_FREEZE = (
     "8a381f4ae20a5f6824e513c7f96920fdf3cfe6b00b0b8d301127f5e0b659d0fd"
 )
@@ -55,7 +55,7 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.10":
+    if state.get("snapshot_version") != "project-continuity-v0.11":
         errors.append("machine-readable continuity snapshot_version is stale")
     if state.get("snapshot_date") != "2026-09-20":
         errors.append("machine-readable continuity snapshot_date is stale")
@@ -209,10 +209,40 @@ def main() -> int:
         errors.append("CodeQL language coverage continuity unexpectedly changed")
     if security.get("codeql_default_setup") != "not_used_advanced_setup_selected":
         errors.append("CodeQL setup mode changed without deliberate continuity update")
-    if security.get("main_ruleset") != "not_configured_detected_via_api":
+    if security.get("main_ruleset") != "protect_main_active_verified_2026-09-20":
+        errors.append("verified Protect main ruleset continuity is stale")
+    verified_admin_flags = {
+        "dependabot_alerts_enabled": True,
+        "dependabot_security_updates_enabled": True,
+        "code_scanning_alerts_enabled": True,
+        "secret_scanning_alerts_enabled": True,
+        "secret_protection_enabled": True,
+        "push_protection_enabled": True,
+        "security_advisories_enabled": True,
+        "security_policy_enabled": True,
+    }
+    for key, expected in verified_admin_flags.items():
+        if security.get(key) is not expected:
+            errors.append(
+                f"verified repository-admin security field {key!r} changed unexpectedly"
+            )
+    if security.get("private_vulnerability_reporting") != (
+        "enabled_owner_verified_2026-09-20"
+    ):
+        errors.append("private vulnerability reporting continuity is stale")
+    if codeql.get("remediation_pr") != 72:
+        errors.append("CodeQL diagnostic-remediation PR continuity is stale")
+    if codeql.get("remediation_merge_commit") != (
+        "4788dc4f39a19b01e68e89c2f39a7e7c6dce7fb4"
+    ):
+        errors.append("CodeQL diagnostic-remediation merge continuity is stale")
+    if codeql.get("post_remediation_python") != "success":
+        errors.append("post-remediation Python CodeQL status is stale")
+    if codeql.get("post_remediation_javascript_typescript") != "success":
+        errors.append("post-remediation JavaScript/TypeScript CodeQL status is stale")
+    if codeql.get("alert_inventory") != "post_remediation_owner_ui_verification_pending":
         errors.append(
-            "main ruleset status changed; update continuity deliberately after "
-            "repository-admin verification"
+            "CodeQL alert-inventory status changed without explicit dashboard evidence"
         )
     if (dev.get("reproducibility_runner") or {}).get("external_reproduction_handoff") is not True:
         errors.append("external reproduction handoff continuity flag unexpectedly changed")

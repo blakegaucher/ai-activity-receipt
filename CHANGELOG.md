@@ -1,3 +1,15 @@
+## Unreleased
+
+### Security diagnostic remediation and admin-state sync
+
+- resolve two High CodeQL clear-text-logging findings through diagnostic hardening rather than dismissal or scanner weakening;
+- sanitize attestation-policy structural/semantic/load diagnostics so potentially input-derived values are not blindly echoed to stderr;
+- preserve tracked-secret detection while removing unnecessary source-controlled workflow fragments from security-smoke diagnostics;
+- add synthetic sensitive-looking regression coverage for both paths;
+- merge remediation through the active protected-main ruleset only after the required validation, Python CodeQL, and JavaScript/TypeScript CodeQL checks passed;
+- record verified owner/admin controls including the active `Protect main` ruleset, Private vulnerability reporting, Dependabot alerts/security updates, code/secret scanning, secret protection, push protection, and retained CodeQL Advanced Setup;
+- keep the final CodeQL dashboard alert count explicitly pending authenticated UI verification rather than inferring zero findings from green CodeQL execution.
+
 # Changelog
 
 This changelog tracks public candidate-schema and validation changes for the AI Activity Receipt research repository.
