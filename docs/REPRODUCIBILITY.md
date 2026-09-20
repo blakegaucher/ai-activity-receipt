@@ -7,7 +7,7 @@
 The repository now exposes one command that runs the current deterministic and synthetic checks in a fixed order and emits a machine-readable report:
 
 ```bash
-python research/reproduce.py --output reproducibility-report.json
+python research/reproduce.py --require-clean-git --output reproducibility-report.json
 ```
 
 The runner is intended to make it easier for another developer, reviewer, competition judge, or collaborator to reproduce the repository-local claims without first reconstructing the GitHub Actions workflow by hand.
@@ -42,20 +42,24 @@ The suite currently executes:
 
 The AR-P003 protocol JSON is also parsed explicitly before the suite runs.
 
-The aggregate suite identifier is now `ai-activity-receipt-repro-v0.5`; the version changed because the license-preflight inventory check became part of the reproducibility path.
+The aggregate suite identifier is now `ai-activity-receipt-repro-v0.13`; the version changed because the license-preflight inventory check became part of the reproducibility path.
 
 ## Machine-readable report
 
 The JSON report records:
 
 - suite version;
-- Python implementation/version;
+- exact Git commit, current branch/detached state, and clean/dirty working-tree status;
+- Python implementation/version, pip version, OS release, and CPU architecture;
 - check ID;
 - command arguments;
 - exit code;
 - pass/fail state;
 - captured stdout/stderr;
 - SHA-256 and byte size for the scripts, schemas, fixtures, protocol files, supported-range requirements, exact tested dependency lock, ignore rules, and CI workflow used by the suite;
+- a deterministic SHA-256 for the complete artifact manifest;
+- a deterministic SHA-256 for the ordered check plan;
+- the exact requirements-lock SHA-256;
 - the explicit evidence boundary.
 
 This gives a reviewer both the execution result and a content manifest of the important artifacts that were actually used.
@@ -70,7 +74,7 @@ A statement such as:
 
 is incomplete if the reader cannot tell which versions of the validators and schemas were used.
 
-The reproducibility report therefore binds the result to a deterministic set of repository artifacts through SHA-256 file hashes.
+The reproducibility report therefore binds the result to the exact Git commit plus a deterministic set of repository artifacts and commands. A clean-checkout run can use `--require-clean-git` so local edits/untracked files fail before the checks begin.
 
 It is still not a signed release manifest or trusted timestamp. It is a reproducibility aid.
 
@@ -109,7 +113,7 @@ A successful run prints a concise per-check summary.
 For JSON-only output to standard output:
 
 ```bash
-python research/reproduce.py --quiet
+python research/reproduce.py --require-clean-git --quiet
 ```
 
 ## CI hardening

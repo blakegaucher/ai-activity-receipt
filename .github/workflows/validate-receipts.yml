@@ -188,7 +188,7 @@ jobs:
 
       - name: Run one-command reproducibility suite
         run: |
-          python research/reproduce.py --output /tmp/reproducibility-report.json
+          python research/reproduce.py --require-clean-git --output /tmp/reproducibility-report.json
           python -m json.tool /tmp/reproducibility-report.json > /dev/null
 
       - name: Upload reproducibility report

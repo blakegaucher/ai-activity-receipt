@@ -527,3 +527,14 @@ remains `draft_not_frozen_not_executed`. Relative to that current `main`, the
 protocol, actual decision ledger, readiness declarations, and frozen v0.2.3
 evidence are unchanged. The next study actions remain deliberate methodology
 decisions and real browser/device tests.
+
+
+---
+
+### Reproducibility provenance hardening — 2026-09-20
+
+The aggregate reproducibility profile is now `ai-activity-receipt-repro-v0.13`.
+
+A report now records the exact Git commit, clean/dirty tree status, runtime/platform metadata, exact requirements-lock digest, deterministic artifact-set digest, and deterministic ordered check-plan digest. CI and the public clean-room handoff use `--require-clean-git`, and CI rejects a report if `GITHUB_SHA` does not equal checked-out `HEAD`.
+
+This strengthens traceability of a reproduction attempt. It does not make project-authored CI independent external reproduction or upgrade any human/commercial evidence gate.

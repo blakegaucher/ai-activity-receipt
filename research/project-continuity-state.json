@@ -107,7 +107,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.12",
+      "suite_version": "ai-activity-receipt-repro-v0.13",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,
@@ -121,7 +121,12 @@
         "immutable_commit_pins": true
       },
       "external_reproduction_handoff": true,
-      "independent_external_reproduction": "open"
+      "independent_external_reproduction": "open",
+      "git_commit_binding": true,
+      "clean_tree_gate": true,
+      "artifact_set_digest": true,
+      "check_plan_digest": true,
+      "requirements_lock_digest": true
     }
   },
   "cross_project_boundaries": {
