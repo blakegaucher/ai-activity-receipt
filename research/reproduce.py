@@ -24,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.16"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.17"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -103,7 +103,7 @@ CHECKS: list[dict[str, Any]] = [
         "artifacts": [
             "research/validate_continuity_state.py",
             "research/project-continuity-state.json",
-            "docs/PROJECT-CONTINUITY-2026-09-19.md",
+            "docs/PROJECT-CONTINUITY-2026-09-20.md",
             "docs/AR-P003-V0.2.3-HISTORICAL-BASELINE.md",
         ],
     },
