@@ -1,0 +1,227 @@
+{
+  "impact_map_version": "AR-P003-v0.3-methodology-impact-map-v0.1",
+  "protocol_version": "v0.3-draft-2026-09-18",
+  "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.1",
+  "status": "decision_support_only_no_selection",
+  "decisions": [
+    {
+      "decision_id": "comparison_conditions",
+      "candidates": [
+        {
+          "candidate_id": "two_condition_current",
+          "implementation_class": "current_native",
+          "impacted_artifacts": [
+            "benchmark/arp003_v0_3/protocol.json",
+            "benchmark/arp003_v0_3/generate_assignment.py",
+            "benchmark/arp003_v0_3/build_runner_bundles.py",
+            "benchmark/arp003_v0_3/offline_runner.html"
+          ],
+          "required_before_execution": [
+            "explicit rationale for choosing two conditions",
+            "crossed-design planning under the chosen two-condition estimand"
+          ],
+          "notes": "Matches the current development runner. It directly estimates the effect of adding the Receipt to underlying evidence, but does not separately identify the effect of generic evidence structuring."
+        },
+        {
+          "candidate_id": "three_condition_structured_control",
+          "implementation_class": "requires_versioned_change",
+          "impacted_artifacts": [
+            "benchmark/arp003_v0_3/protocol.json",
+            "benchmark/arp003_v0_3/generate_assignment.py",
+            "benchmark/arp003_v0_3/runner-bundle.schema.json",
+            "benchmark/arp003_v0_3/runner-analysis.schema.json",
+            "benchmark/arp003_v0_3/build_runner_bundles.py",
+            "benchmark/arp003_v0_3/offline_runner.html",
+            "benchmark/arp003_v0_3/merge_runner_responses.py",
+            "benchmark/arp003_v0_3/score_responses.py",
+            "benchmark/arp003_v0_3/plan_crossed_design.py"
+          ],
+          "required_before_execution": [
+            "new versioned three-condition protocol/assignment contract",
+            "neutral structured event-table renderer derived from the same canonical record/evidence",
+            "evidence-symmetry audit across raw/table/Receipt presentations",
+            "new crossed-design planning for R-vs-structured and structured-vs-raw contrasts"
+          ],
+          "notes": "Implements the research-review recommendation intended to separate generic evidence organization from Receipt-specific presentation. This is a material methodology change, not a cosmetic runner edit."
+        }
+      ]
+    },
+    {
+      "decision_id": "primary_endpoint",
+      "candidates": [
+        {
+          "candidate_id": "component_endpoint_set",
+          "implementation_class": "current_native",
+          "impacted_artifacts": [
+            "benchmark/arp003_v0_3/response-record.schema.json",
+            "benchmark/arp003_v0_3/score_responses.py",
+            "docs/AR-P003-V0.3-PROTOCOL.md"
+          ],
+          "required_before_execution": [
+            "freeze a small prespecified primary endpoint set",
+            "freeze multiplicity/claim-gate handling",
+            "freeze component-level estimands and denominator rules"
+          ],
+          "notes": "The current scorer already preserves action/source/incident F1 and categorical reconstruction outcomes. The final confirmatory primary set is still unresolved."
+        },
+        {
+          "candidate_id": "correct_completion_by_180s",
+          "implementation_class": "requires_versioned_change",
+          "impacted_artifacts": [
+            "benchmark/arp003_v0_3/protocol.json",
+            "benchmark/arp003_v0_3/response-record.schema.json",
+            "benchmark/arp003_v0_3/offline_runner.html",
+            "benchmark/arp003_v0_3/merge_runner_responses.py",
+            "benchmark/arp003_v0_3/score_responses.py",
+            "benchmark/arp003_v0_3/plan_crossed_design.py"
+          ],
+          "required_before_execution": [
+            "freeze required judgments and acceptable evidence sets per case",
+            "implement and test the 180-second timeout rule",
+            "define evidence-supported completion and fabricated-event failure semantics",
+            "add critical-false-clearance safety endpoint",
+            "replan power for the binary primary estimand"
+          ],
+          "notes": "Matches the research-review proposal for an interpretable supported/correct/on-time primary outcome. It requires a new scorer/runner/protocol version and cannot be inferred from component scores after outcomes are visible."
+        }
+      ]
+    },
+    {
+      "decision_id": "primary_timing_clock",
+      "candidates": [
+        {
+          "candidate_id": "active_time_primary",
+          "implementation_class": "current_native",
+          "impacted_artifacts": [
+            "benchmark/arp003_v0_3/offline_runner.html",
+            "benchmark/arp003_v0_3/runner-response.schema.json",
+            "benchmark/arp003_v0_3/merge_runner_responses.py"
+          ],
+          "required_before_execution": [
+            "freeze manual-pause and visibility-pause eligibility rules",
+            "freeze technical-failure exclusion rules",
+            "verify timing behavior in allowed browsers/devices"
+          ],
+          "notes": "The development runner already records active time and pause/visibility events. Selecting it remains a preregistration decision rather than an implementation default."
+        },
+        {
+          "candidate_id": "wall_deadline_with_hidden_sensitivity",
+          "implementation_class": "requires_versioned_change",
+          "impacted_artifacts": [
+            "benchmark/arp003_v0_3/protocol.json",
+            "benchmark/arp003_v0_3/offline_runner.html",
+            "benchmark/arp003_v0_3/merge_runner_responses.py",
+            "benchmark/arp003_v0_3/score_responses.py"
+          ],
+          "required_before_execution": [
+            "freeze wall/deadline semantics",
+            "prespecify hidden-time threshold and sensitivity analysis",
+            "preserve last answer state at timeout",
+            "flag reload/timer-context breaks",
+            "verify timing behavior in allowed browsers/devices"
+          ],
+          "notes": "Matches the research-review recommendation that background time remain in the primary deadline, with >10 seconds hidden handled as a prespecified sensitivity analysis. The runner already preserves wall and visibility data, so development observability is retained."
+        }
+      ]
+    },
+    {
+      "decision_id": "challenge_design",
+      "candidates": [
+        {
+          "candidate_id": "integrated_challenge_strata",
+          "implementation_class": "current_native",
+          "impacted_artifacts": [
+            "benchmark/arp003_v0_3/protocol.json",
+            "benchmark/arp003_v0_3/runner-analysis.schema.json",
+            "benchmark/arp003_v0_3/generate_assignment.py",
+            "benchmark/arp003_v0_3/plan_crossed_design.py"
+          ],
+          "required_before_execution": [
+            "freeze challenge-stratum counts and balancing",
+            "freeze separate ordinary/challenge reporting",
+            "complete leakage and manual methodology review on final cases"
+          ],
+          "notes": "Matches current repository architecture. It keeps stale/incomplete/conflicting challenge cases inside the larger assignment while requiring separate reporting."
+        },
+        {
+          "candidate_id": "separate_robustness_cohort",
+          "implementation_class": "requires_versioned_change",
+          "impacted_artifacts": [
+            "benchmark/arp003_v0_3/protocol.json",
+            "benchmark/arp003_v0_3/generate_assignment.py",
+            "benchmark/arp003_v0_3/runner-analysis.schema.json",
+            "benchmark/arp003_v0_3/build_runner_bundles.py",
+            "benchmark/arp003_v0_3/plan_crossed_design.py"
+          ],
+          "required_before_execution": [
+            "fresh robustness families/episodes",
+            "separate cohort allocation and randomization",
+            "faithful-Receipt and corrupted-Receipt conditions",
+            "freeze corruption families and eligible critical-false-clearance subset",
+            "separate power/precision plan"
+          ],
+          "notes": "Matches the research-review recommendation for a distinct misleading-Receipt experiment. It materially changes sampling, assignment, prevalence, and interpretation and therefore requires a new versioned cohort plan."
+        }
+      ]
+    },
+    {
+      "decision_id": "reviewer_population",
+      "candidates": [
+        {
+          "candidate_id": "population_to_be_selected",
+          "implementation_class": "scope_decision",
+          "impacted_artifacts": [
+            "docs/AR-P003-V0.3-PROTOCOL.md",
+            "docs/AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md",
+            "benchmark/arp003_v0_3/plan_crossed_design.py"
+          ],
+          "required_before_execution": [
+            "define intended claim population",
+            "freeze eligibility/exclusion criteria",
+            "freeze experience/expertise strata and language requirements",
+            "exclude case constructors/scorers and define project-familiarity rule",
+            "align recruitment source with the scope of inference"
+          ],
+          "notes": "This cannot be settled by code. The eventual human-audit claim must remain scoped to the population actually recruited."
+        }
+      ]
+    },
+    {
+      "decision_id": "effect_precision_target",
+      "candidates": [
+        {
+          "candidate_id": "effect_target_to_be_selected",
+          "implementation_class": "scope_decision",
+          "impacted_artifacts": [
+            "docs/AR-P003-V0.3-PLANNING.md",
+            "docs/AR-P003-V0.3-CROSSED-PLANNING.md",
+            "benchmark/arp003_v0_3/plan_crossed_design.py"
+          ],
+          "required_before_execution": [
+            "choose a defensible minimally meaningful effect or precision target",
+            "freeze adverse variance/heterogeneity assumptions",
+            "freeze candidate sample sizes and Monte Carlo decision rule"
+          ],
+          "notes": "Keeps the effect/precision target deliberately open when neither the research-review thresholds nor another decision basis has been accepted."
+        },
+        {
+          "candidate_id": "research_review_proposed_thresholds",
+          "implementation_class": "planning_assumption",
+          "impacted_artifacts": [
+            "docs/AR-P003-V0.3-PLANNING.md",
+            "docs/AR-P003-V0.3-CROSSED-PLANNING.md",
+            "benchmark/arp003_v0_3/plan_crossed_design.py"
+          ],
+          "required_before_execution": [
+            "explicitly accept or revise the +5pp supported-completion benefit threshold",
+            "explicitly accept or revise the 3pp accuracy noninferiority margin for a separate speed claim",
+            "explicitly accept or revise the +2pp critical-false-clearance guardrail",
+            "run >=1000 replicates per decision-relevant crossed-design scenario",
+            "evaluate candidate reviewer counts 108/216/324/432 or document a replacement grid"
+          ],
+          "notes": "Preserves the research review's proposed decision assumptions as a candidate only. They are not industry norms, not estimates from v0.2.3, and not selected by this map."
+        }
+      ]
+    }
+  ]
+}
