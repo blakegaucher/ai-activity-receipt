@@ -99,6 +99,12 @@ jobs:
       - name: Validate current AR-P003 methodology decision ledger
         run: python benchmark/arp003_v0_3/validate_methodology_decisions.py
 
+      - name: Run AR-P003 methodology impact-map self-test
+        run: python benchmark/arp003_v0_3/validate_methodology_impact.py --self-test
+
+      - name: Validate current AR-P003 methodology impact map
+        run: python benchmark/arp003_v0_3/validate_methodology_impact.py
+
       - name: Run Receipt fixture suite
         run: python validate_receipts.py
 
