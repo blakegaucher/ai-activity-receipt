@@ -4,6 +4,16 @@ This changelog tracks public candidate-schema and validation changes for the AI 
 
 The project is pre-commercial research. Version labels below describe repository artifacts, not standards releases.
 
+### Reproducibility provenance hardening — 2026-09-20
+
+- bump the aggregate reproducibility profile to `ai-activity-receipt-repro-v0.13`;
+- record the exact Git commit, branch/detached state, clean/dirty working-tree status, Python/pip/platform metadata, and CPU architecture in the machine-readable report;
+- add deterministic SHA-256 bindings for the artifact manifest and ordered check plan plus a top-level requirements-lock digest;
+- add `--require-clean-git` and use it in CI/external clean-room instructions so local tree drift fails closed;
+- reject a CI run when `GITHUB_SHA` does not match the checked-out Git `HEAD`;
+- fix the aggregate freeze-manifest self-test command so the schema path is an artifact dependency rather than an unused positional argument;
+- extend the public reproduction issue form with suite/artifact/check-plan provenance fields.
+
 ## candidate-v0.2 — 2026-09-18
 
 ### Schema
