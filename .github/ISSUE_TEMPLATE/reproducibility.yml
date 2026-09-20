@@ -21,7 +21,7 @@ body:
     attributes:
       label: Reproducibility suite version
       description: Copy the suite_version from reproducibility-report.json.
-      placeholder: e.g. ai-activity-receipt-repro-v0.13
+      placeholder: e.g. ai-activity-receipt-repro-v0.14
     validations:
       required: true
 
