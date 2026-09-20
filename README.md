@@ -66,6 +66,7 @@ A passing run reproduces repository-local deterministic/synthetic checks only. I
 - [MCP 2026-07-28 Adapter Prototype](docs/MCP-ADAPTER.md)
 - [AR-P003 v0.3 Preregistration Draft](docs/AR-P003-V0.3-PROTOCOL.md)
 - [AR-P003 v0.3 Reviewer Instructions Draft](docs/AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md)
+- [AR-P003 v0.3 Methodology Decision Support](docs/AR-P003-V0.3-DECISION-SUPPORT.md)
 - [AR-P003 v0.3 Development Offline Runner](docs/AR-P003-V0.3-OFFLINE-RUNNER.md)
 - [AR-P003 v0.3 Freeze Readiness](docs/AR-P003-V0.3-FREEZE-READINESS.md)
 - [AR-P003 v0.3 Crossed Design Planning](docs/AR-P003-V0.3-CROSSED-PLANNING.md)
