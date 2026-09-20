@@ -169,9 +169,17 @@
           "evidence_refs": [
             "docs/AR-P003-V0.3-CROSSED-PLANNING.md"
           ]
+        },
+        {
+          "candidate_id": "research_review_proposed_thresholds",
+          "description": "Use the project research review's proposed preregistration decision assumptions: +5 percentage points as the smallest practically important supported-completion benefit; 3 percentage points as the accuracy noninferiority margin for a separate speed claim; and +2 percentage points as the maximum acceptable increase in critical false clearance. These are candidate decision assumptions, not industry norms.",
+          "source_class": "project_research_review",
+          "evidence_refs": [
+            "AI_Activity_Receipt_Research_and_v03_Protocol.pdf"
+          ]
         }
       ],
-      "notes": "Do not infer a meaningful effect from v0.2.3 because both presentations were at ceiling under the auxiliary AI reviewer."
+      "notes": "The earlier research review supplies explicit candidate thresholds (+5pp benefit, 3pp speed-claim accuracy noninferiority margin, +2pp maximum critical-false-clearance increase) and asks that their acceptability be confirmed before confirmatory outcomes. The current repository planning examples remain illustrative. No threshold is selected by this ledger."
     }
   ]
 }
