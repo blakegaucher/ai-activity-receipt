@@ -39,7 +39,7 @@ python -m pip install -r requirements-lock.txt
 Run the aggregate suite:
 
 ```bash
-python research/reproduce.py --output reproducibility-report.json
+python research/reproduce.py --require-clean-git --output reproducibility-report.json
 ```
 
 Record the command exit code.
@@ -59,6 +59,7 @@ Please provide:
 - dependency-install command and result;
 - reproduction command and exit code;
 - `reproducibility-report.json`;
+- the report's suite version, Git commit, requirements-lock SHA-256, artifact-set SHA-256, and check-plan SHA-256;
 - the first mismatch or undocumented prerequisite, if any;
 - any manual workaround attempted after recording the original result.
 
@@ -125,7 +126,7 @@ After the exact-lock attempt is complete and recorded, a reviewer may separately
 
 ```bash
 python -m pip install -r requirements.txt
-python research/reproduce.py --output reproducibility-supported-range.json
+python research/reproduce.py --require-clean-git --output reproducibility-supported-range.json
 ```
 
 Keep this result separate from the exact-lock reproduction.
