@@ -1,5 +1,15 @@
 ## Unreleased
 
+### CodeQL alert #1 detection/diagnostic separation
+
+- record authenticated owner evidence that the post-remediation inventory is **1 open / 1 closed**, with original alert #1 still open in `research/security_smoke_test.py`;
+- preserve the existing high-confidence secret regexes and repository-wide tracked-text scan;
+- refactor the tracked-secret scanner to return only a fixed detection-state bitmask rather than diagnostics carrying dynamic paths;
+- render only allowlisted fixed secret-category messages outside the scanned-text dataflow;
+- add a temporary-file regression proving a synthetic token is detected while the token, arbitrary scanned text, and dynamic filename are absent from diagnostics;
+- keep issue #37 open pending authenticated post-merge CodeQL inventory and owner Security-alert notification confirmation.
+
+
 ### Security diagnostic remediation and admin-state sync
 
 - resolve two High CodeQL clear-text-logging findings through diagnostic hardening rather than dismissal or scanner weakening;
