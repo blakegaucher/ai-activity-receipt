@@ -4,6 +4,15 @@ This changelog tracks public candidate-schema and validation changes for the AI 
 
 The project is pre-commercial research. Version labels below describe repository artifacts, not standards releases.
 
+### Repository JSON integrity — 2026-09-20
+
+- add a deterministic repository-wide JSON parser using duplicate-key rejection rather than permissive last-key-wins semantics;
+- validate every checked-in JSON asset as UTF-8 JSON;
+- automatically run JSON Schema draft 2020-12 meta-validation for files that declare that draft;
+- add self-tests for duplicate keys, malformed JSON, valid schema, and invalid schema;
+- run the checker in CI and aggregate reproducibility profile `ai-activity-receipt-repro-v0.16`;
+- keep instance-vs-schema validation in the existing specialized validators rather than silently broadening this integrity check.
+
 ### Repository documentation-link integrity — 2026-09-20
 
 - add a deterministic offline validator for repository-local Markdown links;
