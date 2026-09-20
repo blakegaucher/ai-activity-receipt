@@ -61,7 +61,13 @@
         "challenge_design": "unresolved",
         "reviewer_population": "unresolved",
         "effect_precision_target": "unresolved",
-        "freeze_readiness_crosscheck": true
+        "freeze_readiness_crosscheck": true,
+        "impact_map": {
+          "status": "decision_support_only_no_selection",
+          "path": "benchmark/arp003_v0_3/methodology-impact-map.json",
+          "completeness_guard": true,
+          "research_review_effect_thresholds_preserved_as_candidate": true
+        }
       },
       "leakage_validation": {
         "status": "prepared_not_complete",
@@ -107,7 +113,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.13",
+      "suite_version": "ai-activity-receipt-repro-v0.14",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,
