@@ -60,8 +60,10 @@ def external_action_errors(workflow: str) -> list[str]:
         if action.startswith("./"):
             continue
         if not re.fullmatch(r"[0-9a-f]{40}", ref):
+            line_number = workflow.count("\n", 0, match.start()) + 1
             errors.append(
-                f"external Action {action!r} is not pinned to a 40-hex commit SHA"
+                f"external Action entry at line {line_number} is not pinned "
+                "to a 40-hex commit SHA"
             )
     return errors
 
@@ -149,7 +151,7 @@ def main() -> int:
         for raw in re.findall(r"timeout-minutes:\s*(\d+)", workflow):
             if int(raw) > 30:
                 errors.append(
-                    f"workflow timeout {raw} minutes exceeds 30-minute guardrail"
+                    "workflow timeout exceeds 30-minute guardrail"
                 )
     if "cancel-in-progress: true" not in workflow:
         errors.append(
@@ -177,8 +179,7 @@ def main() -> int:
     ]
     if unexpected_codeql_writes:
         errors.append(
-            "CodeQL workflow has unexpected write permissions: "
-            + ", ".join(unexpected_codeql_writes)
+            "CodeQL workflow has unexpected write permission entries"
         )
     for marker in ("python", "javascript-typescript"):
         if marker not in codeql:
@@ -265,6 +266,23 @@ def main() -> int:
             )
 
     errors.extend(tracked_secret_errors())
+
+    synthetic_sensitive = "ghp_" + ("A" * 36)
+    synthetic_workflow = (
+        "steps:\n"
+        f"  - uses: owner/{synthetic_sensitive}@main\n"
+    )
+    synthetic_errors = external_action_errors(synthetic_workflow)
+    if not synthetic_errors:
+        errors.append(
+            "security diagnostic regression test did not detect an unpinned "
+            "external Action"
+        )
+    elif any(synthetic_sensitive in error for error in synthetic_errors):
+        errors.append(
+            "security diagnostic regression test echoed a sensitive-looking "
+            "source-controlled value"
+        )
 
     if errors:
         for error in errors:
