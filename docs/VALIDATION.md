@@ -194,6 +194,18 @@ See [AR-P003 v0.2.3 Historical Frozen Baseline](AR-P003-V0.2.3-HISTORICAL-BASELI
 
 ---
 
+## Continuity snapshot v0.10
+
+**Status:** Repository-local continuity control, dated 2026-09-20
+
+The latest human-readable continuity snapshot is `docs/PROJECT-CONTINUITY-2026-09-20.md`. The machine-readable state is `project-continuity-v0.10`.
+
+The guard now explicitly verifies the current snapshot date/version plus the repository Markdown-link and JSON-integrity control states. This prevents those broad integrity layers from being silently removed while older claim/evidence boundaries remain unchanged.
+
+This is governance/reproducibility control only; it does not add human-study, commercial, security-certification, or external-validation evidence.
+
+---
+
 ## Continuity guard
 
 **Status:** Repository-local consistency guard
