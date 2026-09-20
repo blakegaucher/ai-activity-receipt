@@ -24,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.13"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.14"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -182,6 +182,17 @@ CHECKS: list[dict[str, Any]] = [
             "benchmark/arp003_v0_3/methodology-decisions.current.json",
             "benchmark/arp003_v0_3/protocol.json",
             "docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md",
+        ],
+    },
+    {
+        "id": "arp003-methodology-impact-map",
+        "argv": ["benchmark/arp003_v0_3/validate_methodology_impact.py"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/validate_methodology_impact.py",
+            "benchmark/arp003_v0_3/methodology-impact-map.schema.json",
+            "benchmark/arp003_v0_3/methodology-impact-map.json",
+            "benchmark/arp003_v0_3/methodology-decisions.current.json",
+            "docs/AR-P003-V0.3-DECISION-SUPPORT.md",
         ],
     },
     {
