@@ -120,6 +120,20 @@ Passing the audit does **not** prove absence of semantic leakage, framing effect
 
 ---
 
+## AR-P003 methodology impact-map consistency check
+
+**Status:** Development decision-support validation; no methodology selected
+
+The repository now publishes a machine-readable impact map that covers every current candidate in the AR-P003 v0.3 methodology ledger. For each candidate it records the implementation class, artifacts that would change, and work that must be completed before execution.
+
+The validator requires exact candidate coverage in both directions: every ledger candidate must appear exactly once in the impact map, and the impact map may not invent candidates absent from the ledger.
+
+The earlier research review's proposed effect/guardrail thresholds (+5pp supported-completion benefit, 3pp accuracy noninferiority margin for a separate speed claim, +2pp maximum critical-false-clearance increase) are now preserved as an unresolved ledger candidate and explicitly remain non-normative decision assumptions.
+
+This check reduces silent methodology drift. It does not choose a condition design, endpoint, timing clock, challenge architecture, reviewer population, or effect target.
+
+---
+
 ## AR-P003 v0.3 offline runner smoke test
 
 **Status:** Development instrumentation only; not a frozen human-study instrument
