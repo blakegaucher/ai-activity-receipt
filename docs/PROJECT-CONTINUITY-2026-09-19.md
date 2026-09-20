@@ -538,3 +538,18 @@ The aggregate reproducibility profile is now `ai-activity-receipt-repro-v0.13`.
 A report now records the exact Git commit, clean/dirty tree status, runtime/platform metadata, exact requirements-lock digest, deterministic artifact-set digest, and deterministic ordered check-plan digest. CI and the public clean-room handoff use `--require-clean-git`, and CI rejects a report if `GITHUB_SHA` does not equal checked-out `HEAD`.
 
 This strengthens traceability of a reproduction attempt. It does not make project-authored CI independent external reproduction or upgrade any human/commercial evidence gate.
+
+
+---
+
+### Methodology decision-support update — 2026-09-20
+
+AR-P003 v0.3 still has six unresolved pre-freeze methodology decisions. No option was selected.
+
+The repository now has a neutral methodology impact map and completeness guard. The map covers every current ledger candidate and identifies what would change if a candidate were later selected.
+
+The project-research review's proposed +5pp supported-completion benefit threshold, 3pp accuracy noninferiority margin for a separate speed claim, and +2pp maximum critical-false-clearance increase are preserved as an explicit unresolved candidate. They remain decision assumptions, not industry norms and not estimates from v0.2.3.
+
+The aggregate reproducibility profile is now `ai-activity-receipt-repro-v0.14`.
+
+Protected boundary unchanged: AR-P003 v0.3 remains development / not frozen / not executed, and no human-benefit or commercial evidence gate changed status.
