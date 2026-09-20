@@ -4,6 +4,15 @@ This changelog tracks public candidate-schema and validation changes for the AI 
 
 The project is pre-commercial research. Version labels below describe repository artifacts, not standards releases.
 
+### Repository documentation-link integrity — 2026-09-20
+
+- add a deterministic offline validator for repository-local Markdown links;
+- scan Markdown files while ignoring fenced code, external URLs, mail/tel/data/sandbox links, and anchor-only links;
+- resolve URL-encoded relative paths and reject missing targets or local links that escape the repository root;
+- add a self-test covering valid links, reference definitions, fenced-code exclusion, missing targets, and repository-root escape attempts;
+- run the checker in CI and aggregate reproducibility profile `ai-activity-receipt-repro-v0.15`;
+- keep remote-link availability outside this check so CI does not depend on external websites.
+
 ### Documentation state synchronization — 2026-09-20
 
 - refresh Canonical Record next-work text so already-completed multi-hop, external-evidence, C2PA, trust-policy, and DSSE research is no longer described as not yet started;
