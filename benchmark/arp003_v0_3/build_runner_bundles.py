@@ -27,7 +27,7 @@ if str(BENCH) not in sys.path:
 
 from lint_case_packages import lint_package, safe_relative_file  # noqa: E402
 from validate_runner_data import validate_bundle  # noqa: E402
-from render_structured_control import render_file  # noqa: E402
+from render_structured_control import RENDERER_VERSION, render_file  # noqa: E402
 
 CASE_SCHEMA = BENCH / "case-package.schema.json"
 BUILD_SCHEMA = BENCH / "runner-build-config.schema.json"
@@ -210,6 +210,7 @@ def build(
     prepared: dict[str, dict[str, Any]] = {}
     hidden_cases: list[dict[str, Any]] = []
     answer_option_audits: list[dict[str, Any]] = []
+    structured_control_audits: list[dict[str, Any]] = []
 
     for case_id in sorted(used_case_ids):
         item = config_by_id[case_id]
@@ -259,6 +260,15 @@ def build(
         structured_artifact = read_text_artifact(
             structured_path,
             label="Neutral structured event table",
+        )
+        structured_control_audits.append(
+            {
+                "case_id": case_id,
+                "renderer_version": RENDERER_VERSION,
+                "canonical_record_sha256": sha256_file(structured_record_path),
+                "structured_table_sha256": sha256_file(structured_path),
+                "exact_renderer_match": True,
+            }
         )
 
         receipt_path, error = safe_relative_file(
@@ -448,6 +458,7 @@ def build(
             "n_cases": len(hidden_cases),
         },
         "answer_option_audit": answer_option_audits,
+        "structured_control_audit": structured_control_audits,
         "evidence_boundary": (
             "Development-only build output. Reviewer bundles contain no gold "
             "labels or hidden strata; analysis output must remain access-controlled."
@@ -604,6 +615,8 @@ def run_self_test() -> int:
         )
         assert len(result["reviewer_bundles"]) == 3
         assert result["answer_option_audit"][0]["material_actions"]["gold_representable"]
+        assert result["structured_control_audit"][0]["exact_renderer_match"] is True
+        assert result["structured_control_audit"][0]["renderer_version"] == RENDERER_VERSION
         assert result["answer_option_audit"][0]["material_actions"]["option_set_equals_gold_set"]
         # The equality above is allowed in this tiny smoke fixture. It is surfaced
         # for pre-freeze leakage review rather than silently treated as safe.
