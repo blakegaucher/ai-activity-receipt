@@ -2,6 +2,8 @@
 
 ### Repository licensing — Apache-2.0
 
+- correct the Apache-2.0 Appendix application notice from the erroneous `Copyright 2026 OpenAI` attribution to `Copyright 2026 Blake Gaucher`; this is a prospective attribution correction only and does not change the selected license, scope, or historical PR #82 evidence;
+
 - record Blake Gaucher's explicit 2026 owner decision to license covered project-authored public repository material under **Apache License 2.0**;
 - add the complete standard top-level `LICENSE` text and an informational `NOTICE` with Blake Gaucher's copyright attribution;
 - make future private human-study/participant/reviewer/hidden-analysis material explicitly outside automatic public-release scope;
