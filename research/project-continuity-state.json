@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.12",
+  "snapshot_version": "project-continuity-v0.13",
   "snapshot_date": "2026-09-20",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -163,7 +163,7 @@
     "local_private_output_gitignore": true,
     "explicit_license_status": "not_selected",
     "security_hardening": {
-      "status": "admin_controls_verified_codeql_alert1_second_remediation_in_progress",
+      "status": "admin_controls_verified_codeql_alert1_heuristic_followup_in_progress",
       "dependabot_version_updates_configured": true,
       "codeowners_present": true,
       "primary_ci_contents_read_only": true,
@@ -205,7 +205,13 @@
         "alert_1_second_remediation_branch": "codeql-alert-1-detection-state-separation",
         "alert_1_second_remediation_first_commit": "8b387a314500c1436dded92832cc8084229470e7",
         "alert_1_second_remediation_strategy": "separate_detection_state_from_allowlisted_diagnostics",
-        "alert_1_post_second_remediation_dashboard_verification": "pending_owner_ui_after_main_merge"
+        "alert_1_post_second_remediation_dashboard_verification": "pending_owner_ui_after_main_merge",
+        "alert_1_second_remediation_pr": 75,
+        "alert_1_second_remediation_merge_commit": "b8e10da52be098fe7bf2b68e065e7fae5dcb6263",
+        "alert_1_second_remediation_validation_run": 162,
+        "alert_1_second_remediation_codeql_run": 79,
+        "alert_1_heuristic_followup_branch": "codeql-alert-1-heuristic-source-hardening",
+        "alert_1_heuristic_followup_strategy": "remove_sensitive_heuristic_names_from_printable_diagnostic_dataflow"
       },
       "dependabot_alerts_enabled": true,
       "dependabot_security_updates_enabled": true,
