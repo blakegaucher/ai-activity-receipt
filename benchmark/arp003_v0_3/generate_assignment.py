@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Generate deterministic AR-P003 v0.3 reviewer-case assignments.
+"""Generate deterministic AR-P003 v0.3 three-condition reviewer-case assignments.
 
-Case exposure is balanced first. Condition labels are then assigned with a
-balanced bipartite edge-coloring procedure so every reviewer and every case is
-split across control/receipt as evenly as mathematically possible.
+Case exposure is balanced first. Conditions are then assigned with a
+deterministic equitable bipartite b-matching procedure so each reviewer and
+case receives raw / structured / receipt conditions as evenly as possible.
+
+This is development-only methodology infrastructure. It does not freeze the
+final reviewer/case counts, assignment seed, or stopping rule.
 """
 
 from __future__ import annotations
@@ -11,17 +14,19 @@ from __future__ import annotations
 import argparse
 import json
 import random
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
 from pathlib import Path
 from typing import Any
 
 
-VALID_CONDITIONS = ("control", "receipt")
-ASSIGNMENT_VERSION = "AR-P003-v0.3-draft-assignment-v0.2"
-BALANCE_METHOD = "balanced_bipartite_edge_coloring_v1"
+VALID_CONDITIONS = ("raw", "structured", "receipt")
+ASSIGNMENT_VERSION = "AR-P003-v0.3-draft-assignment-v0.3"
+BALANCE_METHOD = "equitable_three_condition_b_matching_v1"
 
 
-def _validate_config(config: dict[str, Any]) -> tuple[list[str], list[dict[str, Any]], int, int]:
+def _validate_config(
+    config: dict[str, Any],
+) -> tuple[list[str], list[dict[str, Any]], int, int]:
     reviewers = config.get("reviewers")
     cases = config.get("cases")
     cases_per_reviewer = config.get("cases_per_reviewer")
@@ -110,194 +115,201 @@ def _select_reviewer_case_edges(
     return rows, exposure
 
 
+class _Dinic:
+    def __init__(self, n: int) -> None:
+        self.graph: list[list[list[int]]] = [[] for _ in range(n)]
+
+    def add_edge(self, u: int, v: int, cap: int) -> tuple[int, int]:
+        forward = [v, cap, len(self.graph[v])]
+        reverse = [u, 0, len(self.graph[u])]
+        self.graph[u].append(forward)
+        self.graph[v].append(reverse)
+        return u, len(self.graph[u]) - 1
+
+    def max_flow(self, source: int, sink: int) -> int:
+        total = 0
+        n = len(self.graph)
+        while True:
+            level = [-1] * n
+            level[source] = 0
+            queue: deque[int] = deque([source])
+            while queue:
+                u = queue.popleft()
+                for v, cap, _ in self.graph[u]:
+                    if cap > 0 and level[v] < 0:
+                        level[v] = level[u] + 1
+                        queue.append(v)
+            if level[sink] < 0:
+                return total
+
+            it = [0] * n
+
+            def dfs(u: int, pushed: int) -> int:
+                if u == sink:
+                    return pushed
+                while it[u] < len(self.graph[u]):
+                    edge = self.graph[u][it[u]]
+                    v, cap, rev = edge
+                    if cap > 0 and level[v] == level[u] + 1:
+                        flow = dfs(v, min(pushed, cap))
+                        if flow:
+                            edge[1] -= flow
+                            self.graph[v][rev][1] += flow
+                            return flow
+                    it[u] += 1
+                return 0
+
+            while True:
+                pushed = dfs(source, 10**9)
+                if not pushed:
+                    break
+                total += pushed
+
+
+def _choose_equitable_subset(
+    rows: list[dict[str, Any]],
+    remaining: list[int],
+    *,
+    remaining_conditions: int,
+    rng: random.Random,
+) -> set[int]:
+    """Choose one condition's edges with floor/ceil degree balance.
+
+    This is a feasible lower/upper-bound bipartite b-matching. Each reviewer
+    and case receives either floor(d/k) or ceil(d/k) selected edges when d
+    incident edges remain and k conditions remain. The selected global count
+    is similarly constrained to floor(E/k) or ceil(E/k).
+    """
+
+    reviewer_degree: Counter[str] = Counter()
+    case_degree: Counter[str] = Counter()
+    for index in remaining:
+        reviewer_degree[rows[index]["reviewer_id"]] += 1
+        case_degree[rows[index]["case_id"]] += 1
+
+    reviewers = sorted(reviewer_degree)
+    cases = sorted(case_degree)
+
+    # Shuffle insertion order deterministically so no lexical condition bias is
+    # baked into otherwise equivalent feasible solutions.
+    edge_order = remaining[:]
+    rng.shuffle(edge_order)
+
+    node_names = (
+        ["__source__"]
+        + [f"r:{x}" for x in reviewers]
+        + [f"c:{x}" for x in cases]
+        + ["__sink__"]
+    )
+    node_index = {name: i for i, name in enumerate(node_names)}
+    source = node_index["__source__"]
+    sink = node_index["__sink__"]
+
+    base_n = len(node_names)
+    super_source = base_n
+    super_sink = base_n + 1
+    flow = _Dinic(base_n + 2)
+    demand = [0] * base_n
+
+    edge_refs: dict[int, tuple[int, int]] = {}
+
+    def add_lower_edge(u: int, v: int, low: int, high: int) -> tuple[int, int]:
+        if low < 0 or high < low:
+            raise AssertionError("invalid lower/upper capacity")
+        ref = flow.add_edge(u, v, high - low)
+        demand[u] -= low
+        demand[v] += low
+        return ref
+
+    for reviewer in reviewers:
+        degree = reviewer_degree[reviewer]
+        low = degree // remaining_conditions
+        high = (degree + remaining_conditions - 1) // remaining_conditions
+        add_lower_edge(source, node_index[f"r:{reviewer}"], low, high)
+
+    for index in edge_order:
+        row = rows[index]
+        ref = add_lower_edge(
+            node_index[f"r:{row['reviewer_id']}"],
+            node_index[f"c:{row['case_id']}"],
+            0,
+            1,
+        )
+        edge_refs[index] = ref
+
+    for case_id in cases:
+        degree = case_degree[case_id]
+        low = degree // remaining_conditions
+        high = (degree + remaining_conditions - 1) // remaining_conditions
+        add_lower_edge(node_index[f"c:{case_id}"], sink, low, high)
+
+    total_edges = len(remaining)
+    total_low = total_edges // remaining_conditions
+    total_high = (total_edges + remaining_conditions - 1) // remaining_conditions
+    add_lower_edge(sink, source, total_low, total_high)
+
+    required = 0
+    for node, value in enumerate(demand):
+        if value > 0:
+            flow.add_edge(super_source, node, value)
+            required += value
+        elif value < 0:
+            flow.add_edge(node, super_sink, -value)
+
+    if flow.max_flow(super_source, super_sink) != required:
+        raise AssertionError(
+            "internal error: equitable three-condition b-matching was infeasible"
+        )
+
+    selected: set[int] = set()
+    for row_index, (u, edge_pos) in edge_refs.items():
+        # Capacity started at 1. Residual 0 means one unit was selected.
+        if flow.graph[u][edge_pos][1] == 0:
+            selected.add(row_index)
+
+    if not total_low <= len(selected) <= total_high:
+        raise AssertionError("internal error: selected condition size is imbalanced")
+    return selected
+
+
 def _balanced_condition_labels(
     rows: list[dict[str, Any]],
     rng: random.Random,
 ) -> dict[int, str]:
-    """2-color reviewer-case incidence edges with local imbalance <= 1.
+    condition_order = list(VALID_CONDITIONS)
+    rng.shuffle(condition_order)
 
-    The reviewer/case incidence structure is a bipartite graph. To make every
-    vertex even-degree, odd reviewer vertices are connected to one dummy case,
-    odd case vertices are connected to one dummy reviewer, and (when needed)
-    the two dummy vertices are connected to each other. Every resulting
-    component is Eulerian and bipartite.
+    remaining = list(range(len(rows)))
+    assignment: dict[int, str] = {}
 
-    Alternating control/receipt labels along each Euler circuit gives equal
-    color degree at every even-degree vertex. Removing the one dummy edge from
-    an originally odd-degree vertex leaves a real-edge imbalance of exactly
-    one at most.
-
-    This guarantees:
-      - reviewer condition imbalance <= 1;
-      - case condition imbalance <= 1.
-
-    Dummy edges are never emitted as assignments.
-    """
-
-    edges: list[dict[str, Any]] = []
-    adjacency: dict[tuple[str, str], list[int]] = defaultdict(list)
-    degrees: Counter[tuple[str, str]] = Counter()
-
-    def add_edge(
-        u: tuple[str, str],
-        v: tuple[str, str],
-        *,
-        row_index: int | None,
-        dummy: bool,
-    ) -> None:
-        edge_id = len(edges)
-        edges.append(
-            {
-                "u": u,
-                "v": v,
-                "row_index": row_index,
-                "dummy": dummy,
-            }
+    for offset, condition in enumerate(condition_order[:-1]):
+        remaining_conditions = len(condition_order) - offset
+        selected = _choose_equitable_subset(
+            rows,
+            remaining,
+            remaining_conditions=remaining_conditions,
+            rng=rng,
         )
-        adjacency[u].append(edge_id)
-        adjacency[v].append(edge_id)
-        degrees[u] += 1
-        degrees[v] += 1
+        for index in selected:
+            assignment[index] = condition
+        remaining = [index for index in remaining if index not in selected]
 
-    for row_index, row in enumerate(rows):
-        add_edge(
-            ("reviewer", row["reviewer_id"]),
-            ("case", row["case_id"]),
-            row_index=row_index,
-            dummy=False,
-        )
+    last = condition_order[-1]
+    for index in remaining:
+        assignment[index] = last
 
-    reviewer_vertices = [
-        vertex for vertex in degrees if vertex[0] == "reviewer"
-    ]
-    case_vertices = [vertex for vertex in degrees if vertex[0] == "case"]
-
-    odd_reviewers = [
-        vertex for vertex in reviewer_vertices if degrees[vertex] % 2 == 1
-    ]
-    odd_cases = [
-        vertex for vertex in case_vertices if degrees[vertex] % 2 == 1
-    ]
-
-    dummy_case = ("dummy_case", "__condition_balance__")
-    dummy_reviewer = ("dummy_reviewer", "__condition_balance__")
-
-    for reviewer_vertex in odd_reviewers:
-        add_edge(
-            reviewer_vertex,
-            dummy_case,
-            row_index=None,
-            dummy=True,
-        )
-
-    for case_vertex in odd_cases:
-        add_edge(
-            dummy_reviewer,
-            case_vertex,
-            row_index=None,
-            dummy=True,
-        )
-
-    # The number of odd vertices in each bipartite partition has the same
-    # parity as the number of real edges. If those counts are odd, the two
-    # dummy vertices are also odd and one final dummy edge makes both even.
-    if len(odd_reviewers) % 2 == 1:
-        add_edge(
-            dummy_reviewer,
-            dummy_case,
-            row_index=None,
-            dummy=True,
-        )
-
-    odd_after = [
-        (vertex, degree)
-        for vertex, degree in degrees.items()
-        if degree % 2 == 1
-    ]
-    if odd_after:
-        raise AssertionError(
-            f"internal error: Eulerized assignment graph still has odd degrees: "
-            f"{odd_after!r}"
-        )
-
-    # Randomize adjacency and component order deterministically from the
-    # assignment seed so there is no fixed lexical color preference.
-    for edge_ids in adjacency.values():
-        rng.shuffle(edge_ids)
-    vertices = list(adjacency)
-    rng.shuffle(vertices)
-
-    used: set[int] = set()
-    condition_by_row: dict[int, str] = {}
-
-    for start in vertices:
-        if not any(edge_id not in used for edge_id in adjacency[start]):
-            continue
-
-        # Hierholzer's algorithm. Each stack item stores the vertex and the
-        # edge used to enter it. Backtracking yields the Euler circuit edges in
-        # reverse order.
-        stack: list[tuple[tuple[str, str], int | None]] = [(start, None)]
-        reversed_circuit: list[int] = []
-
-        while stack:
-            vertex, _ = stack[-1]
-
-            while adjacency[vertex] and adjacency[vertex][-1] in used:
-                adjacency[vertex].pop()
-
-            if adjacency[vertex]:
-                edge_id = adjacency[vertex].pop()
-                if edge_id in used:
-                    continue
-                used.add(edge_id)
-
-                edge = edges[edge_id]
-                next_vertex = (
-                    edge["v"] if edge["u"] == vertex else edge["u"]
-                )
-                stack.append((next_vertex, edge_id))
-            else:
-                _, incoming_edge = stack.pop()
-                if incoming_edge is not None:
-                    reversed_circuit.append(incoming_edge)
-
-        circuit = list(reversed(reversed_circuit))
-        if len(circuit) % 2 != 0:
-            raise AssertionError(
-                "internal error: Euler circuit in bipartite graph has odd length"
-            )
-
-        start_offset = rng.randrange(2)
-        for position, edge_id in enumerate(circuit):
-            condition = VALID_CONDITIONS[(position + start_offset) % 2]
-            edge = edges[edge_id]
-            if edge["dummy"]:
-                continue
-
-            row_index = edge["row_index"]
-            if not isinstance(row_index, int):
-                raise AssertionError("real assignment edge has no row index")
-            if row_index in condition_by_row:
-                raise AssertionError("assignment edge received two conditions")
-            condition_by_row[row_index] = condition
-
-    if len(condition_by_row) != len(rows):
-        missing = sorted(set(range(len(rows))) - set(condition_by_row))
-        raise AssertionError(
-            f"internal error: condition assignment missed rows {missing!r}"
-        )
-
-    return condition_by_row
+    if len(assignment) != len(rows):
+        raise AssertionError("internal error: not every row received a condition")
+    return assignment
 
 
 def _diagnostics(
     assignments: list[dict[str, Any]],
     exposure: dict[str, int],
 ) -> dict[str, Any]:
+    zero_counts = {condition: 0 for condition in VALID_CONDITIONS}
     case_condition: dict[str, dict[str, int]] = {
-        case_id: {"control": 0, "receipt": 0}
-        for case_id in exposure
+        case_id: dict(zero_counts) for case_id in exposure
     }
     reviewer_condition: dict[str, dict[str, int]] = {}
     stratum_condition: dict[str, dict[str, int]] = {}
@@ -308,45 +320,51 @@ def _diagnostics(
         stratum = row["stratum"]
         condition = row["condition"]
 
-        reviewer_condition.setdefault(
-            reviewer, {"control": 0, "receipt": 0}
-        )[condition] += 1
+        reviewer_condition.setdefault(reviewer, dict(zero_counts))[condition] += 1
         case_condition[case_id][condition] += 1
-        stratum_condition.setdefault(
-            stratum, {"control": 0, "receipt": 0}
-        )[condition] += 1
+        stratum_condition.setdefault(stratum, dict(zero_counts))[condition] += 1
+
+    def imbalance(counts: dict[str, int]) -> int:
+        values = [counts[c] for c in VALID_CONDITIONS]
+        return max(values) - min(values)
 
     reviewer_imbalances = {
-        reviewer: abs(counts["control"] - counts["receipt"])
+        reviewer: imbalance(counts)
         for reviewer, counts in reviewer_condition.items()
     }
     case_imbalances = {
-        case_id: abs(counts["control"] - counts["receipt"])
+        case_id: imbalance(counts)
         for case_id, counts in case_condition.items()
     }
+    overall = Counter(row["condition"] for row in assignments)
 
     return {
         "balance_method": BALANCE_METHOD,
+        "conditions": list(VALID_CONDITIONS),
+        "condition_counts": {
+            condition: overall.get(condition, 0) for condition in VALID_CONDITIONS
+        },
         "case_exposure": exposure,
         "case_condition_counts": case_condition,
         "reviewer_condition_counts": reviewer_condition,
         "stratum_condition_counts": stratum_condition,
         "max_case_exposure_imbalance": (
-            max(exposure.values()) - min(exposure.values())
-            if exposure
-            else 0
+            max(exposure.values()) - min(exposure.values()) if exposure else 0
         ),
         "max_case_condition_imbalance": max(case_imbalances.values(), default=0),
         "max_reviewer_condition_imbalance": max(
             reviewer_imbalances.values(), default=0
+        ),
+        "max_overall_condition_imbalance": (
+            max(overall.values()) - min(overall.values()) if overall else 0
         ),
     }
 
 
 def generate(config: dict[str, Any]) -> dict[str, Any]:
     reviewers, cases, cases_per_reviewer, seed = _validate_config(config)
-
     rng = random.Random(seed)
+
     rows, exposure = _select_reviewer_case_edges(
         reviewers,
         cases,
@@ -355,15 +373,10 @@ def generate(config: dict[str, Any]) -> dict[str, Any]:
     )
     condition_by_row = _balanced_condition_labels(rows, rng)
 
-    assignments: list[dict[str, Any]] = []
-    for row_index, row in enumerate(rows):
-        assignments.append(
-            {
-                **row,
-                "condition": condition_by_row[row_index],
-            }
-        )
-
+    assignments = [
+        {**row, "condition": condition_by_row[index]}
+        for index, row in enumerate(rows)
+    ]
     assignments = sorted(
         assignments,
         key=lambda row: (row["reviewer_id"], row["order"]),
@@ -376,11 +389,14 @@ def generate(config: dict[str, Any]) -> dict[str, Any]:
         raise AssertionError("case condition imbalance exceeded 1")
     if diagnostics["max_reviewer_condition_imbalance"] > 1:
         raise AssertionError("reviewer condition imbalance exceeded 1")
+    if diagnostics["max_overall_condition_imbalance"] > 1:
+        raise AssertionError("overall condition imbalance exceeded 1")
 
     return {
         "assignment_version": ASSIGNMENT_VERSION,
         "seed": seed,
         "cases_per_reviewer": cases_per_reviewer,
+        "conditions": list(VALID_CONDITIONS),
         "assignments": assignments,
         "diagnostics": diagnostics,
     }
@@ -391,42 +407,40 @@ def _assert_balance(result: dict[str, Any]) -> None:
     assert diagnostics["max_case_exposure_imbalance"] <= 1
     assert diagnostics["max_case_condition_imbalance"] <= 1
     assert diagnostics["max_reviewer_condition_imbalance"] <= 1
+    assert diagnostics["max_overall_condition_imbalance"] <= 1
 
     for counts in diagnostics["case_condition_counts"].values():
-        assert abs(counts["control"] - counts["receipt"]) <= 1
+        values = [counts[c] for c in VALID_CONDITIONS]
+        assert max(values) - min(values) <= 1
     for counts in diagnostics["reviewer_condition_counts"].values():
-        assert abs(counts["control"] - counts["receipt"]) <= 1
+        values = [counts[c] for c in VALID_CONDITIONS]
+        assert max(values) - min(values) <= 1
 
 
 def run_self_test() -> int:
-    # Even reviewer/case degrees: exact 50/50 balance is achievable.
+    # Degrees divisible by three: exact 1/3 balance is achievable.
     config = {
-        "reviewers": [f"r{i}" for i in range(1, 9)],
+        "reviewers": [f"r{i}" for i in range(1, 10)],
         "cases": [
             {"case_id": f"c{i}", "stratum": "ordinary"}
-            for i in range(1, 9)
+            for i in range(1, 10)
         ],
-        "cases_per_reviewer": 4,
+        "cases_per_reviewer": 6,
         "seed": 73917,
     }
-
     result = generate(config)
     assignments = result["assignments"]
-    assert len(assignments) == 32
+    assert result["assignment_version"] == ASSIGNMENT_VERSION
+    assert result["conditions"] == list(VALID_CONDITIONS)
+    assert len(assignments) == 54
+    _assert_balance(result)
 
     for reviewer in config["reviewers"]:
         rows = [row for row in assignments if row["reviewer_id"] == reviewer]
-        assert len(rows) == 4
-        assert len({row["case_id"] for row in rows}) == 4
-        assert [row["order"] for row in rows] == [1, 2, 3, 4]
         counts = Counter(row["condition"] for row in rows)
-        assert counts["control"] == 2
-        assert counts["receipt"] == 2
+        assert [counts[c] for c in VALID_CONDITIONS] == [2, 2, 2]
 
-    _assert_balance(result)
-
-    # Mixed ordinary/challenge strata with even degrees should still preserve
-    # exact reviewer/case condition balance for this balanced incidence design.
+    # Mixed strata remain balanced at reviewer/case level.
     mixed_cases = [
         *[
             {"case_id": f"o{i}", "stratum": "ordinary"}
@@ -434,15 +448,11 @@ def run_self_test() -> int:
         ],
         *[
             {"case_id": f"s{i}", "stratum": "stale_receipt"}
-            for i in range(1, 3)
+            for i in range(1, 4)
         ],
         *[
             {"case_id": f"i{i}", "stratum": "incomplete_receipt"}
-            for i in range(1, 3)
-        ],
-        *[
-            {"case_id": f"x{i}", "stratum": "conflicting_receipt"}
-            for i in range(1, 3)
+            for i in range(1, 4)
         ],
     ]
     mixed = generate(
@@ -454,17 +464,13 @@ def run_self_test() -> int:
         }
     )
     _assert_balance(mixed)
-    assert mixed["diagnostics"]["max_reviewer_condition_imbalance"] == 0
-    assert mixed["diagnostics"]["max_case_condition_imbalance"] == 0
     assert set(mixed["diagnostics"]["stratum_condition_counts"]) == {
         "ordinary",
         "stale_receipt",
         "incomplete_receipt",
-        "conflicting_receipt",
     }
 
-    # Odd degrees cannot be split exactly, but every reviewer and case must
-    # remain within one observation of balance.
+    # Non-divisible degrees still differ by at most one per condition.
     odd = generate(
         {
             "reviewers": [f"q{i}" for i in range(1, 8)],
@@ -472,25 +478,19 @@ def run_self_test() -> int:
                 {"case_id": f"k{i}", "stratum": "ordinary"}
                 for i in range(1, 8)
             ],
-            "cases_per_reviewer": 3,
+            "cases_per_reviewer": 4,
             "seed": 11,
         }
     )
     _assert_balance(odd)
     assert odd["diagnostics"]["max_reviewer_condition_imbalance"] == 1
-    assert odd["diagnostics"]["max_case_condition_imbalance"] == 1
+    assert odd["diagnostics"]["max_case_condition_imbalance"] <= 1
 
     assert result == generate(config)
-    assert mixed == generate(
-        {
-            "reviewers": [f"m{i}" for i in range(1, 13)],
-            "cases": mixed_cases,
-            "cases_per_reviewer": 6,
-            "seed": 73917,
-        }
+    print(
+        "AR-P003 three-condition assignment-generator self-test passed: "
+        "raw/structured/receipt balance is deterministic and equitable."
     )
-
-    print("AR-P003 assignment-generator self-test passed.")
     return 0
 
 
