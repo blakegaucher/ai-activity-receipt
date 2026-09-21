@@ -43,11 +43,16 @@ def make_case(
 ) -> tuple[Path, dict[str, Any]]:
     case_dir = root / "cases" / case_id
     (case_dir / "evidence").mkdir(parents=True)
+    (case_dir / "structured").mkdir()
     (case_dir / "receipt").mkdir()
     (case_dir / "analysis").mkdir()
 
     (case_dir / "evidence" / "events.txt").write_text(
         evidence_text + "\n",
+        encoding="utf-8",
+    )
+    (case_dir / "structured" / "events-table.md").write_text(
+        "| field | value |\n|---|---|\n|case|" + case_id + "|\n|summary|neutral event organization|\n",
         encoding="utf-8",
     )
     write_json(
@@ -61,11 +66,12 @@ def make_case(
     write_json(case_dir / "analysis" / "gold.json", gold)
 
     manifest = {
-        "package_version": "AR-P003-v0.3-dev-case-v0.1",
+        "package_version": "AR-P003-v0.3-dev-case-v0.2",
         "case_id": case_id,
         "stratum": stratum,
-        "condition_contract": "same_evidence_plus_receipt",
+        "condition_contract": "same_evidence_plus_neutral_structured_or_receipt_v1",
         "reviewer_evidence_files": ["evidence/events.txt"],
+        "structured_control_file": "structured/events-table.md",
         "receipt_file": "receipt/receipt.json",
         "analysis_files": ["analysis/gold.json"],
         "receipt_state": receipt_state,
@@ -153,8 +159,8 @@ def main() -> int:
         write_json(assignment_path, assignment)
 
         build_config = {
-            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.1",
-            "protocol_version": "v0.3-development-pipeline-smoke",
+            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.2",
+            "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
             "cases": [
                 {
                     "case_id": "case-ordinary",
@@ -215,7 +221,15 @@ def main() -> int:
 
             response_cases: list[dict[str, Any]] = []
             for index, case in enumerate(bundle["cases"], start=1):
-                condition = "receipt" if case["receipt"] is not None else "control"
+                condition = (
+                    "receipt"
+                    if case["receipt"] is not None
+                    else (
+                        "structured"
+                        if case["structured_event_table"] is not None
+                        else "raw"
+                    )
+                )
                 conditions.append(condition)
                 gold = hidden_by_id[case["case_id"]]["gold"]
                 response_cases.append(
@@ -244,8 +258,9 @@ def main() -> int:
                 )
 
             response = {
-                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
+                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
                 "protocol_version": bundle["protocol_version"],
+                "comparison_design": bundle["comparison_design"],
                 "assignment_version": bundle["assignment_version"],
                 "assignment_sha256": bundle["assignment_sha256"],
                 "reviewer_id": bundle["reviewer_id"],
@@ -273,9 +288,10 @@ def main() -> int:
                 )
             )
 
-        assert conditions.count("control") == 2
+        assert conditions.count("raw") == 2
+        assert conditions.count("structured") == 2
         assert conditions.count("receipt") == 2
-        assert len(merged_records) == 4
+        assert len(merged_records) == 6
         assert all(record["elapsed_seconds"] == 10.0 for record in merged_records)
 
         scored = [score_record(record) for record in merged_records]
@@ -288,20 +304,34 @@ def main() -> int:
             assert row["missing_evidence_accuracy"] == 1.0
 
         summary = summarize(scored)
-        assert summary["n_records"] == 4
-        assert summary["by_condition"]["control"]["n"] == 2
+        assert summary["n_records"] == 6
+        assert summary["by_condition"]["raw"]["n"] == 2
+        assert summary["by_condition"]["structured"]["n"] == 2
         assert summary["by_condition"]["receipt"]["n"] == 2
 
         # Analysis-side merge must not trust a reviewer-edited condition field.
         first_bundle_path = output_dir / build_manifest["reviewer_bundles"][0]["path"]
         first_bundle = json.loads(first_bundle_path.read_text(encoding="utf-8"))
         first_case = first_bundle["cases"][0]
-        true_condition = "receipt" if first_case["receipt"] is not None else "control"
-        tampered_condition = "control" if true_condition == "receipt" else "receipt"
+        true_condition = (
+            "receipt"
+            if first_case["receipt"] is not None
+            else (
+                "structured"
+                if first_case["structured_event_table"] is not None
+                else "raw"
+            )
+        )
+        tampered_condition = next(
+            condition
+            for condition in ("raw", "structured", "receipt")
+            if condition != true_condition
+        )
         hidden_gold = hidden_by_id[first_case["case_id"]]["gold"]
         tampered_response = {
             "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
             "protocol_version": first_bundle["protocol_version"],
+            "comparison_design": first_bundle["comparison_design"],
             "assignment_version": first_bundle["assignment_version"],
             "assignment_sha256": first_bundle["assignment_sha256"],
             "reviewer_id": first_bundle["reviewer_id"],
