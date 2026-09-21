@@ -370,6 +370,7 @@ def semantic_errors(
         effect_decision = decisions_by_id.get("effect_precision_target") or {}
         if (
             effect_decision.get("status") == "unresolved"
+            and isinstance(endpoint, dict)
             and endpoint.get("critical_false_clearance_threshold")
             != "unresolved_effect_precision_target"
         ):
