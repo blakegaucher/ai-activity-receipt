@@ -49,20 +49,13 @@ This closes the repository-admin security-settings gate. The result establishes 
 
 ### Repository license — issue #44
 
-**Status:** Preflight complete; explicit owner/IP decision still required.
+**Status:** Completed and closed.
 
-The repository currently has **no explicit license**.
+Blake Gaucher selected **Apache License 2.0** for project-authored public repository material. The repository publishes the complete standard text as top-level `LICENSE` and an informational `NOTICE` with the 2026 Blake Gaucher attribution.
 
-Completed preparation:
+The third-party/dependency/action preflight remains clear and machine-guarded. The license covers project-authored public code, validators/research utilities, adapters, benchmark tooling, offline runner, documentation, schemas, examples, synthetic fixtures, and synthetic benchmark material.
 
-- third-party/dependency/action inventory published;
-- direct dependency + GitHub Action drift guard added to CI/reproducibility;
-- owner decision brief published at [LICENSE-PREFLIGHT.md](LICENSE-PREFLIGHT.md);
-- current no-license boundary preserved.
-
-Do not describe the repository as MIT, Apache, CC, or otherwise open-source licensed until the owner deliberately selects terms.
-
-The remaining action is the owner's explicit choice for project-authored code, documentation, synthetic fixtures, and any future released study material. This gate should be resolved before broad reuse/redistribution or a release intended for outside implementation.
+This does **not** release future private human-study/participant/reviewer/hidden-analysis or privacy-sensitive material; relicense third-party material; grant trademark/endorsement rights in Ancient Immortal Art or AI Activity Receipt; or transfer this decision into ARC / solver or other competition lanes.
 
 ## Gate 2 — AR-P003 study-instrument readiness
 
@@ -181,11 +174,14 @@ Technical GitHub activity must not be counted as customer validation or revenue 
 
 For repository work, the shortest non-circular sequence is:
 
-1. owner/IP: issue #44;
-2. manual runner smoke test: issue #38;
-3. AR-P003 design/freeze work: issue #47;
-4. independent reproduction: issue #39;
-5. only then decide whether additional technical integration work has a stronger evidence payoff than commercialization/customer-validation work.
+Issue #44 is resolved. The next unresolved repository gates remain:
+
+1. manual runner smoke test: issue #38;
+2. AR-P003 design/freeze work: issue #47;
+3. independent reproduction: issue #39;
+4. only then decide whether additional technical integration work has a stronger evidence payoff than commercialization/customer-validation work.
+
+This licensing change does not advance issues #38, #39, or #47.
 
 ## Change-control rule
 
