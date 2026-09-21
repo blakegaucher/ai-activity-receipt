@@ -45,7 +45,7 @@
         "benchmark/arp003_v0_3/response-record.schema.json",
         "benchmark/arp003_v0_3/score_responses.py"
       ],
-      "notes": "Owner selected correct_completion_by_180s on 2026-09-21. Binary success requires all case-specific required judgments correct, a valid prespecified acceptable evidence/support set for each required judgment in the assigned condition, no fabricated material set facts or unsupported authorization state, and completion by 180 seconds under the later-frozen primary timing clock. Timeout cannot succeed. Component outcomes remain secondary diagnostics and critical false clearance remains a separate safety endpoint. primary_timing_clock and effect_precision_target remain unresolved, so confirmatory derivation/freeze remains fail-closed."
+      "notes": "Owner selected correct_completion_by_180s on 2026-09-21. Binary success requires all case-specific required judgments correct, a valid prespecified acceptable evidence/support set for each required judgment in the assigned condition, no extra required material facts or mismatched authorization state, and completion by 180 seconds under the later-frozen primary timing clock. A deadline miss cannot succeed. Component outcomes remain secondary diagnostics and critical false clearance remains a separate safety endpoint. primary_timing_clock and effect_precision_target remain unresolved, so confirmatory derivation/freeze remains fail-closed."
     },
     "effect_or_precision_target": {
       "status": "pending",
