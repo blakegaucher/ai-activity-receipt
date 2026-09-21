@@ -58,11 +58,11 @@ These controls reduce interface mismatch and accidental-publication risk. They d
 
 ## AR-P003 v0.3 methodology decision-ledger guard
 
-**Status:** Development governance control; no methodology choice is frozen
+**Status:** Development governance control; selected choices are versioned, but the overall methodology and protocol are not frozen
 
-The current executable v0.3 draft and the earlier project research review contained material differences in comparison conditions and misleading-Receipt challenge design; those two choices are now explicitly selected as three-condition structured control and integrated challenge strata. Primary endpoint, timing semantics, reviewer population, and effect/precision target remain unresolved.
+The current executable v0.3 draft and the earlier project research review contained material differences in comparison conditions and misleading-Receipt challenge design; those choices are now explicitly selected as three-condition structured control and integrated challenge strata. The reviewer population is also selected as relevant professional reviewers under frozen eligibility/exclusion, familiarity-recording, external-assistance, and inference-scope rules. Primary endpoint, timing semantics, and effect/precision target remain unresolved.
 
-The repository now preserves those alternatives in a machine-readable decision ledger together with unresolved reviewer-population and meaningful-effect/precision choices. The validator requires protocol-version agreement, unique decision/candidate identifiers, evidence-linked rationale for any selected choice, and complete resolution of every pre-freeze methodology decision before a frozen protocol is permitted.
+The repository now preserves those alternatives and the former unresolved population placeholder in a machine-readable decision ledger together with the remaining unresolved meaningful-effect/precision choice. The validator requires protocol-version agreement, unique decision/candidate identifiers, evidence-linked rationale for any selected choice, exact representation of the selected reviewer-population rules, and complete resolution of every pre-freeze methodology decision before a frozen protocol is permitted.
 
 The freeze-readiness model now includes comparison-condition design as an explicit gate, so the existing two-condition implementation cannot silently become the confirmatory design merely because code already exists.
 
@@ -154,7 +154,7 @@ The validator requires exact candidate coverage in both directions: every ledger
 
 The earlier research review's proposed effect/guardrail thresholds (+5pp supported-completion benefit, 3pp accuracy noninferiority margin for a separate speed claim, +2pp maximum critical-false-clearance increase) are now preserved as an unresolved ledger candidate and explicitly remain non-normative decision assumptions.
 
-This check reduces silent methodology drift. It does not choose methodology. It now verifies the selected comparison-condition and challenge-design entries while leaving endpoint, timing clock, reviewer population, and effect target unresolved.
+This check reduces silent methodology drift. It does not choose methodology. It now verifies the selected comparison-condition, challenge-design, and reviewer-population entries while leaving endpoint, timing clock, and effect target unresolved.
 
 ---
 

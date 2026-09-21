@@ -265,7 +265,7 @@ def run_self_test() -> int:
 
         response = {
             "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
-            "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
+            "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
             "comparison_design": "three_condition_structured_control",
             "assignment_version": assignment["assignment_version"],
             "assignment_sha256": assignment_digest,
@@ -298,7 +298,7 @@ def run_self_test() -> int:
         }
         analysis = {
             "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.3",
-            "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
+            "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
             "comparison_design": "three_condition_structured_control",
             "challenge_design": "integrated_challenge_strata",
             "cases": [

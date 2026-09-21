@@ -287,7 +287,12 @@ def synthetic_resolved_methodology(
     for decision in resolved["decisions"]:
         if decision.get("pre_freeze_required") is True:
             decision["status"] = "selected"
-            decision["selected_candidate"] = decision["candidates"][0]["candidate_id"]
+            if decision["decision_id"] == "reviewer_population":
+                decision["selected_candidate"] = (
+                    methodology_validator.REVIEWER_POPULATION_CANDIDATE
+                )
+            else:
+                decision["selected_candidate"] = decision["candidates"][0]["candidate_id"]
             decision["rationale"] = "Synthetic self-test selection only."
             decision["evidence_refs"] = ["synthetic://methodology-selection"]
     resolved["status"] = "methodology_resolved"

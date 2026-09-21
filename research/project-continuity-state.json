@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.17",
+  "snapshot_version": "project-continuity-v0.18",
   "snapshot_date": "2026-09-21",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -63,7 +63,7 @@
         "primary_endpoint": "unresolved",
         "primary_timing_clock": "unresolved",
         "challenge_design": "selected:integrated_challenge_strata",
-        "reviewer_population": "unresolved",
+        "reviewer_population": "selected:relevant_professional_reviewers",
         "effect_precision_target": "unresolved",
         "freeze_readiness_crosscheck": true,
         "impact_map": {
@@ -72,9 +72,24 @@
           "completeness_guard": true,
           "research_review_effect_thresholds_preserved_as_candidate": true
         },
-        "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
+        "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
         "comparison_conditions_freeze_readiness": "complete",
-        "challenge_strata_freeze_readiness": "prepared"
+        "challenge_strata_freeze_readiness": "prepared",
+        "reviewer_population_freeze_readiness": "complete",
+        "reviewer_population_design": {
+          "minimum_relevant_experience_years": 1,
+          "experience_bands": [
+            "1_to_2_years",
+            "3_to_5_years",
+            "6_plus_years"
+          ],
+          "english_proficiency_required": true,
+          "degree_certification_or_specific_title_required": false,
+          "prior_general_ai_activity_receipt_familiarity": "permitted_and_recorded",
+          "external_assistance_during_study_cases": "prohibited_absent_pre_execution_versioned_amendment",
+          "claims_scoped_to_population_actually_recruited": true,
+          "recruitment_authorized": false
+        }
       },
       "leakage_validation": {
         "status": "prepared_not_complete",
@@ -120,7 +135,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.21",
+      "suite_version": "ai-activity-receipt-repro-v0.22",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,
