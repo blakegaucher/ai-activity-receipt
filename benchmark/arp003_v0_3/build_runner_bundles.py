@@ -34,7 +34,7 @@ BUNDLE_SCHEMA = BENCH / "runner-bundle.schema.json"
 ANALYSIS_SCHEMA = BENCH / "runner-analysis.schema.json"
 
 ASSIGNMENT_VERSION_PREFIX = "AR-P003-v0.3-draft-assignment-"
-BUILD_OUTPUT_VERSION = "AR-P003-v0.3-dev-runner-build-output-v0.2"
+BUILD_OUTPUT_VERSION = "AR-P003-v0.3-dev-runner-build-output-v0.3"
 
 
 def load_json(path: Path) -> Any:
@@ -236,6 +236,17 @@ def build(
             label = labels.get(raw) or Path(raw).name
             evidence.append(read_text_artifact(path, label=label))
 
+        structured_path, error = safe_relative_file(
+            package_root,
+            manifest["structured_control_file"],
+        )
+        if error or structured_path is None:
+            raise ValueError(error or "unable to resolve structured-control file")
+        structured_artifact = read_text_artifact(
+            structured_path,
+            label="Neutral structured event table",
+        )
+
         receipt_path, error = safe_relative_file(
             package_root,
             manifest["receipt_file"],
@@ -270,6 +281,7 @@ def build(
         prepared[case_id] = {
             "manifest": manifest,
             "evidence": evidence,
+            "structured_event_table": structured_artifact,
             "receipt": receipt_artifact,
             "answer_options": item["answer_options"],
         }
@@ -291,7 +303,7 @@ def build(
 
         if not isinstance(reviewer, str) or not reviewer:
             raise ValueError("assignment reviewer_id must be non-empty string")
-        if condition not in {"control", "receipt"}:
+        if condition not in {"raw", "structured", "receipt"}:
             raise ValueError(
                 f"assignment condition for {case_id!r} is invalid: {condition!r}"
             )
@@ -329,6 +341,11 @@ def build(
                 {
                     "case_id": case_id,
                     "evidence": material["evidence"],
+                    "structured_event_table": (
+                        material["structured_event_table"]
+                        if row["condition"] == "structured"
+                        else None
+                    ),
                     "receipt": (
                         material["receipt"]
                         if row["condition"] == "receipt"
@@ -339,8 +356,9 @@ def build(
             )
 
         bundle = {
-            "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.2",
+            "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.3",
             "protocol_version": config["protocol_version"],
+            "comparison_design": "three_condition_structured_control",
             "assignment_version": assignment["assignment_version"],
             "assignment_sha256": assignment_sha256,
             "reviewer_id": reviewer,
@@ -382,8 +400,9 @@ def build(
         )
 
     analysis_bundle = {
-        "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.1",
+        "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.2",
         "protocol_version": config["protocol_version"],
+        "comparison_design": "three_condition_structured_control",
         "cases": hidden_cases,
     }
     analysis_errors = schema_errors(analysis_bundle, analysis_schema)
@@ -436,6 +455,7 @@ def run_self_test() -> int:
         cases_root = root / "cases"
         case_dir = cases_root / "case-1"
         (case_dir / "evidence").mkdir(parents=True)
+        (case_dir / "structured").mkdir()
         (case_dir / "receipt").mkdir()
         (case_dir / "analysis").mkdir()
 
@@ -449,6 +469,10 @@ def run_self_test() -> int:
                 indent=2,
             )
             + "\n",
+            encoding="utf-8",
+        )
+        (case_dir / "structured" / "events-table.md").write_text(
+            "| time | operation | status |\n|---|---|---|\n|08:00|analyze|completed|\n",
             encoding="utf-8",
         )
         (case_dir / "receipt" / "receipt.json").write_text(
@@ -469,11 +493,12 @@ def run_self_test() -> int:
         )
 
         case_manifest = {
-            "package_version": "AR-P003-v0.3-dev-case-v0.1",
+            "package_version": "AR-P003-v0.3-dev-case-v0.2",
             "case_id": "case-1",
             "stratum": "ordinary",
-            "condition_contract": "same_evidence_plus_receipt",
+            "condition_contract": "same_evidence_plus_neutral_structured_or_receipt_v1",
             "reviewer_evidence_files": ["evidence/events.json"],
+            "structured_control_file": "structured/events-table.md",
             "receipt_file": "receipt/receipt.json",
             "analysis_files": ["analysis/gold.json"],
             "receipt_state": "current",
@@ -486,8 +511,8 @@ def run_self_test() -> int:
         )
 
         config = {
-            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.1",
-            "protocol_version": "v0.3-development-only",
+            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.2",
+            "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
             "cases": [
                 {
                     "case_id": "case-1",
@@ -511,14 +536,21 @@ def run_self_test() -> int:
         )
 
         assignment = {
-            "assignment_version": "AR-P003-v0.3-draft-assignment-v0.2",
+            "assignment_version": "AR-P003-v0.3-draft-assignment-v0.3",
             "assignments": [
                 {
-                    "reviewer_id": "R-control",
+                    "reviewer_id": "R-raw",
                     "case_id": "case-1",
                     "stratum": "ordinary",
                     "order": 1,
-                    "condition": "control",
+                    "condition": "raw",
+                },
+                {
+                    "reviewer_id": "R-structured",
+                    "case_id": "case-1",
+                    "stratum": "ordinary",
+                    "order": 1,
+                    "condition": "structured",
                 },
                 {
                     "reviewer_id": "R-receipt",
@@ -547,7 +579,7 @@ def run_self_test() -> int:
             config_path=config_path,
             output_dir=output_dir,
         )
-        assert len(result["reviewer_bundles"]) == 2
+        assert len(result["reviewer_bundles"]) == 3
         assert result["answer_option_audit"][0]["material_actions"]["gold_representable"]
         assert result["answer_option_audit"][0]["material_actions"]["option_set_equals_gold_set"]
         # The equality above is allowed in this tiny smoke fixture. It is surfaced
@@ -569,18 +601,26 @@ def run_self_test() -> int:
         else:
             raise AssertionError("unrepresentable gold answer was accepted")
 
-        control = load_json(output_dir / "reviewer_bundles" / "R-control.json")
+        raw = load_json(output_dir / "reviewer_bundles" / "R-raw.json")
+        structured = load_json(output_dir / "reviewer_bundles" / "R-structured.json")
         receipt = load_json(output_dir / "reviewer_bundles" / "R-receipt.json")
         hidden = load_json(output_dir / "analysis" / "runner-analysis.json")
 
-        assert control["assignment_version"] == assignment["assignment_version"]
-        assert control["assignment_sha256"] == sha256_file(assignment_path)
+        assert raw["assignment_version"] == assignment["assignment_version"]
+        assert raw["assignment_sha256"] == sha256_file(assignment_path)
+        assert structured["assignment_sha256"] == sha256_file(assignment_path)
         assert receipt["assignment_sha256"] == sha256_file(assignment_path)
-        assert control["cases"][0]["receipt"] is None
+        assert raw["comparison_design"] == "three_condition_structured_control"
+        assert raw["cases"][0]["structured_event_table"] is None
+        assert raw["cases"][0]["receipt"] is None
+        assert structured["cases"][0]["structured_event_table"]["label"] == "Neutral structured event table"
+        assert structured["cases"][0]["receipt"] is None
+        assert receipt["cases"][0]["structured_event_table"] is None
         assert receipt["cases"][0]["receipt"]["label"] == "Activity Receipt"
-        assert control["cases"][0]["evidence"] == receipt["cases"][0]["evidence"]
-        assert "gold" not in json.dumps(control)
-        assert "stratum" not in json.dumps(control)
+        assert raw["cases"][0]["evidence"] == structured["cases"][0]["evidence"]
+        assert raw["cases"][0]["evidence"] == receipt["cases"][0]["evidence"]
+        assert "gold" not in json.dumps(raw)
+        assert "stratum" not in json.dumps(raw)
         assert hidden["cases"][0]["gold"] == gold
         assert hidden["cases"][0]["stratum"] == "ordinary"
 
@@ -608,7 +648,7 @@ def run_self_test() -> int:
 
     print(
         "AR-P003 runner-bundle builder self-test passed: "
-        "condition symmetry, hidden-label separation, and build hashes."
+        "three-condition evidence symmetry, hidden-label separation, and build hashes."
     )
     return 0
 
