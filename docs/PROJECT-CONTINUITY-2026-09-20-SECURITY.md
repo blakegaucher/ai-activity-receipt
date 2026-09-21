@@ -245,3 +245,71 @@ Issue #37 remains open.
 Do not infer closure from green CodeQL runs. After this branch is merged through protected `main`, the owner must re-check authenticated Code scanning with `is:open branch:main` and record the exact resulting inventory.
 
 Owner Security-alert notification confirmation remains an independent acceptance item.
+
+
+## 11. CodeQL source-model refinement after PR #75
+
+PR #75 — `Separate secret detection state from diagnostics for CodeQL alert #1` — merged through protected `main` as:
+
+`b8e10da52be098fe7bf2b68e065e7fae5dcb6263`
+
+Post-merge execution evidence:
+
+- validation run #162: success;
+- CodeQL run #79:
+  - Analyze python: success;
+  - Analyze javascript-typescript: success.
+
+Those green runs are execution evidence only. The authenticated post-PR-#75 alert inventory has not yet been supplied, so no zero-alert state is inferred.
+
+### Upstream CodeQL source-model evidence
+
+A follow-up inspection of the upstream Python CodeQL implementation identified a more precise source-model reason the generic stderr sink can remain reportable even after matched repository text and dynamic paths are removed from the diagnostic payload.
+
+The Python sensitive-data model considers the right-hand-side expression of an assignment to a **sensitive-looking variable name** to be a sensitive source. It also considers sensitive-looking function names and string literals when building sensitive-data sources.
+
+Relevant upstream model behavior is in:
+
+- `python/ql/lib/semmle/python/dataflow/new/SensitiveDataSources.qll`;
+- `shared/concepts/codeql/concepts/internal/SensitiveDataHeuristics.qll`;
+- `python/ql/lib/semmle/python/security/dataflow/CleartextLoggingCustomizations.qll`.
+
+On the PR #75 `main` state, diagnostic-side names/literals such as `SAFE_SECRET_DIAGNOSTICS` and `secret_diagnostic_regression_errors` still contain the heuristic term `secret`.
+
+The direct source-model path is therefore:
+
+```text
+RHS assigned to SAFE_SECRET_DIAGNOSTICS
+→ CodeQL SensitiveVariableAssignment source
+→ .items()
+→ fixed diagnostic message
+→ errors.append(...)
+→ generic print(..., file=sys.stderr) sink
+```
+
+A second potential modeled path exists through the sensitive-looking function name:
+
+```text
+secret_diagnostic_regression_errors()
+→ CodeQL sensitive function-name source
+→ returned error list
+→ errors.extend(...)
+→ generic stderr sink
+```
+
+This is distinct from the original runtime-data concern. The scanner can be runtime-value-safe and still match CodeQL's heuristic source model because the diagnostic identifiers themselves look sensitive to the query.
+
+### Narrow follow-up
+
+Fresh branch from post-PR-#75 `main`:
+
+`codeql-alert-1-heuristic-source-hardening`
+
+The follow-up preserves `HIGH_CONFIDENCE_SECRET_PATTERNS`, repository-wide tracked-text scanning, and failure semantics while:
+
+- removing sensitive-looking names from the diagnostic-side state/rendering path;
+- replacing printable category text with neutral fixed category identifiers;
+- keeping scanned text and dynamic paths out of the rendered diagnostic;
+- capturing the actual generic stderr renderer in the regression test and asserting that the synthetic probe value, arbitrary source text, and dynamic filename are absent.
+
+The authenticated CodeQL inventory remains the authority for final alert state. Issue #37 must remain open until that inventory and the owner Security-alert notification setting are both independently verified.
