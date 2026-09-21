@@ -1,6 +1,6 @@
 {
   "readiness_version": "AR-P003-v0.3-freeze-readiness-v0.1",
-  "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
+  "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
   "study_status": "development_not_ready",
   "gates": {
     "comparison_conditions": {
@@ -93,11 +93,14 @@
     "challenge_strata": {
       "status": "prepared",
       "evidence_refs": [
+        "docs/AR-P003-V0.3-CHALLENGE-DESIGN-DECISION-2026-09-21.md",
         "docs/AR-P003-V0.3-PROTOCOL.md",
         "benchmark/arp003_v0_3/runner-analysis.schema.json",
-        "benchmark/arp003_v0_3/methodology-decisions.current.json"
+        "benchmark/arp003_v0_3/methodology-decisions.current.json",
+        "benchmark/arp003_v0_3/generate_assignment.py",
+        "benchmark/arp003_v0_3/score_responses.py"
       ],
-      "notes": "Stale, incomplete, and conflicting Receipt strata are specified but no final sealed case counts are frozen."
+      "notes": "integrated_challenge_strata is selected. Ordinary, stale, incomplete, and conflicting strata are represented inside the three-condition crossed development architecture with separate reporting. The gate remains prepared because final sealed stratum counts/allocation, final assignment balance by stratum, and final-corpus leakage/manual review are not frozen or complete."
     },
     "browser_smoke": {
       "status": "pending",

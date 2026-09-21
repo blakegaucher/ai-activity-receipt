@@ -454,10 +454,14 @@ def run_self_test() -> int:
             {"case_id": f"i{i}", "stratum": "incomplete_receipt"}
             for i in range(1, 4)
         ],
+        *[
+            {"case_id": f"c{i}", "stratum": "conflicting_receipt"}
+            for i in range(1, 4)
+        ],
     ]
     mixed = generate(
         {
-            "reviewers": [f"m{i}" for i in range(1, 13)],
+            "reviewers": [f"m{i}" for i in range(1, 16)],
             "cases": mixed_cases,
             "cases_per_reviewer": 6,
             "seed": 73917,
@@ -468,7 +472,10 @@ def run_self_test() -> int:
         "ordinary",
         "stale_receipt",
         "incomplete_receipt",
+        "conflicting_receipt",
     }
+    for stratum_counts in mixed["diagnostics"]["stratum_condition_counts"].values():
+        assert set(stratum_counts) == set(VALID_CONDITIONS)
 
     # Non-divisible degrees still differ by at most one per condition.
     odd = generate(

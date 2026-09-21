@@ -1,6 +1,6 @@
 {
   "impact_map_version": "AR-P003-v0.3-methodology-impact-map-v0.1",
-  "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
+  "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
   "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.1",
   "status": "decision_support_only_no_selection",
   "decisions": [
@@ -141,7 +141,7 @@
             "freeze separate ordinary/challenge reporting",
             "complete leakage and manual methodology review on final cases"
           ],
-          "notes": "Matches current repository architecture. It keeps stale/incomplete/conflicting challenge cases inside the larger assignment while requiring separate reporting."
+          "notes": "Selected by the project owner on 2026-09-21. The architecture is current-native: stale/incomplete/conflicting challenge cases stay inside the broader three-condition crossed study and ordinary/challenge results remain separate. Versioned protocol/analysis/scoring/planning bindings make the explicit selection machine-visible, while final stratum counts/allocation and final-corpus review remain unresolved."
         },
         {
           "candidate_id": "separate_robustness_cohort",

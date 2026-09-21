@@ -60,7 +60,7 @@ These controls reduce interface mismatch and accidental-publication risk. They d
 
 **Status:** Development governance control; no methodology choice is frozen
 
-The current executable v0.3 draft and the earlier project research review contain material differences in comparison conditions, primary endpoint, timing semantics, and misleading-Receipt challenge design.
+The current executable v0.3 draft and the earlier project research review contained material differences in comparison conditions and misleading-Receipt challenge design; those two choices are now explicitly selected as three-condition structured control and integrated challenge strata. Primary endpoint, timing semantics, reviewer population, and effect/precision target remain unresolved.
 
 The repository now preserves those alternatives in a machine-readable decision ledger together with unresolved reviewer-population and meaningful-effect/precision choices. The validator requires protocol-version agreement, unique decision/candidate identifiers, evidence-linked rationale for any selected choice, and complete resolution of every pre-freeze methodology decision before a frozen protocol is permitted.
 
@@ -154,7 +154,7 @@ The validator requires exact candidate coverage in both directions: every ledger
 
 The earlier research review's proposed effect/guardrail thresholds (+5pp supported-completion benefit, 3pp accuracy noninferiority margin for a separate speed claim, +2pp maximum critical-false-clearance increase) are now preserved as an unresolved ledger candidate and explicitly remain non-normative decision assumptions.
 
-This check reduces silent methodology drift. It does not choose a condition design, endpoint, timing clock, challenge architecture, reviewer population, or effect target.
+This check reduces silent methodology drift. It does not choose methodology. It now verifies the selected comparison-condition and challenge-design entries while leaving endpoint, timing clock, reviewer population, and effect target unresolved.
 
 ---
 

@@ -197,11 +197,40 @@ def summarize(scored: list[dict[str, Any]]) -> dict[str, Any]:
             },
         }
 
+    case_classes: dict[str, Any] = {}
+    for case_class in ("ordinary", "challenge"):
+        rows = [
+            row
+            for row in scored
+            if (
+                (case_class == "ordinary" and row["stratum"] == "ordinary")
+                or (case_class == "challenge" and row["stratum"] != "ordinary")
+            )
+        ]
+        case_classes[case_class] = {
+            "n": len(rows),
+            "by_condition": {
+                condition: {
+                    "n": len([r for r in rows if r["condition"] == condition]),
+                    **{
+                        metric: _mean(
+                            [r for r in rows if r["condition"] == condition],
+                            metric,
+                        )
+                        for metric in metrics
+                    },
+                }
+                for condition in sorted(VALID_CONDITIONS)
+            },
+        }
+
     return {
-        "scoring_version": "AR-P003-v0.3-three-condition-draft-v0.2",
+        "scoring_version": "AR-P003-v0.3-three-condition-challenge-integrated-v0.3",
+        "challenge_design": "integrated_challenge_strata",
         "composite_primary_score": None,
         "n_records": len(scored),
         "by_condition": by_condition,
+        "by_case_class": case_classes,
         "by_stratum": strata,
     }
 
@@ -315,6 +344,10 @@ def run_self_test(
     assert summary["by_condition"]["raw"]["n"] == 1
     assert summary["by_condition"]["structured"]["n"] == 1
     assert summary["by_condition"]["receipt"]["n"] == 1
+    assert summary["challenge_design"] == "integrated_challenge_strata"
+    assert summary["by_case_class"]["ordinary"]["n"] == 2
+    assert summary["by_case_class"]["challenge"]["n"] == 1
+    assert summary["by_case_class"]["challenge"]["by_condition"]["receipt"]["n"] == 1
     print("AR-P003 scoring self-test passed.")
     return 0
 

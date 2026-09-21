@@ -44,6 +44,7 @@ The human-readable preregistration draft and first explicit methodology decision
 
 - `../../docs/AR-P003-V0.3-PROTOCOL.md`
 - `../../docs/AR-P003-V0.3-COMPARISON-CONDITIONS-DECISION-2026-09-20.md`
+- `../../docs/AR-P003-V0.3-CHALLENGE-DESIGN-DECISION-2026-09-21.md`
 
 ## Data boundary
 
@@ -237,7 +238,7 @@ Files:
 - `validate_methodology_decisions.py`
 - `../../docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md`
 
-The ledger records `comparison_conditions` as selected (`three_condition_structured_control`) and leaves primary endpoint, primary timing clock, challenge architecture, reviewer population, and meaningful effect/precision target unresolved. CI rejects a frozen protocol while required methodology decisions remain unresolved.
+The ledger records `comparison_conditions` as selected (`three_condition_structured_control`) and `challenge_design` as selected (`integrated_challenge_strata`). Primary endpoint, primary timing clock, reviewer population, and meaningful effect/precision target remain unresolved. CI rejects a frozen protocol while required methodology decisions remain unresolved.
 
 Run:
 
