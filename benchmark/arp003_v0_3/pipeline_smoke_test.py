@@ -340,10 +340,14 @@ def main() -> int:
                 )
             )
 
-        assert conditions.count("raw") == 2
-        assert conditions.count("structured") == 2
-        assert conditions.count("receipt") == 2
-        assert len(merged_records) == 6
+        condition_counts = {
+            condition: conditions.count(condition)
+            for condition in ("raw", "structured", "receipt")
+        }
+        assert sum(condition_counts.values()) == 4
+        assert all(count >= 1 for count in condition_counts.values())
+        assert max(condition_counts.values()) - min(condition_counts.values()) <= 1
+        assert len(merged_records) == 4
         assert all(record["elapsed_seconds"] == 10.0 for record in merged_records)
 
         scored = [score_record(record) for record in merged_records]
@@ -356,10 +360,9 @@ def main() -> int:
             assert row["missing_evidence_accuracy"] == 1.0
 
         summary = summarize(scored)
-        assert summary["n_records"] == 6
-        assert summary["by_condition"]["raw"]["n"] == 2
-        assert summary["by_condition"]["structured"]["n"] == 2
-        assert summary["by_condition"]["receipt"]["n"] == 2
+        assert summary["n_records"] == 4
+        for condition, expected in condition_counts.items():
+            assert summary["by_condition"][condition]["n"] == expected
 
         # Analysis-side merge must not trust a reviewer-edited condition field.
         first_bundle_path = output_dir / build_manifest["reviewer_bundles"][0]["path"]
@@ -381,7 +384,7 @@ def main() -> int:
         )
         hidden_gold = hidden_by_id[first_case["case_id"]]["gold"]
         tampered_response = {
-            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
             "protocol_version": first_bundle["protocol_version"],
             "comparison_design": first_bundle["comparison_design"],
             "assignment_version": first_bundle["assignment_version"],
