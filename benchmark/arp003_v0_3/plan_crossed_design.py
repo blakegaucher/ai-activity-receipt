@@ -29,7 +29,7 @@ if str(ROOT) not in sys.path:
 
 from benchmark.arp003_v0_3.generate_assignment import generate  # noqa: E402
 
-PLANNER_VERSION = "AR-P003-v0.3-crossed-planning-v0.2"
+PLANNER_VERSION = "AR-P003-v0.3-crossed-planning-v0.3"
 CONDITIONS = ("raw", "structured", "receipt")
 CONTRASTS = {
     "structured_vs_raw": (0.0, 1.0, 0.0),
@@ -444,6 +444,8 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
         ),
         "design": {
             "comparison_design": "three_condition_structured_control",
+            "challenge_design": "integrated_challenge_strata",
+            "challenge_allocation_status": "not_frozen_not_modeled_in_example_scenario",
             "reviewers": reviewers,
             "cases": cases,
             "cases_per_reviewer": cases_per_reviewer,
@@ -498,6 +500,8 @@ def run_plan(config: dict[str, Any]) -> dict[str, Any]:
         "planner_version": PLANNER_VERSION,
         "status": "development_only_not_frozen",
         "comparison_design": "three_condition_structured_control",
+        "challenge_design": "integrated_challenge_strata",
+        "challenge_allocation_status": "not_frozen_not_modeled_in_example_scenarios",
         "method_note": (
             "Reviewer and case random intercepts are simulated explicitly. "
             "Inference uses raw-baseline three-condition OLS contrasts with additive "
@@ -577,6 +581,10 @@ def run_self_test() -> int:
     plan = run_plan({"scenarios": [base, {**base, "scenario_id": "smoke-2"}]})
     assert plan["n_scenarios"] == 2
     assert plan["comparison_design"] == "three_condition_structured_control"
+    assert plan["challenge_design"] == "integrated_challenge_strata"
+    assert plan["challenge_allocation_status"] == (
+        "not_frozen_not_modeled_in_example_scenarios"
+    )
 
     print(
         "AR-P003 crossed-design planner self-test passed: deterministic "
