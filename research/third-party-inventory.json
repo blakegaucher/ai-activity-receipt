@@ -1,8 +1,8 @@
 {
-  "inventory_version": "third-party-inventory-v0.1",
-  "snapshot_date": "2026-09-19",
-  "repository_license_status": "not_selected",
-  "evidence_boundary": "Observed upstream license files for direct dependencies/actions are inventory evidence only. This file is not legal advice, does not grant rights, and does not replace review of upstream terms when redistributing third-party material.",
+  "inventory_version": "third-party-inventory-v0.2",
+  "snapshot_date": "2026-09-21",
+  "repository_license_status": "apache-2.0",
+  "evidence_boundary": "Observed upstream license files for direct dependencies/actions and the repository Apache-2.0 state are inventory evidence only. This file is not legal advice or patent clearance, does not relicense third-party material, and does not replace review of upstream terms when redistributing third-party material.",
   "direct_python_dependencies": [
     {
       "package": "jsonschema",
@@ -97,5 +97,13 @@
     "C2PA",
     "DSSE"
   ],
-  "repository_tree_observation": "No third-party source subtree or vendored dependency directory is present in the repository tree at this snapshot. References to standards/projects are documentation or interoperability references unless a file states otherwise."
+  "repository_tree_observation": "No third-party source subtree or vendored dependency directory is present in the repository tree at this snapshot. References to standards/projects are documentation or interoperability references unless a file states otherwise.",
+  "repository_license_file": "LICENSE",
+  "notice_file": "NOTICE",
+  "repository_copyright_holder": "Blake Gaucher",
+  "repository_copyright_year": 2026,
+  "private_human_study_material_auto_released": false,
+  "third_party_terms_preserved": true,
+  "trademark_rights_granted": false,
+  "cross_competition_lane_transfer": false
 }
