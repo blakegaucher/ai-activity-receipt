@@ -161,33 +161,22 @@ def main() -> int:
 
     endpoint = methodology.get("primary_endpoint_design") or {}
     expected_endpoint = {
-        "endpoint_id": "correct_completion_by_180s",
         "outcome_type": "binary",
         "deadline_seconds": 180,
-        "required_judgments": (
-            "case_specific_prespecified_and_frozen_before_confirmatory_execution"
-        ),
-        "acceptable_evidence_sets": (
-            "case_and_condition_specific_prespecified_support_sets"
-        ),
-        "material_fact_failure": (
-            "extra_required_set_fact_or_mismatched_authorization_state_fails"
-        ),
-        "timeout_failure": "deadline_miss_cannot_succeed",
+        "case_specific_required_judgments": True,
+        "case_specific_acceptable_evidence_sets": True,
+        "material_fact_failure_semantics": True,
+        "deadline_miss_cannot_succeed": True,
         "component_endpoints": "secondary_diagnostic_not_co_primary",
         "critical_false_clearance": "separate_prespecified_safety_endpoint",
         "critical_false_clearance_threshold": (
             "unresolved_effect_precision_target"
         ),
         "primary_timing_clock": "unresolved",
-        "timing_candidates": [
-            "active_time_primary",
-            "wall_deadline_with_hidden_sensitivity",
-        ],
-        "confirmatory_derivation": (
-            "blocked_until_primary_timing_clock_selected"
+        "development_contingency": (
+            "pre_freeze_stop_and_new_owner_decision_no_automatic_fallback"
         ),
-        "automatic_fallback_primary": False,
+        "confirmatory_primary_derivation": "blocked_until_timing_selected",
     }
     if endpoint != expected_endpoint:
         errors.append("AR-P003 primary-endpoint continuity details are stale")
@@ -243,18 +232,30 @@ def main() -> int:
     if assignment_binding.get("challenge_design") != "integrated_challenge_strata":
         errors.append("AR-P003 challenge-design runner continuity is stale")
 
-    runner_endpoint = runner.get("primary_endpoint") or {}
-    expected_runner_endpoint = {
-        "endpoint_id": "correct_completion_by_180s",
-        "primary_timing_clock": "unresolved",
-        "wall_and_active_recorded": True,
-        "confirmatory_timeout_enforcement": (
-            "blocked_until_primary_timing_clock_selected"
-        ),
-        "scoring_record_contract": "AR-P003-v0.3-scoring-record-v0.2",
-    }
-    if runner_endpoint != expected_runner_endpoint:
+    if runner.get("primary_endpoint") != (
+        "selected:correct_completion_by_180s"
+    ):
         errors.append("AR-P003 endpoint-aware runner continuity is stale")
+    if runner.get("primary_endpoint_deadline_seconds") != 180:
+        errors.append("AR-P003 primary endpoint deadline continuity is stale")
+    if runner.get("primary_timing_clock") != "unresolved":
+        errors.append("AR-P003 primary timing clock must remain unresolved")
+    if runner.get("confirmatory_primary_derivation") != (
+        "blocked_until_primary_timing_clock_selected"
+    ):
+        errors.append("AR-P003 confirmatory primary derivation must remain blocked")
+    if runner.get("primary_endpoint_contract") != (
+        "AR-P003-v0.3-primary-endpoint-case-v0.1"
+    ):
+        errors.append("AR-P003 primary endpoint contract continuity is stale")
+    if runner.get("scoring_record_contract") != (
+        "AR-P003-v0.3-scoring-record-v0.2"
+    ):
+        errors.append("AR-P003 scoring-record continuity is stale")
+    if assignment_binding.get("dual_clock_preservation") is not True:
+        errors.append("AR-P003 dual-clock preservation continuity is stale")
+    if assignment_binding.get("primary_endpoint_binding") is not True:
+        errors.append("AR-P003 endpoint-binding continuity is stale")
 
     freeze_manifest = arp003.get("freeze_manifest") or {}
     if freeze_manifest.get("version") != "AR-P003-v0.3-freeze-manifest-v0.2":
