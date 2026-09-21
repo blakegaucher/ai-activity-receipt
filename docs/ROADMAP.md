@@ -80,7 +80,9 @@ A technically informed reader should be able to understand what an Activity Rece
 - [x] Publish a third-party dependency/action inventory and license-decision preflight without selecting terms.
 - [x] Choose and publish an explicit repository license: **Apache License 2.0**, with explicit private human-study, third-party, trademark, and cross-competition boundaries.
 - [x] Define target reviewer population — relevant professional reviewers with prespecified eligibility/exclusion rules; no recruitment authorized.
-- [ ] Freeze primary endpoint(s) and meaningful effect/precision target.
+- [x] Freeze the primary endpoint — `correct_completion_by_180s`, with component outcomes secondary and critical false clearance separate.
+- [ ] Freeze the primary timing clock.
+- [ ] Freeze a meaningful effect/precision target.
 - [ ] Complete sample-size or precision analysis.
 - [ ] Create fresh sealed synthetic corpus.
 - [ ] Finalize independent human reviewer instructions from the published draft.
