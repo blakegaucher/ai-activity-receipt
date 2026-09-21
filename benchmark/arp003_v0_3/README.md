@@ -7,7 +7,7 @@ This directory contains **development infrastructure** for the next human-center
 ## Files
 
 - `protocol.json` — machine-readable candidate protocol scaffold.
-- `score_responses.py` — deterministic component-level scorer with a built-in synthetic self-test.
+- `score_responses.py` — deterministic endpoint-aware scorer with a built-in synthetic self-test; derives the selected binary content semantics, preserves both timing candidates while the primary clock is unresolved, reports component outcomes as secondary diagnostics, and keeps critical false clearance separate.
 - `response-record.schema.json` — JSON Schema for one analysis-side reviewer/case scoring record.
 - `generate_assignment.py` — seeded reviewer/case assignment generator for the selected raw / neutral-structured / Receipt design; it avoids repeat exposure to the same case and keeps each reviewer/case condition count within one observation across the three conditions.
 - `freeze_manifest.py` — content-bound SHA-256 manifest utility that reads the exact protocol version/hash, rejects duplicate paths, computes an aggregate artifact-set digest and deterministic freeze content ID, and can require `protocol.frozen=true`.
@@ -86,7 +86,16 @@ Example shape:
   "case_id": "case-id",
   "condition": "raw",
   "stratum": "ordinary",
-  "elapsed_seconds": 83.4,
+  "elapsed_wall_seconds": 83.4,
+  "elapsed_active_seconds": 80.1,
+  "primary_endpoint_contract": {
+    "contract_version": "AR-P003-v0.3-primary-endpoint-case-v0.1",
+    "case_id": "case-id",
+    "endpoint_id": "correct_completion_by_180s",
+    "deadline_seconds": 180,
+    "required_judgments": "... case-specific prespecified contract ...",
+    "critical_false_clearance_checks": []
+  },
   "gold": {
     "material_actions": ["action-1"],
     "authorization_violation": false,
@@ -137,14 +146,7 @@ Score JSONL records:
 python benchmark/arp003_v0_3/score_responses.py responses.jsonl --output scored.json
 ```
 
-The scorer intentionally reports endpoint components separately:
-
-- set precision/recall/F1 for material actions, sources, and incidents;
-- exact accuracy for authorization violation, verification state, and missing-evidence state;
-- elapsed time;
-- confidence as a descriptive measure.
-
-It does **not** generate a post-hoc weighted primary composite.
+The scorer implements the selected binary primary endpoint contract but intentionally returns the confirmatory primary success as non-estimable while `primary_timing_clock` remains unresolved. It also reports development-only active-clock and wall/deadline sensitivity values. Component outcomes remain secondary diagnostics: set precision/recall/F1 for material actions, sources, and incidents; exact accuracy for authorization violation, verification state, and missing-evidence state; both timing measures; and confidence. Critical false clearance is reported separately as a safety endpoint. It does **not** generate a post-hoc weighted primary composite.
 
 ## Sample-size / precision development planning
 
@@ -238,7 +240,7 @@ Files:
 - `validate_methodology_decisions.py`
 - `../../docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md`
 
-The ledger records `comparison_conditions` as selected (`three_condition_structured_control`), `challenge_design` as selected (`integrated_challenge_strata`), and `reviewer_population` as selected (`relevant_professional_reviewers`). Primary endpoint, primary timing clock, and meaningful effect/precision target remain unresolved. The selected population requires at least 1 year of relevant professional/practical experience, records 1–2/3–5/6+ year bands, and freezes language, familiarity, exclusion, assistance, and inference-scope rules without authorizing recruitment. CI rejects a frozen protocol while required methodology decisions remain unresolved.
+The ledger records `comparison_conditions = three_condition_structured_control`, `challenge_design = integrated_challenge_strata`, `reviewer_population = relevant_professional_reviewers`, and `primary_endpoint = correct_completion_by_180s` as selected. The primary timing clock and meaningful effect/precision target remain unresolved. The selected population requires at least 1 year of relevant professional/practical experience, records 1–2/3–5/6+ year bands, and freezes language, familiarity, exclusion, assistance, and inference-scope rules without authorizing recruitment. CI rejects a frozen protocol while required methodology decisions or downstream freeze gates remain unresolved.
 
 Run:
 
