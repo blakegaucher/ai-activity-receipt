@@ -11,7 +11,7 @@
   ],
   "properties": {
     "readiness_version": {
-      "const": "AR-P003-v0.3-freeze-readiness-v0.1"
+      "const": "AR-P003-v0.3-freeze-readiness-v0.2"
     },
     "protocol_version": {
       "type": "string",

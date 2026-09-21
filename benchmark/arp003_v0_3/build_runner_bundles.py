@@ -35,7 +35,19 @@ BUNDLE_SCHEMA = BENCH / "runner-bundle.schema.json"
 ANALYSIS_SCHEMA = BENCH / "runner-analysis.schema.json"
 
 ASSIGNMENT_VERSION_PREFIX = "AR-P003-v0.3-draft-assignment-"
-BUILD_OUTPUT_VERSION = "AR-P003-v0.3-dev-runner-build-output-v0.4"
+BUILD_OUTPUT_VERSION = "AR-P003-v0.3-dev-runner-build-output-v0.5"
+PRIMARY_ENDPOINT_PUBLIC = {
+    "endpoint_id": "correct_completion_by_180s",
+    "deadline_seconds": 180,
+    "primary_timing_clock": "unresolved",
+    "timing_candidates": [
+        "active_time_primary",
+        "wall_deadline_with_hidden_sensitivity",
+    ],
+    "timeout_enforcement": (
+        "development_not_enforced_until_primary_timing_clock_selected"
+    ),
+}
 
 
 def load_json(path: Path) -> Any:
@@ -162,6 +174,91 @@ def validate_answer_options(
     return audit
 
 
+def validate_primary_endpoint_contract(
+    contract: dict[str, Any],
+    manifest: dict[str, Any],
+    gold: dict[str, Any],
+    *,
+    case_id: str,
+) -> dict[str, Any]:
+    if contract["case_id"] != case_id:
+        raise ValueError(
+            f"case {case_id!r} primary endpoint contract case_id mismatch"
+        )
+
+    expected_rules = {
+        "material_actions": "set_exact",
+        "authorization_violation": "exact",
+        "material_sources": "set_exact",
+        "incidents": "set_exact",
+        "verification_state": "exact",
+        "missing_evidence": "exact",
+    }
+    required = contract["required_judgments"]
+    if not required:
+        raise ValueError(
+            f"case {case_id!r} primary endpoint contract has no required judgments"
+        )
+
+    raw_refs = set(manifest["reviewer_evidence_files"])
+    available = {
+        "raw": raw_refs,
+        "structured": raw_refs | {manifest["structured_control_file"]},
+        "receipt": raw_refs | {manifest["receipt_file"]},
+    }
+
+    for field, spec in required.items():
+        if field not in gold:
+            raise ValueError(
+                f"case {case_id!r} endpoint judgment {field!r} has no gold field"
+            )
+        if spec["comparison_rule"] != expected_rules[field]:
+            raise ValueError(
+                f"case {case_id!r} endpoint judgment {field!r} uses the wrong "
+                "comparison_rule"
+            )
+        support_by_condition = spec["acceptable_evidence_sets"]
+        for condition, support_sets in support_by_condition.items():
+            for support_set in support_sets:
+                unknown = sorted(set(support_set) - available[condition])
+                if unknown:
+                    raise ValueError(
+                        f"case {case_id!r} endpoint judgment {field!r} "
+                        f"references unavailable {condition} support: {unknown!r}"
+                    )
+
+    allowed_cfc_rules = {
+        "authorization_violation": {"boolean_true_to_false"},
+        "incidents": {"nonempty_set_to_empty"},
+        "verification_state": {"adverse_verification_to_clear"},
+        "missing_evidence": {"boolean_true_to_false"},
+    }
+    for check in contract["critical_false_clearance_checks"]:
+        field = check["field"]
+        if field not in required:
+            raise ValueError(
+                f"case {case_id!r} critical false-clearance field {field!r} "
+                "must also be a required judgment"
+            )
+        if check["rule"] not in allowed_cfc_rules[field]:
+            raise ValueError(
+                f"case {case_id!r} critical false-clearance rule is invalid "
+                f"for field {field!r}"
+            )
+
+    return {
+        "case_id": case_id,
+        "contract_version": contract["contract_version"],
+        "endpoint_id": contract["endpoint_id"],
+        "deadline_seconds": contract["deadline_seconds"],
+        "required_judgments": sorted(required),
+        "support_sets_validated_for_conditions": ["raw", "structured", "receipt"],
+        "critical_false_clearance_checks": len(
+            contract["critical_false_clearance_checks"]
+        ),
+    }
+
+
 def build(
     assignment: dict[str, Any],
     config: dict[str, Any],
@@ -211,6 +308,7 @@ def build(
     hidden_cases: list[dict[str, Any]] = []
     answer_option_audits: list[dict[str, Any]] = []
     structured_control_audits: list[dict[str, Any]] = []
+    primary_endpoint_contract_audits: list[dict[str, Any]] = []
 
     for case_id in sorted(used_case_ids):
         item = config_by_id[case_id]
@@ -301,6 +399,15 @@ def build(
                 case_id=case_id,
             )
         )
+        primary_endpoint_contract = item["primary_endpoint_contract"]
+        primary_endpoint_contract_audits.append(
+            validate_primary_endpoint_contract(
+                primary_endpoint_contract,
+                manifest,
+                gold,
+                case_id=case_id,
+            )
+        )
 
         prepared[case_id] = {
             "manifest": manifest,
@@ -314,6 +421,7 @@ def build(
                 "case_id": case_id,
                 "stratum": manifest["stratum"],
                 "gold": gold,
+                "primary_endpoint_contract": primary_endpoint_contract,
             }
         )
 
@@ -380,9 +488,10 @@ def build(
             )
 
         bundle = {
-            "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.3",
+            "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.4",
             "protocol_version": config["protocol_version"],
             "comparison_design": "three_condition_structured_control",
+            "primary_endpoint": PRIMARY_ENDPOINT_PUBLIC,
             "assignment_version": assignment["assignment_version"],
             "assignment_sha256": assignment_sha256,
             "reviewer_id": reviewer,
@@ -424,10 +533,11 @@ def build(
         )
 
     analysis_bundle = {
-        "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.3",
+        "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.4",
         "protocol_version": config["protocol_version"],
         "comparison_design": "three_condition_structured_control",
         "challenge_design": "integrated_challenge_strata",
+        "primary_endpoint": PRIMARY_ENDPOINT_PUBLIC,
         "cases": hidden_cases,
     }
     analysis_errors = schema_errors(analysis_bundle, analysis_schema)
@@ -460,6 +570,7 @@ def build(
         },
         "answer_option_audit": answer_option_audits,
         "structured_control_audit": structured_control_audits,
+        "primary_endpoint_contract_audit": primary_endpoint_contract_audits,
         "evidence_boundary": (
             "Development-only build output. Reviewer bundles contain no gold "
             "labels or hidden strata; analysis output must remain access-controlled."
@@ -546,8 +657,8 @@ def run_self_test() -> int:
         )
 
         config = {
-            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.2",
-            "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
+            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.3",
+            "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
             "cases": [
                 {
                     "case_id": "case-1",
@@ -560,6 +671,80 @@ def run_self_test() -> int:
                     },
                     "evidence_labels": {
                         "evidence/events.json": "Synthetic event log"
+                    },
+                    "primary_endpoint_contract": {
+                        "contract_version": "AR-P003-v0.3-primary-endpoint-case-v0.1",
+                        "case_id": "case-1",
+                        "endpoint_id": "correct_completion_by_180s",
+                        "deadline_seconds": 180,
+                        "required_judgments": {
+                            "material_actions": {
+                                "comparison_rule": "set_exact",
+                                "acceptable_evidence_sets": {
+                                    "raw": [["evidence/events.json"]],
+                                    "structured": [["evidence/events.json"]],
+                                    "receipt": [["evidence/events.json"]]
+                                }
+                            },
+                            "authorization_violation": {
+                                "comparison_rule": "exact",
+                                "acceptable_evidence_sets": {
+                                    "raw": [["evidence/events.json"]],
+                                    "structured": [["evidence/events.json"]],
+                                    "receipt": [["evidence/events.json"]]
+                                }
+                            },
+                            "material_sources": {
+                                "comparison_rule": "set_exact",
+                                "acceptable_evidence_sets": {
+                                    "raw": [["evidence/events.json"]],
+                                    "structured": [["evidence/events.json"]],
+                                    "receipt": [["evidence/events.json"]]
+                                }
+                            },
+                            "incidents": {
+                                "comparison_rule": "set_exact",
+                                "acceptable_evidence_sets": {
+                                    "raw": [["evidence/events.json"]],
+                                    "structured": [["evidence/events.json"]],
+                                    "receipt": [["evidence/events.json"]]
+                                }
+                            },
+                            "verification_state": {
+                                "comparison_rule": "exact",
+                                "acceptable_evidence_sets": {
+                                    "raw": [["evidence/events.json"]],
+                                    "structured": [["evidence/events.json"]],
+                                    "receipt": [["evidence/events.json"]]
+                                }
+                            },
+                            "missing_evidence": {
+                                "comparison_rule": "exact",
+                                "acceptable_evidence_sets": {
+                                    "raw": [["evidence/events.json"]],
+                                    "structured": [["evidence/events.json"]],
+                                    "receipt": [["evidence/events.json"]]
+                                }
+                            }
+                        },
+                        "critical_false_clearance_checks": [
+                            {
+                                "field": "authorization_violation",
+                                "rule": "boolean_true_to_false"
+                            },
+                            {
+                                "field": "incidents",
+                                "rule": "nonempty_set_to_empty"
+                            },
+                            {
+                                "field": "verification_state",
+                                "rule": "adverse_verification_to_clear"
+                            },
+                            {
+                                "field": "missing_evidence",
+                                "rule": "boolean_true_to_false"
+                            }
+                        ]
                     },
                 }
             ],
@@ -618,6 +803,15 @@ def run_self_test() -> int:
         assert result["answer_option_audit"][0]["material_actions"]["gold_representable"]
         assert result["structured_control_audit"][0]["exact_renderer_match"] is True
         assert result["structured_control_audit"][0]["renderer_version"] == RENDERER_VERSION
+        assert result["primary_endpoint_contract_audit"][0]["deadline_seconds"] == 180
+        assert result["primary_endpoint_contract_audit"][0]["required_judgments"] == [
+            "authorization_violation",
+            "incidents",
+            "material_actions",
+            "material_sources",
+            "missing_evidence",
+            "verification_state",
+        ]
         assert result["answer_option_audit"][0]["material_actions"]["option_set_equals_gold_set"]
         # The equality above is allowed in this tiny smoke fixture. It is surfaced
         # for pre-freeze leakage review rather than silently treated as safe.

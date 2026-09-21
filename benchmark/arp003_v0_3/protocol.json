@@ -1,6 +1,6 @@
 {
   "protocol_id": "AR-P003",
-  "version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
+  "version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
   "status": "candidate_preregistration_draft",
   "frozen": false,
   "research_question": "Do a neutral structured event table and an AI Activity Receipt, each added to the same underlying heterogeneous evidence, change independent human reconstruction accuracy, reliability, or time relative to raw evidence, and does the Receipt add benefit beyond generic structuring?",
@@ -80,35 +80,45 @@
     "recruitment_authorized": false
   },
   "primary_targets": [
-    "material_actions",
-    "authorization_violation",
-    "material_sources",
-    "incidents",
-    "verification_state",
-    "missing_evidence",
-    "elapsed_seconds"
+    "correct_completion_by_180s"
   ],
   "secondary_targets": [
-    "confidence",
-    "reviewer_agreement",
-    "false_incident_flags",
-    "omission_patterns",
-    "challenge_detection"
+    "material_action_precision_recall_f1",
+    "material_source_precision_recall_f1",
+    "incident_precision_recall_f1",
+    "authorization_violation_accuracy",
+    "verification_state_accuracy",
+    "missing_evidence_accuracy",
+    "reviewer_confidence",
+    "elapsed_wall_seconds",
+    "elapsed_active_seconds",
+    "challenge_detection_and_reporting"
   ],
   "scoring": {
-    "material_actions": "set_precision_recall_f1",
-    "material_sources": "set_precision_recall_f1",
-    "incidents": "set_precision_recall_f1",
-    "authorization_violation": "exact_accuracy",
-    "verification_state": "exact_accuracy",
-    "missing_evidence": "exact_accuracy",
-    "elapsed_seconds": "report_valid_active_wall_clock_time",
+    "material_actions": "secondary_set_precision_recall_f1",
+    "material_sources": "secondary_set_precision_recall_f1",
+    "incidents": "secondary_set_precision_recall_f1",
+    "authorization_violation": "secondary_exact_accuracy",
+    "verification_state": "secondary_exact_accuracy",
+    "missing_evidence": "secondary_exact_accuracy",
+    "elapsed_wall_seconds": "secondary_timing_measure",
+    "elapsed_active_seconds": "secondary_timing_measure",
+    "primary_endpoint": "binary_correct_supported_completion_by_180_seconds_after_primary_timing_clock_is_frozen",
+    "critical_false_clearance": "separate_safety_endpoint",
     "composite_primary_score": false
   },
   "timing": {
     "system_instrumented": true,
     "speed_claim_requires_reliable_timing": true,
-    "automatic_slow_response_exclusion": false
+    "automatic_slow_response_exclusion": false,
+    "record_wall_and_active_during_development": true,
+    "deadline_seconds": 180,
+    "primary_timing_clock": "unresolved",
+    "candidates": [
+      "active_time_primary",
+      "wall_deadline_with_hidden_sensitivity"
+    ],
+    "confirmatory_timeout_enforcement": "blocked_until_primary_timing_clock_selected"
   },
   "confirmatory_requirements": [
     "fresh_sealed_corpus",
@@ -151,16 +161,60 @@
     "development_scenarios_are_confirmatory": false,
     "crossed_tool": "benchmark/arp003_v0_3/plan_crossed_design.py",
     "crossed_example_scenarios": "benchmark/arp003_v0_3/crossed-planning-scenarios.example.json",
-    "crossed_planning_prepared": true
+    "crossed_planning_prepared": true,
+    "primary_estimand": "binary_correct_completion_by_180s",
+    "primary_timing_clock": "unresolved",
+    "effect_precision_target": "unresolved",
+    "final_sample_size_frozen": false
   },
   "methodology_decision_ledger": {
     "status": "development_unresolved",
     "path": "benchmark/arp003_v0_3/methodology-decisions.current.json",
     "required_before_freeze": true,
     "unresolved_decisions": [
-      "primary_endpoint",
       "primary_timing_clock",
       "effect_precision_target"
     ]
+  },
+  "primary_endpoint": {
+    "decision_id": "primary_endpoint",
+    "selected_candidate": "correct_completion_by_180s",
+    "endpoint_id": "correct_completion_by_180s",
+    "outcome_type": "binary",
+    "deadline_seconds": 180,
+    "required_judgments_rule": "case_specific_frozen_primary_endpoint_contract",
+    "acceptable_evidence_rule": "each_required_judgment_must_have_at_least_one_prespecified_acceptable_support_set_for_the_assigned_condition",
+    "correctness_rule": "all_prespecified_required_judgments_for_the_case_must_be_correct",
+    "material_fact_failure_rule": "extra_required_set_facts_or_mismatched_authorization_state_fail_primary",
+    "timeout_failure_rule": "a_trial_over_the_frozen_180_second_primary_clock_cannot_succeed",
+    "primary_timing_clock": "unresolved",
+    "timing_candidates": [
+      "active_time_primary",
+      "wall_deadline_with_hidden_sensitivity"
+    ],
+    "confirmatory_derivation_status": "blocked_until_primary_timing_clock_selected",
+    "component_endpoints_role": "secondary_diagnostic_not_co_primary",
+    "critical_false_clearance_role": "separate_prespecified_safety_endpoint",
+    "critical_false_clearance_threshold": "unresolved_effect_precision_target",
+    "development_only_contingency": {
+      "allowed_before_confirmatory_freeze_only": true,
+      "triggers": [
+        "timer_implementation_failure",
+        "browser_or_device_behavior_makes_deadline_unreliable",
+        "required_judgment_or_evidence_success_rule_not_reproducible",
+        "development_testing_shows_180_second_threshold_not_meaningfully_usable_for_intended_professional_task"
+      ],
+      "action": "stop_return_to_methodology_decision_state",
+      "automatic_component_endpoint_promotion": false,
+      "confirmatory_outcome_inspection_allowed": false,
+      "requires": [
+        "explicit_new_owner_decision",
+        "new_protocol_version",
+        "updated_power_and_planning",
+        "updated_freeze_readiness",
+        "updated_hashes_and_artifacts"
+      ]
+    },
+    "post_freeze_rule": "do_not_switch_primary_endpoint_for_unfavorable_results_if_timing_becomes_technically_unusable_report_primary_as_affected_or_non_estimable_under_prespecified_rules"
   }
 }

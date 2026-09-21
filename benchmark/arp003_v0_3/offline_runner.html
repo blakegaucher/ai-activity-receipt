@@ -35,6 +35,7 @@
 <main>
   <h1>AR-P003 v0.3 Development Offline Runner</h1>
   <p class="warning"><strong>Development only.</strong> This runner is not a frozen human-study instrument. It makes no claim that Activity Receipts improve auditing.</p>
+  <p class="warning"><strong>Endpoint development status:</strong> the selected primary endpoint is evidence-supported correct completion by 180 seconds, but the primary timing clock remains unresolved. This runner records both wall and active time and does not enforce a confirmatory timeout until that separate methodology decision is frozen.</p>
 
   <section id="setup" class="card">
     <h2>Load reviewer bundle</h2>
@@ -241,9 +242,18 @@
 <script>
 "use strict";
 
-const EXPECTED_VERSION = "AR-P003-v0.3-dev-runner-bundle-v0.3";
-const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.5";
+const EXPECTED_VERSION = "AR-P003-v0.3-dev-runner-bundle-v0.4";
+const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.6";
 const COMPARISON_DESIGN = "three_condition_structured_control";
+const PRIMARY_ENDPOINT_ID = "correct_completion_by_180s";
+const PRIMARY_DEADLINE_SECONDS = 180;
+const PRIMARY_TIMING_CLOCK = "unresolved";
+const PRIMARY_TIMING_CANDIDATES = [
+  "active_time_primary",
+  "wall_deadline_with_hidden_sensitivity"
+];
+const PRIMARY_TIMEOUT_ENFORCEMENT =
+  "development_not_enforced_until_primary_timing_clock_selected";
 const COMPREHENSION_VERSION = "AR-P003-v0.3-comprehension-v0.1";
 const PRACTICE_VERSION = "AR-P003-v0.3-practice-v0.1";
 const MAX_BUNDLE_BYTES = 32 * 1024 * 1024;
@@ -319,6 +329,12 @@ function validateBundleBasic(doc) {
   if (doc.bundle_version !== EXPECTED_VERSION) throw new Error("Unexpected bundle_version.");
   boundedString(doc.protocol_version, "protocol_version");
   if (doc.comparison_design !== COMPARISON_DESIGN) throw new Error("Unexpected comparison_design.");
+  if (!doc.primary_endpoint || typeof doc.primary_endpoint !== "object" || Array.isArray(doc.primary_endpoint)) throw new Error("Missing primary_endpoint development contract.");
+  if (doc.primary_endpoint.endpoint_id !== PRIMARY_ENDPOINT_ID) throw new Error("Unexpected primary endpoint.");
+  if (doc.primary_endpoint.deadline_seconds !== PRIMARY_DEADLINE_SECONDS) throw new Error("Unexpected primary endpoint deadline.");
+  if (doc.primary_endpoint.primary_timing_clock !== PRIMARY_TIMING_CLOCK) throw new Error("Primary timing clock must remain unresolved in this development version.");
+  if (JSON.stringify(doc.primary_endpoint.timing_candidates) !== JSON.stringify(PRIMARY_TIMING_CANDIDATES)) throw new Error("Unexpected primary timing candidates.");
+  if (doc.primary_endpoint.timeout_enforcement !== PRIMARY_TIMEOUT_ENFORCEMENT) throw new Error("Unexpected timeout enforcement state.");
   boundedString(doc.assignment_version, "assignment_version");
   if (typeof doc.assignment_sha256 !== "string" || !/^sha256:[0-9a-f]{64}$/.test(doc.assignment_sha256)) throw new Error("assignment_sha256 is invalid.");
   boundedString(doc.reviewer_id, "reviewer_id");
@@ -494,6 +510,19 @@ function currentElapsed() {
   };
 }
 
+function deadlineReached(elapsed, clock) {
+  if (clock === "active_time_primary") {
+    return elapsed.active > PRIMARY_DEADLINE_SECONDS;
+  }
+  if (clock === "wall_deadline_with_hidden_sensitivity") {
+    return elapsed.wall > PRIMARY_DEADLINE_SECONDS;
+  }
+  if (clock === "unresolved") {
+    return null;
+  }
+  throw new Error("Unknown primary timing clock.");
+}
+
 function collectAnswer() {
   const authorization = selectedRadio("authorization");
   const missing = selectedRadio("missing");
@@ -523,6 +552,7 @@ function exportObject() {
     response_bundle_version: RESPONSE_VERSION,
     protocol_version: bundle.protocol_version,
     comparison_design: bundle.comparison_design,
+    primary_endpoint: bundle.primary_endpoint,
     assignment_version: bundle.assignment_version,
     assignment_sha256: bundle.assignment_sha256,
     reviewer_id: bundle.reviewer_id,
@@ -586,6 +616,9 @@ $("loadBtn").addEventListener("click", async () => {
       "Reviewer: " + bundle.reviewer_id +
       " • Protocol: " + bundle.protocol_version +
       " • Assignment: " + bundle.assignment_version +
+      " • Endpoint: " + PRIMARY_ENDPOINT_ID +
+      " • Deadline: " + PRIMARY_DEADLINE_SECONDS + "s" +
+      " • Primary clock: unresolved" +
       " • Cases: " + bundle.cases.length;
     $("bundleSummary").classList.remove("hidden");
     $("startBtn").classList.remove("hidden");
@@ -688,6 +721,15 @@ $("answerForm").addEventListener("submit", (event) => {
     const answer = collectAnswer();
     const elapsed = currentElapsed();
     const item = bundle.cases[currentIndex];
+    const confirmatoryDeadlineState = deadlineReached(
+      elapsed,
+      bundle.primary_endpoint.primary_timing_clock
+    );
+    if (confirmatoryDeadlineState !== null) {
+      throw new Error(
+        "Development runner fail-closed: this version must not select a primary timing clock."
+      );
+    }
 
     results.push({
       case_id: item.case_id,

@@ -291,6 +291,10 @@ def synthetic_resolved_methodology(
                 decision["selected_candidate"] = (
                     methodology_validator.REVIEWER_POPULATION_CANDIDATE
                 )
+            elif decision["decision_id"] == "primary_endpoint":
+                decision["selected_candidate"] = (
+                    methodology_validator.PRIMARY_ENDPOINT_CANDIDATE
+                )
             else:
                 decision["selected_candidate"] = decision["candidates"][0]["candidate_id"]
             decision["rationale"] = "Synthetic self-test selection only."

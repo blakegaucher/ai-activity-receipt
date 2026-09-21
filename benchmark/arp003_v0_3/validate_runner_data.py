@@ -199,6 +199,12 @@ def runner_static_errors() -> list[str]:
         "comparison_design: bundle.comparison_design",
         "assignment_version: bundle.assignment_version",
         "assignment_sha256: bundle.assignment_sha256",
+        "primary_endpoint: bundle.primary_endpoint",
+        "const PRIMARY_ENDPOINT_ID",
+        "const PRIMARY_DEADLINE_SECONDS",
+        "const PRIMARY_TIMING_CLOCK = \"unresolved\"",
+        "function deadlineReached",
+        "development_not_enforced_until_primary_timing_clock_selected",
     ]
     for marker in required:
         if marker not in html:
@@ -275,10 +281,17 @@ def run_self_test() -> int:
     assert errors
     assert any("too long" in error for error in errors)
 
+    unresolved_clock = copy.deepcopy(bundle)
+    unresolved_clock["primary_endpoint"]["primary_timing_clock"] = "active_time_primary"
+    errors = validate_bundle(unresolved_clock, bundle_schema)
+    assert errors
+    assert any("unresolved" in error for error in errors)
+
     sample_response = {
-        "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
+        "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.6",
         "protocol_version": bundle["protocol_version"],
         "comparison_design": bundle["comparison_design"],
+        "primary_endpoint": copy.deepcopy(bundle["primary_endpoint"]),
         "assignment_version": bundle["assignment_version"],
         "assignment_sha256": bundle["assignment_sha256"],
         "reviewer_id": bundle["reviewer_id"],
@@ -330,6 +343,14 @@ def run_self_test() -> int:
     errors = validate_response(sample_response, response_schema)
     assert not errors, errors
 
+    selected_clock_response = copy.deepcopy(sample_response)
+    selected_clock_response["primary_endpoint"]["primary_timing_clock"] = (
+        "wall_deadline_with_hidden_sensitivity"
+    )
+    errors = validate_response(selected_clock_response, response_schema)
+    assert errors
+    assert any("unresolved" in error for error in errors)
+
     late_comprehension = copy.deepcopy(sample_response)
     late_comprehension["comprehension"]["passed_at"] = "2026-09-18T12:00:01Z"
     errors = validate_response(late_comprehension, response_schema)
@@ -379,7 +400,8 @@ def run_self_test() -> int:
     print(
         "AR-P003 offline runner validation self-test passed: "
         "strict offline/no-network static checks, reviewer-bundle separation, "
-        "resource bounds, and response timing checks."
+        "unresolved primary-clock fail-close markers, resource bounds, and "
+        "dual-clock response timing checks."
     )
     return 0
 

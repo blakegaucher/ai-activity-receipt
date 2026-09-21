@@ -1,5 +1,18 @@
 ## Unreleased
 
+### AR-P003 binary primary-endpoint decision
+
+- select `primary_endpoint = correct_completion_by_180s` while preserving `component_endpoint_set` as the non-selected historical candidate;
+- define success as all prespecified case-required judgments correct, with a valid prespecified support set for each required judgment, no extra required material set fact or mismatched authorization state, and completion by the fixed 180-second deadline under the later-frozen primary timing clock;
+- keep `primary_timing_clock` explicitly unresolved between `active_time_primary` and `wall_deadline_with_hidden_sensitivity`; preserve both clocks in development and fail closed against confirmatory primary-outcome estimation;
+- preserve action/source/incident precision, recall and F1, categorical reconstruction accuracy, confidence, timing and challenge measures as secondary diagnostics rather than a co-primary endpoint;
+- add critical false clearance as a separate prespecified safety endpoint whose acceptable threshold remains unresolved under `effect_precision_target`;
+- version the endpoint-aware protocol, build/bundle/response/analysis/scoring contracts and crossed planner; add case-specific required-judgment and acceptable-support-set contracts plus development smoke/adversarial coverage;
+- define the pre-freeze-only contingency: stop and require a new owner decision/version/planning/readiness/hashes if the 180-second endpoint proves technically invalid or unusable; do not automatically promote component outcomes and do not inspect confirmatory outcomes;
+- advance machine continuity to `project-continuity-v0.19` and aggregate reproducibility to `ai-activity-receipt-repro-v0.23`;
+- complete only the primary-endpoint readiness gate; keep the study development-only, not frozen, not executed, with recruitment unauthorized and timing/effect/sample-size/allocation/stopping/corpus/analysis/ethics gates unchanged.
+
+
 ### AR-P003 relevant-professional reviewer-population decision
 
 - select `reviewer_population = relevant_professional_reviewers` while preserving the former unresolved state and `population_to_be_selected` placeholder;

@@ -5,10 +5,12 @@ Development-only planning for the selected comparison design:
 raw evidence, neutral structured event table + the same evidence, and
 Activity Receipt + the same evidence.
 
-The planner simulates a binary endpoint under reviewer and case random
-intercepts and reports prespecified development contrasts with two-way
-cluster-robust covariance. It does not freeze an endpoint, effect size,
-sample size, or final analysis model.
+The planner simulates the selected binary primary endpoint
+correct_completion_by_180s under reviewer and case random intercepts and
+reports prespecified development contrasts with two-way cluster-robust
+covariance. The primary timing clock and effect/precision target remain
+unresolved, so current probabilities are illustrative and no sample size,
+allocation, stopping rule, or final analysis model is frozen.
 """
 
 from __future__ import annotations
@@ -29,7 +31,7 @@ if str(ROOT) not in sys.path:
 
 from benchmark.arp003_v0_3.generate_assignment import generate  # noqa: E402
 
-PLANNER_VERSION = "AR-P003-v0.3-crossed-planning-v0.3"
+PLANNER_VERSION = "AR-P003-v0.3-crossed-planning-v0.4"
 CONDITIONS = ("raw", "structured", "receipt")
 CONTRASTS = {
     "structured_vs_raw": (0.0, 1.0, 0.0),
@@ -442,6 +444,9 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
             "three_condition_logistic_random_intercepts_plus_linear_probability_"
             "contrasts_with_two_way_cluster_robust_covariance"
         ),
+        "primary_endpoint": "correct_completion_by_180s",
+        "primary_timing_clock": "unresolved",
+        "effect_precision_target": "unresolved",
         "design": {
             "comparison_design": "three_condition_structured_control",
             "challenge_design": "integrated_challenge_strata",
@@ -471,10 +476,12 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
             "contrasts": contrast_output,
         },
         "interpretation_boundary": (
-            "Development-only sensitivity analysis for the selected three-condition "
-            "comparison architecture. Results depend on illustrative performance, "
-            "heterogeneity, assignment, and analysis assumptions. They do not select "
-            "the primary endpoint/effect target or freeze sample size."
+            "Development-only sensitivity analysis for the selected binary primary "
+            "endpoint and three-condition comparison architecture. Results depend on "
+            "illustrative success probabilities, heterogeneity, assignment, and "
+            "analysis assumptions. The primary timing clock and effect/precision "
+            "target remain unresolved; this does not freeze reviewer count, case "
+            "count, cases per reviewer, allocation, or stopping."
         ),
     }
 
@@ -501,6 +508,10 @@ def run_plan(config: dict[str, Any]) -> dict[str, Any]:
         "status": "development_only_not_frozen",
         "comparison_design": "three_condition_structured_control",
         "challenge_design": "integrated_challenge_strata",
+        "primary_endpoint": "correct_completion_by_180s",
+        "primary_timing_clock": "unresolved",
+        "effect_precision_target": "unresolved",
+        "final_sample_size_frozen": False,
         "challenge_allocation_status": "not_frozen_not_modeled_in_example_scenarios",
         "method_note": (
             "Reviewer and case random intercepts are simulated explicitly. "
@@ -533,6 +544,9 @@ def run_self_test() -> int:
     second = simulate_scenario(base)
     assert first == second
     assert first["design"]["total_reviewer_case_observations"] == 72
+    assert first["primary_endpoint"] == "correct_completion_by_180s"
+    assert first["primary_timing_clock"] == "unresolved"
+    assert first["effect_precision_target"] == "unresolved"
     assert set(first["simulation"]["contrasts"]) == set(CONTRASTS)
 
     stronger = simulate_scenario(

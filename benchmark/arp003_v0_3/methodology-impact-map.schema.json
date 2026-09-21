@@ -12,7 +12,7 @@
   ],
   "properties": {
     "impact_map_version": {
-      "const": "AR-P003-v0.3-methodology-impact-map-v0.1"
+      "const": "AR-P003-v0.3-methodology-impact-map-v0.2"
     },
     "protocol_version": {
       "type": "string",

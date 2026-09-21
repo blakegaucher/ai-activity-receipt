@@ -1,6 +1,6 @@
 {
-  "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.1",
-  "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
+  "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.2",
+  "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
   "status": "development_unresolved",
   "decisions": [
     {
@@ -42,12 +42,15 @@
       "decision_id": "primary_endpoint",
       "title": "Primary confirmatory endpoint",
       "pre_freeze_required": true,
-      "status": "unresolved",
-      "current_implementation": "Repository protocol reports prespecified component endpoints separately and explicitly has no post-hoc weighted composite primary score.",
-      "selected_candidate": null,
+      "status": "selected",
+      "current_implementation": "Selected binary primary endpoint: evidence-supported correct audit completion by 180 seconds. All case-specific required judgments must be correct and backed by a prespecified acceptable support set; extra required material facts or mismatched authorization state fail; a deadline miss cannot succeed. Component outcomes remain secondary diagnostics and critical false clearance remains a separate safety endpoint. The primary timing clock remains unresolved and confirmatory derivation therefore stays blocked.",
+      "selected_candidate": "correct_completion_by_180s",
       "evidence_refs": [
+        "docs/AR-P003-V0.3-PRIMARY-ENDPOINT-DECISION-2026-09-21.md",
         "docs/AR-P003-V0.3-PROTOCOL.md",
-        "benchmark/arp003_v0_3/response-record.schema.json"
+        "benchmark/arp003_v0_3/protocol.json",
+        "benchmark/arp003_v0_3/response-record.schema.json",
+        "benchmark/arp003_v0_3/score_responses.py"
       ],
       "candidates": [
         {
@@ -67,7 +70,8 @@
           ]
         }
       ],
-      "notes": "The earlier research review proposed a single interpretable deadline-based primary endpoint; the current repository draft intentionally decomposes endpoints. A deliberate preregistration choice is still required."
+      "notes": "Historical unresolved state and both candidates remain preserved in this ledger and repository history. This decision selects only primary_endpoint. primary_timing_clock and effect_precision_target remain unresolved. Before confirmatory freeze only, a technically invalid or unusable 180-second endpoint requires STOP and a new explicit owner decision/protocol version rather than automatic promotion of component_endpoint_set.",
+      "rationale": "Selected explicitly by the project owner as an interpretable binary confirmatory endpoint for the intended professional audit/evidence-review task. Success requires all prespecified case judgments to be correct, evidence-supportable under the frozen case contract, free of extra required material facts or mismatched authorization state, and within 180 seconds under the later-frozen primary timing clock. Component outcomes remain secondary diagnostics; critical false clearance remains a separate safety endpoint; no post-hoc weighted composite or automatic fallback primary is permitted."
     },
     {
       "decision_id": "primary_timing_clock",

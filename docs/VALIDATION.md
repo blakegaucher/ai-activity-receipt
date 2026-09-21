@@ -60,7 +60,7 @@ These controls reduce interface mismatch and accidental-publication risk. They d
 
 **Status:** Development governance control; selected choices are versioned, but the overall methodology and protocol are not frozen
 
-The current executable v0.3 draft and the earlier project research review contained material differences in comparison conditions and misleading-Receipt challenge design; those choices are now explicitly selected as three-condition structured control and integrated challenge strata. The reviewer population is also selected as relevant professional reviewers under frozen eligibility/exclusion, familiarity-recording, external-assistance, and inference-scope rules. Primary endpoint, timing semantics, and effect/precision target remain unresolved.
+The current executable v0.3 draft and the earlier project research review contained material methodology differences. The repository now explicitly selects three-condition structured control, integrated challenge strata, relevant professional reviewers, and the binary primary endpoint `correct_completion_by_180s`. Endpoint validation requires case-specific required judgments/support sets, keeps component outcomes secondary, preserves critical false clearance separately, and blocks confirmatory primary derivation while the primary timing clock remains unresolved. The effect/precision target also remains unresolved.
 
 The repository now preserves those alternatives and the former unresolved population placeholder in a machine-readable decision ledger together with the remaining unresolved meaningful-effect/precision choice. The validator requires protocol-version agreement, unique decision/candidate identifiers, evidence-linked rationale for any selected choice, exact representation of the selected reviewer-population rules, and complete resolution of every pre-freeze methodology decision before a frozen protocol is permitted.
 
@@ -154,7 +154,7 @@ The validator requires exact candidate coverage in both directions: every ledger
 
 The earlier research review's proposed effect/guardrail thresholds (+5pp supported-completion benefit, 3pp accuracy noninferiority margin for a separate speed claim, +2pp maximum critical-false-clearance increase) are now preserved as an unresolved ledger candidate and explicitly remain non-normative decision assumptions.
 
-This check reduces silent methodology drift. It does not choose methodology. It now verifies the selected comparison-condition, challenge-design, and reviewer-population entries while leaving endpoint, timing clock, and effect target unresolved.
+This check reduces silent methodology drift. It does not choose methodology. It verifies the selected comparison-condition, challenge-design, reviewer-population, and primary-endpoint entries while requiring the primary timing clock and effect/precision target to remain unresolved until separately selected.
 
 ---
 
