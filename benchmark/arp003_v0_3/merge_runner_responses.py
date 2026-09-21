@@ -146,6 +146,8 @@ def merge(
         raise ValueError("response comparison_design is unsupported")
     if analysis.get("comparison_design") != "three_condition_structured_control":
         raise ValueError("analysis comparison_design is unsupported")
+    if analysis.get("challenge_design") != "integrated_challenge_strata":
+        raise ValueError("analysis challenge_design is unsupported")
 
     assignment_version = assignment.get("assignment_version")
     if response["assignment_version"] != assignment_version:
@@ -295,9 +297,10 @@ def run_self_test() -> int:
             ],
         }
         analysis = {
-            "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.2",
+            "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.3",
             "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
             "comparison_design": "three_condition_structured_control",
+            "challenge_design": "integrated_challenge_strata",
             "cases": [
                 {
                     "case_id": "DEV-RUNNER-001",
