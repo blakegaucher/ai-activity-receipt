@@ -18,7 +18,7 @@ STATE = ROOT / "research" / "project-continuity-state.json"
 REPRO = ROOT / "research" / "reproduce.py"
 RUNNER_BUNDLE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-bundle.schema.json"
 RUNNER_RESPONSE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-response.schema.json"
-LATEST_CONTINUITY = ROOT / "docs" / "PROJECT-CONTINUITY-2026-09-20-SECURITY.md"
+LATEST_CONTINUITY = ROOT / "docs" / "PROJECT-CONTINUITY-2026-09-21-AR-P003.md"
 EXPECTED_FREEZE = (
     "8a381f4ae20a5f6824e513c7f96920fdf3cfe6b00b0b8d301127f5e0b659d0fd"
 )
@@ -55,11 +55,11 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.15":
+    if state.get("snapshot_version") != "project-continuity-v0.16":
         errors.append("machine-readable continuity snapshot_version is stale")
-    if state.get("snapshot_date") != "2026-09-20":
+    if state.get("snapshot_date") != "2026-09-21":
         errors.append("machine-readable continuity snapshot_date is stale")
-    if "**Snapshot date:** 2026-09-20" not in latest_continuity_text:
+    if "**Snapshot date:** 2026-09-21" not in latest_continuity_text:
         errors.append("latest human-readable continuity snapshot date is stale")
 
     hist = ((state.get("historical") or {}).get("arp003_v0_2_3") or {})
@@ -98,16 +98,26 @@ def main() -> int:
             "three_condition_structured_control"
         )
     if methodology.get("protocol_version") != (
-        "v0.3-draft-2026-09-20-three-condition-v0.1"
+        "v0.3-draft-2026-09-21-integrated-challenge-v0.1"
     ):
         errors.append("AR-P003 selected comparison protocol-version continuity is stale")
     if methodology.get("comparison_conditions_freeze_readiness") != "complete":
         errors.append("AR-P003 comparison-condition readiness continuity is stale")
 
+    if methodology.get("challenge_design") != "selected:integrated_challenge_strata":
+        errors.append(
+            "AR-P003 challenge_design must remain explicitly selected as "
+            "integrated_challenge_strata"
+        )
+    if methodology.get("challenge_strata_freeze_readiness") != "prepared":
+        errors.append(
+            "AR-P003 challenge-strata freeze-readiness must remain prepared "
+            "until counts/allocation/final-corpus review are frozen"
+        )
+
     required_methodology_unresolved = {
         "primary_endpoint",
         "primary_timing_clock",
-        "challenge_design",
         "reviewer_population",
         "effect_precision_target",
     }
@@ -151,6 +161,12 @@ def main() -> int:
         "three_condition_structured_control"
     ):
         errors.append("AR-P003 comparison-design runner continuity is stale")
+    if assignment_binding.get("analysis_contract") != (
+        "AR-P003-v0.3-dev-runner-analysis-v0.3"
+    ):
+        errors.append("AR-P003 hidden analysis contract continuity is stale")
+    if assignment_binding.get("challenge_design") != "integrated_challenge_strata":
+        errors.append("AR-P003 challenge-design runner continuity is stale")
 
     freeze_manifest = arp003.get("freeze_manifest") or {}
     if freeze_manifest.get("version") != "AR-P003-v0.3-freeze-manifest-v0.2":
