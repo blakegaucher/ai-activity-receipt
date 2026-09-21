@@ -1,7 +1,7 @@
 {
-  "impact_map_version": "AR-P003-v0.3-methodology-impact-map-v0.1",
-  "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
-  "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.1",
+  "impact_map_version": "AR-P003-v0.3-methodology-impact-map-v0.2",
+  "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
+  "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.2",
   "status": "decision_support_only_no_selection",
   "decisions": [
     {
@@ -69,20 +69,27 @@
           "implementation_class": "requires_versioned_change",
           "impacted_artifacts": [
             "benchmark/arp003_v0_3/protocol.json",
+            "benchmark/arp003_v0_3/runner-build-config.schema.json",
+            "benchmark/arp003_v0_3/runner-bundle.schema.json",
+            "benchmark/arp003_v0_3/runner-response.schema.json",
+            "benchmark/arp003_v0_3/runner-analysis.schema.json",
             "benchmark/arp003_v0_3/response-record.schema.json",
             "benchmark/arp003_v0_3/offline_runner.html",
+            "benchmark/arp003_v0_3/build_runner_bundles.py",
             "benchmark/arp003_v0_3/merge_runner_responses.py",
             "benchmark/arp003_v0_3/score_responses.py",
-            "benchmark/arp003_v0_3/plan_crossed_design.py"
+            "benchmark/arp003_v0_3/plan_crossed_design.py",
+            "benchmark/arp003_v0_3/pipeline_smoke_test.py"
           ],
           "required_before_execution": [
-            "freeze required judgments and acceptable evidence sets per case",
-            "implement and test the 180-second timeout rule",
-            "define evidence-supported completion and fabricated-event failure semantics",
-            "add critical-false-clearance safety endpoint",
-            "replan power for the binary primary estimand"
+            "freeze required judgments and acceptable evidence sets per final sealed case",
+            "select and freeze primary_timing_clock before confirmatory freeze",
+            "enforce and test the 180-second timeout rule under the frozen timing clock",
+            "preserve fabricated-material-fact and unsupported-authorization failure semantics",
+            "preserve critical false clearance as a separate safety endpoint",
+            "replan crossed-design power for the binary primary estimand after effect_precision_target is selected"
           ],
-          "notes": "Matches the research-review proposal for an interpretable supported/correct/on-time primary outcome. It requires a new scorer/runner/protocol version and cannot be inferred from component scores after outcomes are visible."
+          "notes": "Selected by the owner on 2026-09-21. Versioned development contracts implement the binary endpoint and case-specific judgment/support representation. Both wall and active clocks remain recorded, primary_timing_clock remains explicitly unresolved, and confirmatory primary-outcome derivation fails closed until that separate decision is selected. Component outcomes remain secondary and critical false clearance remains separate."
         }
       ]
     },
