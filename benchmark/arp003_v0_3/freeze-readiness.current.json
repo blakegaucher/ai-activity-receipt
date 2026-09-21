@@ -1,17 +1,28 @@
 {
   "readiness_version": "AR-P003-v0.3-freeze-readiness-v0.1",
-  "protocol_version": "v0.3-draft-2026-09-18",
+  "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
   "study_status": "development_not_ready",
   "gates": {
     "comparison_conditions": {
-      "status": "prepared",
+      "status": "complete",
       "evidence_refs": [
-        "benchmark/arp003_v0_3/protocol.json",
+        "docs/AR-P003-V0.3-COMPARISON-CONDITIONS-DECISION-2026-09-20.md",
         "benchmark/arp003_v0_3/methodology-decisions.current.json",
-        "docs/AR-P003-V0.3-PROTOCOL.md",
-        "docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md"
+        "benchmark/arp003_v0_3/protocol.json",
+        "benchmark/arp003_v0_3/generate_assignment.py",
+        "benchmark/arp003_v0_3/case-package.schema.json",
+        "benchmark/arp003_v0_3/lint_case_packages.py",
+        "benchmark/arp003_v0_3/runner-bundle.schema.json",
+        "benchmark/arp003_v0_3/runner-response.schema.json",
+        "benchmark/arp003_v0_3/runner-analysis.schema.json",
+        "benchmark/arp003_v0_3/build_runner_bundles.py",
+        "benchmark/arp003_v0_3/offline_runner.html",
+        "benchmark/arp003_v0_3/merge_runner_responses.py",
+        "benchmark/arp003_v0_3/score_responses.py",
+        "benchmark/arp003_v0_3/plan_crossed_design.py",
+        "benchmark/arp003_v0_3/audit_leakage.py"
       ],
-      "notes": "The current repository implements a two-condition comparison, while the earlier research review recommended adding a neutral structured-log control. The final confirmatory condition design is explicitly unresolved and must be selected before freeze."
+      "notes": "Owner selected three_condition_structured_control on 2026-09-20. The development pipeline now requires raw, neutral structured-control, and Receipt conditions over the same underlying evidence, with versioned assignment/runner/scoring contracts and an explicit structured-control evidence-symmetry audit. This completes only the comparison-condition design gate; the study remains development-only, not frozen, and not executed."
     },
     "reviewer_population": {
       "status": "pending",
