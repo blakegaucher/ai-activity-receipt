@@ -24,6 +24,7 @@ if str(BENCH) not in sys.path:
 from build_runner_bundles import build  # noqa: E402
 from generate_assignment import generate  # noqa: E402
 from merge_runner_responses import merge  # noqa: E402
+from render_structured_control import render_record  # noqa: E402
 from score_responses import score_record, summarize  # noqa: E402
 
 
@@ -43,11 +44,63 @@ def make_case(
 ) -> tuple[Path, dict[str, Any]]:
     case_dir = root / "cases" / case_id
     (case_dir / "evidence").mkdir(parents=True)
+    (case_dir / "structured").mkdir()
     (case_dir / "receipt").mkdir()
     (case_dir / "analysis").mkdir()
 
     (case_dir / "evidence" / "events.txt").write_text(
         evidence_text + "\n",
+        encoding="utf-8",
+    )
+    source_ids = list(gold["material_sources"])
+    actor_id = "agent-pipeline"
+    principal_id = "user-pipeline"
+    events = []
+    for index, operation in enumerate(gold["material_actions"], start=1):
+        events.append(
+            {
+                "event_id": f"{case_id}-event-{index}",
+                "occurred_at": f"2026-09-18T12:{index:02d}:00Z",
+                "actor_id": actor_id,
+                "operation": operation,
+                "status": "completed",
+                "authorization": "approved",
+                "authorization_decided_at": f"2026-09-18T12:{index-1:02d}:30Z",
+                "consequential": True,
+                "material": True,
+                "source_refs": source_ids,
+            }
+        )
+    canonical_record = {
+        "record_id": f"record-{case_id}",
+        "record_schema_version": "candidate-record-v0.1",
+        "trace_id": f"trace-{case_id}",
+        "system": {"agent_id": actor_id, "version": "pipeline-smoke"},
+        "actors": [
+            {"actor_id": principal_id, "kind": "human", "role": "principal"},
+            {"actor_id": actor_id, "kind": "agent", "role": "delegate"},
+        ],
+        "authority": {
+            "principal": principal_id,
+            "delegate": actor_id,
+            "scope": list(gold["material_actions"]) or ["read"],
+            "prohibited": [],
+            "valid_from": "2026-09-18T12:00:00Z",
+            "valid_until": "2026-09-18T13:00:00Z",
+        },
+        "sources": [
+            {"source_id": source_id, "role": "supports_result", "material": True}
+            for source_id in source_ids
+        ],
+        "events": events,
+        "verification": {"state": "not_required", "evidence_refs": []},
+        "incidents": [],
+        "integrity": {"generated_at": "2026-09-18T12:30:00Z"},
+        "notes": "Synthetic pipeline smoke canonical record.",
+    }
+    write_json(case_dir / "analysis" / "canonical-record.json", canonical_record)
+    (case_dir / "structured" / "events-table.md").write_text(
+        render_record(canonical_record),
         encoding="utf-8",
     )
     write_json(
@@ -61,13 +114,18 @@ def make_case(
     write_json(case_dir / "analysis" / "gold.json", gold)
 
     manifest = {
-        "package_version": "AR-P003-v0.3-dev-case-v0.1",
+        "package_version": "AR-P003-v0.3-dev-case-v0.2",
         "case_id": case_id,
         "stratum": stratum,
-        "condition_contract": "same_evidence_plus_receipt",
+        "condition_contract": "same_evidence_plus_neutral_structured_or_receipt_v1",
         "reviewer_evidence_files": ["evidence/events.txt"],
+        "structured_control_file": "structured/events-table.md",
+        "structured_control_record_file": "analysis/canonical-record.json",
         "receipt_file": "receipt/receipt.json",
-        "analysis_files": ["analysis/gold.json"],
+        "analysis_files": [
+            "analysis/gold.json",
+            "analysis/canonical-record.json",
+        ],
         "receipt_state": receipt_state,
         "forbidden_reviewer_markers": [f"HIDDEN_{case_id.upper()}"],
         "notes": "Synthetic end-to-end pipeline smoke case.",
@@ -153,8 +211,8 @@ def main() -> int:
         write_json(assignment_path, assignment)
 
         build_config = {
-            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.1",
-            "protocol_version": "v0.3-development-pipeline-smoke",
+            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.2",
+            "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
             "cases": [
                 {
                     "case_id": "case-ordinary",
@@ -215,7 +273,15 @@ def main() -> int:
 
             response_cases: list[dict[str, Any]] = []
             for index, case in enumerate(bundle["cases"], start=1):
-                condition = "receipt" if case["receipt"] is not None else "control"
+                condition = (
+                    "receipt"
+                    if case["receipt"] is not None
+                    else (
+                        "structured"
+                        if case["structured_event_table"] is not None
+                        else "raw"
+                    )
+                )
                 conditions.append(condition)
                 gold = hidden_by_id[case["case_id"]]["gold"]
                 response_cases.append(
@@ -244,8 +310,9 @@ def main() -> int:
                 )
 
             response = {
-                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
+                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
                 "protocol_version": bundle["protocol_version"],
+                "comparison_design": bundle["comparison_design"],
                 "assignment_version": bundle["assignment_version"],
                 "assignment_sha256": bundle["assignment_sha256"],
                 "reviewer_id": bundle["reviewer_id"],
@@ -273,8 +340,13 @@ def main() -> int:
                 )
             )
 
-        assert conditions.count("control") == 2
-        assert conditions.count("receipt") == 2
+        condition_counts = {
+            condition: conditions.count(condition)
+            for condition in ("raw", "structured", "receipt")
+        }
+        assert sum(condition_counts.values()) == 4
+        assert all(count >= 1 for count in condition_counts.values())
+        assert max(condition_counts.values()) - min(condition_counts.values()) <= 1
         assert len(merged_records) == 4
         assert all(record["elapsed_seconds"] == 10.0 for record in merged_records)
 
@@ -289,19 +361,32 @@ def main() -> int:
 
         summary = summarize(scored)
         assert summary["n_records"] == 4
-        assert summary["by_condition"]["control"]["n"] == 2
-        assert summary["by_condition"]["receipt"]["n"] == 2
+        for condition, expected in condition_counts.items():
+            assert summary["by_condition"][condition]["n"] == expected
 
         # Analysis-side merge must not trust a reviewer-edited condition field.
         first_bundle_path = output_dir / build_manifest["reviewer_bundles"][0]["path"]
         first_bundle = json.loads(first_bundle_path.read_text(encoding="utf-8"))
         first_case = first_bundle["cases"][0]
-        true_condition = "receipt" if first_case["receipt"] is not None else "control"
-        tampered_condition = "control" if true_condition == "receipt" else "receipt"
+        true_condition = (
+            "receipt"
+            if first_case["receipt"] is not None
+            else (
+                "structured"
+                if first_case["structured_event_table"] is not None
+                else "raw"
+            )
+        )
+        tampered_condition = next(
+            condition
+            for condition in ("raw", "structured", "receipt")
+            if condition != true_condition
+        )
         hidden_gold = hidden_by_id[first_case["case_id"]]["gold"]
         tampered_response = {
-            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
             "protocol_version": first_bundle["protocol_version"],
+            "comparison_design": first_bundle["comparison_design"],
             "assignment_version": first_bundle["assignment_version"],
             "assignment_sha256": first_bundle["assignment_sha256"],
             "reviewer_id": first_bundle["reviewer_id"],

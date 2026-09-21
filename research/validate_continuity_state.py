@@ -55,7 +55,7 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.14":
+    if state.get("snapshot_version") != "project-continuity-v0.15":
         errors.append("machine-readable continuity snapshot_version is stale")
     if state.get("snapshot_date") != "2026-09-20":
         errors.append("machine-readable continuity snapshot_date is stale")
@@ -90,8 +90,21 @@ def main() -> int:
             "AR-P003 methodology-decision status changed; update continuity "
             "deliberately when preregistration choices are selected"
         )
+    if methodology.get("comparison_conditions") != (
+        "selected:three_condition_structured_control"
+    ):
+        errors.append(
+            "AR-P003 comparison_conditions must remain explicitly selected as "
+            "three_condition_structured_control"
+        )
+    if methodology.get("protocol_version") != (
+        "v0.3-draft-2026-09-20-three-condition-v0.1"
+    ):
+        errors.append("AR-P003 selected comparison protocol-version continuity is stale")
+    if methodology.get("comparison_conditions_freeze_readiness") != "complete":
+        errors.append("AR-P003 comparison-condition readiness continuity is stale")
+
     required_methodology_unresolved = {
-        "comparison_conditions",
         "primary_endpoint",
         "primary_timing_clock",
         "challenge_design",
@@ -130,6 +143,14 @@ def main() -> int:
             f"state={assignment_binding.get('response_contract')!r}, "
             f"schema={actual_response_contract!r}"
         )
+    if assignment_binding.get("assignment_contract") != (
+        "AR-P003-v0.3-draft-assignment-v0.3"
+    ):
+        errors.append("AR-P003 three-condition assignment contract continuity is stale")
+    if assignment_binding.get("comparison_design") != (
+        "three_condition_structured_control"
+    ):
+        errors.append("AR-P003 comparison-design runner continuity is stale")
 
     freeze_manifest = arp003.get("freeze_manifest") or {}
     if freeze_manifest.get("version") != "AR-P003-v0.3-freeze-manifest-v0.2":

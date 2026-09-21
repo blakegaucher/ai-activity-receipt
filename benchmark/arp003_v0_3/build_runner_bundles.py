@@ -27,6 +27,7 @@ if str(BENCH) not in sys.path:
 
 from lint_case_packages import lint_package, safe_relative_file  # noqa: E402
 from validate_runner_data import validate_bundle  # noqa: E402
+from render_structured_control import RENDERER_VERSION, render_file  # noqa: E402
 
 CASE_SCHEMA = BENCH / "case-package.schema.json"
 BUILD_SCHEMA = BENCH / "runner-build-config.schema.json"
@@ -34,7 +35,7 @@ BUNDLE_SCHEMA = BENCH / "runner-bundle.schema.json"
 ANALYSIS_SCHEMA = BENCH / "runner-analysis.schema.json"
 
 ASSIGNMENT_VERSION_PREFIX = "AR-P003-v0.3-draft-assignment-"
-BUILD_OUTPUT_VERSION = "AR-P003-v0.3-dev-runner-build-output-v0.2"
+BUILD_OUTPUT_VERSION = "AR-P003-v0.3-dev-runner-build-output-v0.3"
 
 
 def load_json(path: Path) -> Any:
@@ -209,6 +210,7 @@ def build(
     prepared: dict[str, dict[str, Any]] = {}
     hidden_cases: list[dict[str, Any]] = []
     answer_option_audits: list[dict[str, Any]] = []
+    structured_control_audits: list[dict[str, Any]] = []
 
     for case_id in sorted(used_case_ids):
         item = config_by_id[case_id]
@@ -235,6 +237,39 @@ def build(
                 raise ValueError(error or f"unable to resolve evidence {raw!r}")
             label = labels.get(raw) or Path(raw).name
             evidence.append(read_text_artifact(path, label=label))
+
+        structured_path, error = safe_relative_file(
+            package_root,
+            manifest["structured_control_file"],
+        )
+        if error or structured_path is None:
+            raise ValueError(error or "unable to resolve structured-control file")
+        structured_record_path, error = safe_relative_file(
+            package_root,
+            manifest["structured_control_record_file"],
+        )
+        if error or structured_record_path is None:
+            raise ValueError(error or "unable to resolve structured-control record")
+        expected_structured = render_file(structured_record_path)
+        actual_structured = structured_path.read_text(encoding="utf-8")
+        if actual_structured != expected_structured:
+            raise ValueError(
+                f"case {case_id!r} structured-control table does not match "
+                "the deterministic canonical-record rendering"
+            )
+        structured_artifact = read_text_artifact(
+            structured_path,
+            label="Neutral structured event table",
+        )
+        structured_control_audits.append(
+            {
+                "case_id": case_id,
+                "renderer_version": RENDERER_VERSION,
+                "canonical_record_sha256": sha256_file(structured_record_path),
+                "structured_table_sha256": sha256_file(structured_path),
+                "exact_renderer_match": True,
+            }
+        )
 
         receipt_path, error = safe_relative_file(
             package_root,
@@ -270,6 +305,7 @@ def build(
         prepared[case_id] = {
             "manifest": manifest,
             "evidence": evidence,
+            "structured_event_table": structured_artifact,
             "receipt": receipt_artifact,
             "answer_options": item["answer_options"],
         }
@@ -291,7 +327,7 @@ def build(
 
         if not isinstance(reviewer, str) or not reviewer:
             raise ValueError("assignment reviewer_id must be non-empty string")
-        if condition not in {"control", "receipt"}:
+        if condition not in {"raw", "structured", "receipt"}:
             raise ValueError(
                 f"assignment condition for {case_id!r} is invalid: {condition!r}"
             )
@@ -329,6 +365,11 @@ def build(
                 {
                     "case_id": case_id,
                     "evidence": material["evidence"],
+                    "structured_event_table": (
+                        material["structured_event_table"]
+                        if row["condition"] == "structured"
+                        else None
+                    ),
                     "receipt": (
                         material["receipt"]
                         if row["condition"] == "receipt"
@@ -339,8 +380,9 @@ def build(
             )
 
         bundle = {
-            "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.2",
+            "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.3",
             "protocol_version": config["protocol_version"],
+            "comparison_design": "three_condition_structured_control",
             "assignment_version": assignment["assignment_version"],
             "assignment_sha256": assignment_sha256,
             "reviewer_id": reviewer,
@@ -382,8 +424,9 @@ def build(
         )
 
     analysis_bundle = {
-        "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.1",
+        "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.2",
         "protocol_version": config["protocol_version"],
+        "comparison_design": "three_condition_structured_control",
         "cases": hidden_cases,
     }
     analysis_errors = schema_errors(analysis_bundle, analysis_schema)
@@ -415,6 +458,7 @@ def build(
             "n_cases": len(hidden_cases),
         },
         "answer_option_audit": answer_option_audits,
+        "structured_control_audit": structured_control_audits,
         "evidence_boundary": (
             "Development-only build output. Reviewer bundles contain no gold "
             "labels or hidden strata; analysis output must remain access-controlled."
@@ -436,6 +480,7 @@ def run_self_test() -> int:
         cases_root = root / "cases"
         case_dir = cases_root / "case-1"
         (case_dir / "evidence").mkdir(parents=True)
+        (case_dir / "structured").mkdir()
         (case_dir / "receipt").mkdir()
         (case_dir / "analysis").mkdir()
 
@@ -449,6 +494,15 @@ def run_self_test() -> int:
                 indent=2,
             )
             + "\n",
+            encoding="utf-8",
+        )
+        canonical_record = load_json(ROOT / "examples" / "canonical-record.json")
+        (case_dir / "analysis" / "canonical-record.json").write_text(
+            json.dumps(canonical_record, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        (case_dir / "structured" / "events-table.md").write_text(
+            render_file(case_dir / "analysis" / "canonical-record.json"),
             encoding="utf-8",
         )
         (case_dir / "receipt" / "receipt.json").write_text(
@@ -469,13 +523,18 @@ def run_self_test() -> int:
         )
 
         case_manifest = {
-            "package_version": "AR-P003-v0.3-dev-case-v0.1",
+            "package_version": "AR-P003-v0.3-dev-case-v0.2",
             "case_id": "case-1",
             "stratum": "ordinary",
-            "condition_contract": "same_evidence_plus_receipt",
+            "condition_contract": "same_evidence_plus_neutral_structured_or_receipt_v1",
             "reviewer_evidence_files": ["evidence/events.json"],
+            "structured_control_file": "structured/events-table.md",
+            "structured_control_record_file": "analysis/canonical-record.json",
             "receipt_file": "receipt/receipt.json",
-            "analysis_files": ["analysis/gold.json"],
+            "analysis_files": [
+                "analysis/gold.json",
+                "analysis/canonical-record.json",
+            ],
             "receipt_state": "current",
             "forbidden_reviewer_markers": ["GOLD_ONLY_MARKER"],
         }
@@ -486,8 +545,8 @@ def run_self_test() -> int:
         )
 
         config = {
-            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.1",
-            "protocol_version": "v0.3-development-only",
+            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.2",
+            "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
             "cases": [
                 {
                     "case_id": "case-1",
@@ -511,14 +570,21 @@ def run_self_test() -> int:
         )
 
         assignment = {
-            "assignment_version": "AR-P003-v0.3-draft-assignment-v0.2",
+            "assignment_version": "AR-P003-v0.3-draft-assignment-v0.3",
             "assignments": [
                 {
-                    "reviewer_id": "R-control",
+                    "reviewer_id": "R-raw",
                     "case_id": "case-1",
                     "stratum": "ordinary",
                     "order": 1,
-                    "condition": "control",
+                    "condition": "raw",
+                },
+                {
+                    "reviewer_id": "R-structured",
+                    "case_id": "case-1",
+                    "stratum": "ordinary",
+                    "order": 1,
+                    "condition": "structured",
                 },
                 {
                     "reviewer_id": "R-receipt",
@@ -547,8 +613,10 @@ def run_self_test() -> int:
             config_path=config_path,
             output_dir=output_dir,
         )
-        assert len(result["reviewer_bundles"]) == 2
+        assert len(result["reviewer_bundles"]) == 3
         assert result["answer_option_audit"][0]["material_actions"]["gold_representable"]
+        assert result["structured_control_audit"][0]["exact_renderer_match"] is True
+        assert result["structured_control_audit"][0]["renderer_version"] == RENDERER_VERSION
         assert result["answer_option_audit"][0]["material_actions"]["option_set_equals_gold_set"]
         # The equality above is allowed in this tiny smoke fixture. It is surfaced
         # for pre-freeze leakage review rather than silently treated as safe.
@@ -569,18 +637,26 @@ def run_self_test() -> int:
         else:
             raise AssertionError("unrepresentable gold answer was accepted")
 
-        control = load_json(output_dir / "reviewer_bundles" / "R-control.json")
+        raw = load_json(output_dir / "reviewer_bundles" / "R-raw.json")
+        structured = load_json(output_dir / "reviewer_bundles" / "R-structured.json")
         receipt = load_json(output_dir / "reviewer_bundles" / "R-receipt.json")
         hidden = load_json(output_dir / "analysis" / "runner-analysis.json")
 
-        assert control["assignment_version"] == assignment["assignment_version"]
-        assert control["assignment_sha256"] == sha256_file(assignment_path)
+        assert raw["assignment_version"] == assignment["assignment_version"]
+        assert raw["assignment_sha256"] == sha256_file(assignment_path)
+        assert structured["assignment_sha256"] == sha256_file(assignment_path)
         assert receipt["assignment_sha256"] == sha256_file(assignment_path)
-        assert control["cases"][0]["receipt"] is None
+        assert raw["comparison_design"] == "three_condition_structured_control"
+        assert raw["cases"][0]["structured_event_table"] is None
+        assert raw["cases"][0]["receipt"] is None
+        assert structured["cases"][0]["structured_event_table"]["label"] == "Neutral structured event table"
+        assert structured["cases"][0]["receipt"] is None
+        assert receipt["cases"][0]["structured_event_table"] is None
         assert receipt["cases"][0]["receipt"]["label"] == "Activity Receipt"
-        assert control["cases"][0]["evidence"] == receipt["cases"][0]["evidence"]
-        assert "gold" not in json.dumps(control)
-        assert "stratum" not in json.dumps(control)
+        assert raw["cases"][0]["evidence"] == structured["cases"][0]["evidence"]
+        assert raw["cases"][0]["evidence"] == receipt["cases"][0]["evidence"]
+        assert "gold" not in json.dumps(raw)
+        assert "stratum" not in json.dumps(raw)
         assert hidden["cases"][0]["gold"] == gold
         assert hidden["cases"][0]["stratum"] == "ordinary"
 
@@ -608,7 +684,7 @@ def run_self_test() -> int:
 
     print(
         "AR-P003 runner-bundle builder self-test passed: "
-        "condition symmetry, hidden-label separation, and build hashes."
+        "three-condition evidence symmetry, hidden-label separation, and build hashes."
     )
     return 0
 

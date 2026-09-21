@@ -1,6 +1,6 @@
 {
-  "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.2",
-  "protocol_version": "v0.3-development-only",
+  "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.3",
+  "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
   "reviewer_id": "dev-reviewer-001",
   "cases": [
     {
@@ -30,7 +30,8 @@
           "blocked_action",
           "authorization_violation"
         ]
-      }
+      },
+      "structured_event_table": null
     },
     {
       "case_id": "DEV-RUNNER-002",
@@ -54,9 +55,37 @@
           "source-A"
         ],
         "incidents": []
+      },
+      "structured_event_table": null
+    },
+    {
+      "case_id": "DEV-RUNNER-003",
+      "evidence": [
+        {
+          "label": "Synthetic event log",
+          "media_type": "text/plain",
+          "content": "08:00 agent read source-B. 08:02 agent analyzed source-B. Both actions completed under delegated authority."
+        }
+      ],
+      "structured_event_table": {
+        "label": "Neutral structured event table",
+        "media_type": "text/markdown",
+        "content": "| time | actor | operation | status | source |\\n|---|---|---|---|---|\\n|08:00|agent|read|completed|source-B|\\n|08:02|agent|analyze|completed|source-B|"
+      },
+      "receipt": null,
+      "answer_options": {
+        "material_actions": [
+          "read",
+          "analyze"
+        ],
+        "material_sources": [
+          "source-B"
+        ],
+        "incidents": []
       }
     }
   ],
-  "assignment_version": "AR-P003-v0.3-draft-assignment-v0.2",
-  "assignment_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  "assignment_version": "AR-P003-v0.3-draft-assignment-v0.3",
+  "assignment_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "comparison_design": "three_condition_structured_control"
 }

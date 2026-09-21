@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.14",
+  "snapshot_version": "project-continuity-v0.15",
   "snapshot_date": "2026-09-20",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -44,18 +44,20 @@
         "end_to_end_pipeline_smoke_test": true,
         "assignment_binding": {
           "status": "development_only_ci_green",
-          "bundle_contract": "AR-P003-v0.3-dev-runner-bundle-v0.2",
-          "response_contract": "AR-P003-v0.3-dev-runner-response-v0.4",
+          "bundle_contract": "AR-P003-v0.3-dev-runner-bundle-v0.3",
+          "response_contract": "AR-P003-v0.3-dev-runner-response-v0.5",
           "exact_assignment_sha256": true,
           "assignment_version": true,
           "condition_order_case_verification": true,
-          "incomplete_session_rejected": true
+          "incomplete_session_rejected": true,
+          "assignment_contract": "AR-P003-v0.3-draft-assignment-v0.3",
+          "comparison_design": "three_condition_structured_control"
         }
       },
       "methodology_decision_ledger": {
         "status": "development_unresolved",
         "path": "benchmark/arp003_v0_3/methodology-decisions.current.json",
-        "comparison_conditions": "unresolved",
+        "comparison_conditions": "selected:three_condition_structured_control",
         "primary_endpoint": "unresolved",
         "primary_timing_clock": "unresolved",
         "challenge_design": "unresolved",
@@ -67,7 +69,9 @@
           "path": "benchmark/arp003_v0_3/methodology-impact-map.json",
           "completeness_guard": true,
           "research_review_effect_thresholds_preserved_as_candidate": true
-        }
+        },
+        "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
+        "comparison_conditions_freeze_readiness": "complete"
       },
       "leakage_validation": {
         "status": "prepared_not_complete",
@@ -113,7 +117,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.18",
+      "suite_version": "ai-activity-receipt-repro-v0.19",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,

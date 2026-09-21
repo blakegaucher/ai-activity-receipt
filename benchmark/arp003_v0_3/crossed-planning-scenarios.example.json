@@ -1,6 +1,6 @@
 {
   "planner_status": "illustrative_not_frozen",
-  "note": "The 108 reviewer / 72 case / 24 cases-per-reviewer configuration is carried forward as a planning center from the project research review, not as a frozen sample size. Probabilities and random-effect SDs below are sensitivity assumptions only.",
+  "note": "Three-condition development sensitivity scenarios for the selected raw / neutral-structured / Receipt architecture. The 108 reviewer / 72 case / 24 cases-per-reviewer configuration is carried forward only as a planning center; probabilities and random-effect SDs are illustrative and do not select the primary endpoint, effect target, or sample size.",
   "scenarios": [
     {
       "scenario_id": "source-centered-72-reviewers",
@@ -10,11 +10,12 @@
       "assignment_seed": 73917,
       "simulation_seed": 2026091901,
       "iterations": 500,
-      "conditional_p_control": 0.7,
-      "conditional_p_receipt": 0.8,
       "reviewer_sd_logit": 0.6,
       "case_sd_logit": 0.6,
-      "alpha": 0.05
+      "alpha": 0.05,
+      "conditional_p_raw": 0.7,
+      "conditional_p_structured": 0.75,
+      "conditional_p_receipt": 0.8
     },
     {
       "scenario_id": "source-centered-108-reviewers",
@@ -24,11 +25,12 @@
       "assignment_seed": 73917,
       "simulation_seed": 2026091902,
       "iterations": 500,
-      "conditional_p_control": 0.7,
-      "conditional_p_receipt": 0.8,
       "reviewer_sd_logit": 0.6,
       "case_sd_logit": 0.6,
-      "alpha": 0.05
+      "alpha": 0.05,
+      "conditional_p_raw": 0.7,
+      "conditional_p_structured": 0.75,
+      "conditional_p_receipt": 0.8
     },
     {
       "scenario_id": "source-centered-144-reviewers",
@@ -38,11 +40,12 @@
       "assignment_seed": 73917,
       "simulation_seed": 2026091903,
       "iterations": 500,
-      "conditional_p_control": 0.7,
-      "conditional_p_receipt": 0.8,
       "reviewer_sd_logit": 0.6,
       "case_sd_logit": 0.6,
-      "alpha": 0.05
+      "alpha": 0.05,
+      "conditional_p_raw": 0.7,
+      "conditional_p_structured": 0.75,
+      "conditional_p_receipt": 0.8
     },
     {
       "scenario_id": "108-reviewers-higher-heterogeneity",
@@ -52,11 +55,12 @@
       "assignment_seed": 73917,
       "simulation_seed": 2026091904,
       "iterations": 500,
-      "conditional_p_control": 0.7,
-      "conditional_p_receipt": 0.8,
       "reviewer_sd_logit": 0.9,
       "case_sd_logit": 0.9,
-      "alpha": 0.05
+      "alpha": 0.05,
+      "conditional_p_raw": 0.7,
+      "conditional_p_structured": 0.75,
+      "conditional_p_receipt": 0.8
     },
     {
       "scenario_id": "108-reviewers-smaller-effect",
@@ -66,11 +70,12 @@
       "assignment_seed": 73917,
       "simulation_seed": 2026091905,
       "iterations": 500,
-      "conditional_p_control": 0.7,
-      "conditional_p_receipt": 0.77,
       "reviewer_sd_logit": 0.6,
       "case_sd_logit": 0.6,
-      "alpha": 0.05
+      "alpha": 0.05,
+      "conditional_p_raw": 0.7,
+      "conditional_p_structured": 0.74,
+      "conditional_p_receipt": 0.77
     }
   ]
 }

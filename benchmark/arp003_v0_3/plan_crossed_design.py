@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Crossed reviewer x case Monte Carlo planning for AR-P003 v0.3.
+"""Three-condition crossed reviewer x case planning for AR-P003 v0.3.
 
-This is development-only design planning. It simulates a binary endpoint under
-reviewer and case random intercepts using the repository's balanced assignment
-generator, then evaluates a simple condition contrast with two-way cluster-
-robust covariance (reviewer + case - reviewer/case intersection).
+Development-only planning for the selected comparison design:
+raw evidence, neutral structured event table + the same evidence, and
+Activity Receipt + the same evidence.
 
-The output is sensitivity evidence, not a frozen confirmatory sample size.
+The planner simulates a binary endpoint under reviewer and case random
+intercepts and reports prespecified development contrasts with two-way
+cluster-robust covariance. It does not freeze an endpoint, effect size,
+sample size, or final analysis model.
 """
 
 from __future__ import annotations
@@ -19,7 +21,7 @@ import statistics
 import sys
 from pathlib import Path
 from statistics import NormalDist
-from typing import Any, Iterable
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -27,7 +29,13 @@ if str(ROOT) not in sys.path:
 
 from benchmark.arp003_v0_3.generate_assignment import generate  # noqa: E402
 
-PLANNER_VERSION = "AR-P003-v0.3-crossed-planning-v0.1"
+PLANNER_VERSION = "AR-P003-v0.3-crossed-planning-v0.2"
+CONDITIONS = ("raw", "structured", "receipt")
+CONTRASTS = {
+    "structured_vs_raw": (0.0, 1.0, 0.0),
+    "receipt_vs_raw": (0.0, 0.0, 1.0),
+    "receipt_vs_structured": (0.0, -1.0, 1.0),
+}
 
 
 def _positive_int(value: Any, name: str, minimum: int = 1) -> int:
@@ -68,132 +76,176 @@ def logistic(x: float) -> float:
     return e / (1.0 + e)
 
 
-def _mat2_mul(a: list[list[float]], b: list[list[float]]) -> list[list[float]]:
+def _x(condition: str) -> list[float]:
+    if condition == "raw":
+        return [1.0, 0.0, 0.0]
+    if condition == "structured":
+        return [1.0, 1.0, 0.0]
+    if condition == "receipt":
+        return [1.0, 0.0, 1.0]
+    raise ValueError(f"unknown condition {condition!r}")
+
+
+def _zeros(n: int) -> list[list[float]]:
+    return [[0.0 for _ in range(n)] for _ in range(n)]
+
+
+def _mat_mul(a: list[list[float]], b: list[list[float]]) -> list[list[float]]:
+    if not a or not b or len(a[0]) != len(b):
+        raise ValueError("incompatible matrix dimensions")
     return [
         [
-            a[0][0] * b[0][0] + a[0][1] * b[1][0],
-            a[0][0] * b[0][1] + a[0][1] * b[1][1],
-        ],
-        [
-            a[1][0] * b[0][0] + a[1][1] * b[1][0],
-            a[1][0] * b[0][1] + a[1][1] * b[1][1],
-        ],
+            sum(a[i][k] * b[k][j] for k in range(len(b)))
+            for j in range(len(b[0]))
+        ]
+        for i in range(len(a))
     ]
 
 
-def _mat2_add(a: list[list[float]], b: list[list[float]], scale: float = 1.0) -> list[list[float]]:
+def _mat_add(
+    a: list[list[float]],
+    b: list[list[float]],
+    *,
+    scale: float = 1.0,
+) -> list[list[float]]:
     return [
-        [a[0][0] + scale * b[0][0], a[0][1] + scale * b[0][1]],
-        [a[1][0] + scale * b[1][0], a[1][1] + scale * b[1][1]],
+        [a[i][j] + scale * b[i][j] for j in range(len(a[0]))]
+        for i in range(len(a))
     ]
 
 
-def _xtx_inverse(n0: int, n1: int) -> list[list[float]]:
-    n = n0 + n1
-    if n0 <= 0 or n1 <= 0:
-        raise ValueError("both conditions require at least one observation")
-    # X = [1, treatment], so X'X = [[n, n1], [n1, n1]]
-    det = float(n1 * n0)
-    return [
-        [n1 / det, -n1 / det],
-        [-n1 / det, n / det],
+def _inverse(matrix: list[list[float]]) -> list[list[float]]:
+    n = len(matrix)
+    aug = [
+        [float(matrix[i][j]) for j in range(n)]
+        + [1.0 if i == j else 0.0 for j in range(n)]
+        for i in range(n)
     ]
+    for col in range(n):
+        pivot = max(range(col, n), key=lambda row: abs(aug[row][col]))
+        if abs(aug[pivot][col]) < 1e-12:
+            raise ValueError("design matrix is singular")
+        aug[col], aug[pivot] = aug[pivot], aug[col]
+        scale = aug[col][col]
+        aug[col] = [value / scale for value in aug[col]]
+        for row in range(n):
+            if row == col:
+                continue
+            factor = aug[row][col]
+            aug[row] = [
+                aug[row][j] - factor * aug[col][j]
+                for j in range(2 * n)
+            ]
+    return [row[n:] for row in aug]
+
+
+def _xtx_inverse(rows: list[dict[str, Any]]) -> list[list[float]]:
+    xtx = _zeros(3)
+    for row in rows:
+        x = _x(row["condition"])
+        for i in range(3):
+            for j in range(3):
+                xtx[i][j] += x[i] * x[j]
+    return _inverse(xtx)
 
 
 def _cluster_meat(
     rows: list[dict[str, Any]],
     residuals: list[float],
-    group_key: str,
+    *,
+    group_key: str | None = None,
+    intersection: bool = False,
 ) -> list[list[float]]:
     groups: dict[Any, list[float]] = {}
-    for row, resid in zip(rows, residuals):
-        key = row[group_key]
-        treatment = 1.0 if row["condition"] == "receipt" else 0.0
-        score = groups.setdefault(key, [0.0, 0.0])
-        score[0] += resid
-        score[1] += treatment * resid
+    for row, resid in zip(rows, residuals, strict=True):
+        if intersection:
+            key: Any = (row["reviewer_id"], row["case_id"])
+        else:
+            if group_key is None:
+                raise ValueError("group_key is required")
+            key = row[group_key]
+        x = _x(row["condition"])
+        score = groups.setdefault(key, [0.0, 0.0, 0.0])
+        for i in range(3):
+            score[i] += x[i] * resid
 
-    meat = [[0.0, 0.0], [0.0, 0.0]]
-    for s0, s1 in groups.values():
-        meat[0][0] += s0 * s0
-        meat[0][1] += s0 * s1
-        meat[1][0] += s1 * s0
-        meat[1][1] += s1 * s1
+    meat = _zeros(3)
+    for score in groups.values():
+        for i in range(3):
+            for j in range(3):
+                meat[i][j] += score[i] * score[j]
 
     g = len(groups)
     n = len(rows)
-    k = 2
+    k = 3
     if g <= 1 or n <= k:
-        raise ValueError(f"too few clusters/observations for {group_key}")
+        raise ValueError("too few clusters/observations for three-condition covariance")
     correction = (g / (g - 1.0)) * ((n - 1.0) / (n - k))
     return [[value * correction for value in row] for row in meat]
 
 
-def _intersection_meat(
-    rows: list[dict[str, Any]],
-    residuals: list[float],
-) -> list[list[float]]:
-    groups: dict[tuple[str, str], list[float]] = {}
-    for row, resid in zip(rows, residuals):
-        key = (row["reviewer_id"], row["case_id"])
-        treatment = 1.0 if row["condition"] == "receipt" else 0.0
-        score = groups.setdefault(key, [0.0, 0.0])
-        score[0] += resid
-        score[1] += treatment * resid
-
-    meat = [[0.0, 0.0], [0.0, 0.0]]
-    for s0, s1 in groups.values():
-        meat[0][0] += s0 * s0
-        meat[0][1] += s0 * s1
-        meat[1][0] += s1 * s0
-        meat[1][1] += s1 * s1
-
-    g = len(groups)
-    n = len(rows)
-    k = 2
-    if g <= 1 or n <= k:
-        raise ValueError("too few reviewer/case intersections")
-    correction = (g / (g - 1.0)) * ((n - 1.0) / (n - k))
-    return [[value * correction for value in row] for row in meat]
+def _contrast_variance(
+    covariance: list[list[float]],
+    vector: tuple[float, float, float],
+) -> float:
+    return sum(
+        vector[i] * covariance[i][j] * vector[j]
+        for i in range(3)
+        for j in range(3)
+    )
 
 
-def two_way_cluster_contrast(
+def two_way_cluster_contrasts(
     rows: list[dict[str, Any]],
     outcomes: list[int],
-) -> dict[str, float]:
+) -> dict[str, Any]:
     if len(rows) != len(outcomes) or not rows:
         raise ValueError("rows and outcomes must be same non-zero length")
 
-    control = [y for row, y in zip(rows, outcomes) if row["condition"] == "control"]
-    receipt = [y for row, y in zip(rows, outcomes) if row["condition"] == "receipt"]
-    if not control or not receipt:
-        raise ValueError("both conditions require observations")
+    groups = {
+        condition: [
+            float(y)
+            for row, y in zip(rows, outcomes, strict=True)
+            if row["condition"] == condition
+        ]
+        for condition in CONDITIONS
+    }
+    if any(not values for values in groups.values()):
+        raise ValueError("all three comparison conditions require observations")
 
-    p0 = statistics.fmean(control)
-    p1 = statistics.fmean(receipt)
-    beta = p1 - p0
+    means = {condition: statistics.fmean(values) for condition, values in groups.items()}
+    beta = [
+        means["raw"],
+        means["structured"] - means["raw"],
+        means["receipt"] - means["raw"],
+    ]
+    fitted = [
+        means[row["condition"]]
+        for row in rows
+    ]
+    residuals = [float(y) - fit for y, fit in zip(outcomes, fitted, strict=True)]
 
-    fitted = [p1 if row["condition"] == "receipt" else p0 for row in rows]
-    residuals = [float(y) - fit for y, fit in zip(outcomes, fitted)]
+    bread = _xtx_inverse(rows)
+    reviewer_meat = _cluster_meat(rows, residuals, group_key="reviewer_id")
+    case_meat = _cluster_meat(rows, residuals, group_key="case_id")
+    intersection_meat = _cluster_meat(rows, residuals, intersection=True)
+    meat = _mat_add(_mat_add(reviewer_meat, case_meat), intersection_meat, scale=-1.0)
+    covariance = _mat_mul(_mat_mul(bread, meat), bread)
 
-    bread = _xtx_inverse(len(control), len(receipt))
-    reviewer_meat = _cluster_meat(rows, residuals, "reviewer_id")
-    case_meat = _cluster_meat(rows, residuals, "case_id")
-    intersection_meat = _intersection_meat(rows, residuals)
-
-    meat = _mat2_add(reviewer_meat, case_meat)
-    meat = _mat2_add(meat, intersection_meat, scale=-1.0)
-
-    cov = _mat2_mul(_mat2_mul(bread, meat), bread)
-    variance = cov[1][1]
-    se = math.sqrt(variance) if variance > 0 else float("nan")
+    estimates: dict[str, dict[str, float]] = {}
+    for name, vector in CONTRASTS.items():
+        estimate = sum(vector[i] * beta[i] for i in range(3))
+        variance = _contrast_variance(covariance, vector)
+        estimates[name] = {
+            "risk_difference": estimate,
+            "two_way_cluster_se": math.sqrt(variance) if variance > 0 else float("nan"),
+            "variance": variance,
+        }
 
     return {
-        "p_control": p0,
-        "p_receipt": p1,
-        "risk_difference": beta,
-        "two_way_cluster_se": se,
-        "variance": variance,
+        "condition_means": means,
+        "contrasts": estimates,
+        "covariance": covariance,
     }
 
 
@@ -216,22 +268,24 @@ def _assignment_rows(
             "seed": seed,
         }
     )
-    rows = assignment["assignments"]
-    return rows, assignment["diagnostics"]
+    return assignment["assignments"], assignment["diagnostics"]
 
 
 def _simulate_once(
     rows: list[dict[str, Any]],
     rng: random.Random,
     *,
-    conditional_p_control: float,
+    conditional_p_raw: float,
+    conditional_p_structured: float,
     conditional_p_receipt: float,
     reviewer_sd_logit: float,
     case_sd_logit: float,
-) -> tuple[list[int], float, float]:
-    base = logit(conditional_p_control)
-    delta = logit(conditional_p_receipt) - base
-
+) -> tuple[list[int], dict[str, float]]:
+    logits = {
+        "raw": logit(conditional_p_raw),
+        "structured": logit(conditional_p_structured),
+        "receipt": logit(conditional_p_receipt),
+    }
     reviewers = sorted({row["reviewer_id"] for row in rows})
     cases = sorted({row["case_id"] for row in rows})
     reviewer_effect = {
@@ -242,29 +296,26 @@ def _simulate_once(
     }
 
     outcomes: list[int] = []
-    p0_sum = 0.0
-    p1_sum = 0.0
-    n0 = 0
-    n1 = 0
+    marginal_sum = {condition: 0.0 for condition in CONDITIONS}
+    marginal_n = {condition: 0 for condition in CONDITIONS}
 
     for row in rows:
-        treatment = 1.0 if row["condition"] == "receipt" else 0.0
+        condition = row["condition"]
         eta = (
-            base
+            logits[condition]
             + reviewer_effect[row["reviewer_id"]]
             + case_effect[row["case_id"]]
-            + treatment * delta
         )
         p = logistic(eta)
         outcomes.append(1 if rng.random() < p else 0)
-        if treatment:
-            p1_sum += p
-            n1 += 1
-        else:
-            p0_sum += p
-            n0 += 1
+        marginal_sum[condition] += p
+        marginal_n[condition] += 1
 
-    return outcomes, p0_sum / n0, p1_sum / n1
+    marginals = {
+        condition: marginal_sum[condition] / marginal_n[condition]
+        for condition in CONDITIONS
+    }
+    return outcomes, marginals
 
 
 def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
@@ -277,7 +328,7 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
     cases_per_reviewer = _positive_int(
         scenario.get("cases_per_reviewer"),
         "cases_per_reviewer",
-        minimum=2,
+        minimum=3,
     )
     if cases_per_reviewer > cases:
         raise ValueError("cases_per_reviewer cannot exceed cases")
@@ -288,7 +339,7 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
         minimum=0,
     )
     simulation_seed = _positive_int(
-        scenario.get("simulation_seed", 20260919),
+        scenario.get("simulation_seed", 20260920),
         "simulation_seed",
         minimum=0,
     )
@@ -298,35 +349,20 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
         minimum=20,
     )
 
-    p0 = _probability(
-        scenario.get("conditional_p_control"),
-        "conditional_p_control",
-        open_interval=True,
-    )
-    p1 = _probability(
-        scenario.get("conditional_p_receipt"),
-        "conditional_p_receipt",
-        open_interval=True,
-    )
-    if p0 == p1:
-        raise ValueError("conditional_p_control and conditional_p_receipt must differ")
-
-    reviewer_sd = _finite(
-        scenario.get("reviewer_sd_logit"),
-        "reviewer_sd_logit",
-    )
-    case_sd = _finite(
-        scenario.get("case_sd_logit"),
-        "case_sd_logit",
-    )
+    assumed = {
+        condition: _probability(
+            scenario.get(f"conditional_p_{condition}"),
+            f"conditional_p_{condition}",
+            open_interval=True,
+        )
+        for condition in CONDITIONS
+    }
+    reviewer_sd = _finite(scenario.get("reviewer_sd_logit"), "reviewer_sd_logit")
+    case_sd = _finite(scenario.get("case_sd_logit"), "case_sd_logit")
     if reviewer_sd < 0 or case_sd < 0:
         raise ValueError("random-effect standard deviations must be >= 0")
 
-    alpha = _probability(
-        scenario.get("alpha", 0.05),
-        "alpha",
-        open_interval=True,
-    )
+    alpha = _probability(scenario.get("alpha", 0.05), "alpha", open_interval=True)
     zcrit = NormalDist().inv_cdf(1.0 - alpha / 2.0)
 
     rows, diagnostics = _assignment_rows(
@@ -337,58 +373,77 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
     )
     rng = random.Random(simulation_seed)
 
-    estimates: list[float] = []
-    ses: list[float] = []
-    p0_marginal: list[float] = []
-    p1_marginal: list[float] = []
-    two_sided_rejections = 0
-    directional_rejections = 0
-    unusable = 0
-    expected_sign = 1.0 if p1 > p0 else -1.0
+    estimates = {name: [] for name in CONTRASTS}
+    ses = {name: [] for name in CONTRASTS}
+    rejections = {name: 0 for name in CONTRASTS}
+    directional = {name: 0 for name in CONTRASTS}
+    unusable = {name: 0 for name in CONTRASTS}
+    marginal = {condition: [] for condition in CONDITIONS}
+
+    assumed_diff = {
+        "structured_vs_raw": assumed["structured"] - assumed["raw"],
+        "receipt_vs_raw": assumed["receipt"] - assumed["raw"],
+        "receipt_vs_structured": assumed["receipt"] - assumed["structured"],
+    }
 
     for _ in range(iterations):
-        outcomes, m0, m1 = _simulate_once(
+        outcomes, marginals = _simulate_once(
             rows,
             rng,
-            conditional_p_control=p0,
-            conditional_p_receipt=p1,
+            conditional_p_raw=assumed["raw"],
+            conditional_p_structured=assumed["structured"],
+            conditional_p_receipt=assumed["receipt"],
             reviewer_sd_logit=reviewer_sd,
             case_sd_logit=case_sd,
         )
-        result = two_way_cluster_contrast(rows, outcomes)
-        estimate = result["risk_difference"]
-        se = result["two_way_cluster_se"]
+        result = two_way_cluster_contrasts(rows, outcomes)
+        for condition in CONDITIONS:
+            marginal[condition].append(marginals[condition])
+        for name in CONTRASTS:
+            estimate = result["contrasts"][name]["risk_difference"]
+            se = result["contrasts"][name]["two_way_cluster_se"]
+            estimates[name].append(estimate)
+            if not math.isfinite(se) or se <= 0:
+                unusable[name] += 1
+                continue
+            ses[name].append(se)
+            z = estimate / se
+            if abs(z) > zcrit:
+                rejections[name] += 1
+            direction = 1.0 if assumed_diff[name] > 0 else -1.0 if assumed_diff[name] < 0 else 0.0
+            if direction and direction * z > zcrit:
+                directional[name] += 1
 
-        estimates.append(estimate)
-        p0_marginal.append(m0)
-        p1_marginal.append(m1)
-
-        if not math.isfinite(se) or se <= 0:
-            unusable += 1
-            continue
-
-        ses.append(se)
-        z = estimate / se
-        if abs(z) > zcrit:
-            two_sided_rejections += 1
-        if expected_sign * z > zcrit:
-            directional_rejections += 1
-
-    usable = iterations - unusable
-    if usable <= 0:
-        raise ValueError("all simulated cluster-robust standard errors were unusable")
-
-    power = two_sided_rejections / usable
-    directional_power = directional_rejections / usable
-    mcse = math.sqrt(power * (1.0 - power) / usable)
+    contrast_output: dict[str, Any] = {}
+    for name in CONTRASTS:
+        usable = iterations - unusable[name]
+        if usable <= 0:
+            raise ValueError(f"all simulated standard errors unusable for {name}")
+        rate = rejections[name] / usable
+        contrast_output[name] = {
+            "assumed_conditional_risk_difference": assumed_diff[name],
+            "mean_estimated_risk_difference": statistics.fmean(estimates[name]),
+            "sd_estimated_risk_difference": (
+                statistics.stdev(estimates[name]) if len(estimates[name]) > 1 else 0.0
+            ),
+            "median_two_way_cluster_se": statistics.median(ses[name]) if ses[name] else None,
+            "two_sided_rejection_rate": rate,
+            "directional_rejection_rate": directional[name] / usable,
+            "monte_carlo_se_for_two_sided_rate": math.sqrt(
+                rate * (1.0 - rate) / usable
+            ),
+            "usable_iterations": usable,
+            "unusable_variance_iterations": unusable[name],
+        }
 
     return {
         "scenario_id": scenario_id,
         "method": (
-            "logistic_random_intercepts_plus_linear_probability_condition_contrast_"
-            "with_two_way_cluster_robust_covariance"
+            "three_condition_logistic_random_intercepts_plus_linear_probability_"
+            "contrasts_with_two_way_cluster_robust_covariance"
         ),
         "design": {
+            "comparison_design": "three_condition_structured_control",
             "reviewers": reviewers,
             "cases": cases,
             "cases_per_reviewer": cases_per_reviewer,
@@ -397,9 +452,9 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
             "assignment_diagnostics": diagnostics,
         },
         "assumptions": {
-            "conditional_p_control_at_zero_random_effects": p0,
-            "conditional_p_receipt_at_zero_random_effects": p1,
-            "conditional_log_odds_ratio": math.exp(logit(p1) - logit(p0)),
+            "conditional_p_raw_at_zero_random_effects": assumed["raw"],
+            "conditional_p_structured_at_zero_random_effects": assumed["structured"],
+            "conditional_p_receipt_at_zero_random_effects": assumed["receipt"],
             "reviewer_sd_logit": reviewer_sd,
             "case_sd_logit": case_sd,
             "alpha_two_sided": alpha,
@@ -407,22 +462,17 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
             "simulation_seed": simulation_seed,
         },
         "simulation": {
-            "mean_simulated_marginal_p_control": statistics.fmean(p0_marginal),
-            "mean_simulated_marginal_p_receipt": statistics.fmean(p1_marginal),
-            "mean_risk_difference_estimate": statistics.fmean(estimates),
-            "sd_risk_difference_estimate": statistics.stdev(estimates),
-            "median_two_way_cluster_se": statistics.median(ses),
-            "two_sided_rejection_rate": power,
-            "directional_rejection_rate": directional_power,
-            "monte_carlo_se_for_two_sided_rate": mcse,
-            "usable_iterations": usable,
-            "unusable_variance_iterations": unusable,
+            "mean_simulated_marginal_p": {
+                condition: statistics.fmean(marginal[condition])
+                for condition in CONDITIONS
+            },
+            "contrasts": contrast_output,
         },
         "interpretation_boundary": (
-            "Development-only sensitivity analysis. Results depend on assumed "
-            "baseline performance, condition effect, reviewer heterogeneity, case "
-            "heterogeneity, assignment, and the simple linear-probability/two-way "
-            "cluster-robust analysis approximation. They do not freeze sample size."
+            "Development-only sensitivity analysis for the selected three-condition "
+            "comparison architecture. Results depend on illustrative performance, "
+            "heterogeneity, assignment, and analysis assumptions. They do not select "
+            "the primary endpoint/effect target or freeze sample size."
         ),
     }
 
@@ -447,10 +497,11 @@ def run_plan(config: dict[str, Any]) -> dict[str, Any]:
     return {
         "planner_version": PLANNER_VERSION,
         "status": "development_only_not_frozen",
+        "comparison_design": "three_condition_structured_control",
         "method_note": (
             "Reviewer and case random intercepts are simulated explicitly. "
-            "Inference uses an OLS condition contrast with additive two-way "
-            "cluster covariance: reviewer + case - reviewer/case intersection."
+            "Inference uses raw-baseline three-condition OLS contrasts with additive "
+            "two-way cluster covariance: reviewer + case - reviewer/case intersection."
         ),
         "n_scenarios": len(results),
         "scenarios": results,
@@ -466,7 +517,8 @@ def run_self_test() -> int:
         "assignment_seed": 123,
         "simulation_seed": 456,
         "iterations": 40,
-        "conditional_p_control": 0.55,
+        "conditional_p_raw": 0.55,
+        "conditional_p_structured": 0.65,
         "conditional_p_receipt": 0.75,
         "reviewer_sd_logit": 0.4,
         "case_sd_logit": 0.5,
@@ -477,8 +529,7 @@ def run_self_test() -> int:
     second = simulate_scenario(base)
     assert first == second
     assert first["design"]["total_reviewer_case_observations"] == 72
-    assert first["simulation"]["usable_iterations"] > 0
-    assert 0.0 <= first["simulation"]["two_sided_rejection_rate"] <= 1.0
+    assert set(first["simulation"]["contrasts"]) == set(CONTRASTS)
 
     stronger = simulate_scenario(
         {
@@ -488,21 +539,30 @@ def run_self_test() -> int:
         }
     )
     assert (
-        stronger["simulation"]["mean_risk_difference_estimate"]
-        > first["simulation"]["mean_risk_difference_estimate"]
+        stronger["simulation"]["contrasts"]["receipt_vs_structured"][
+            "mean_estimated_risk_difference"
+        ]
+        > first["simulation"]["contrasts"]["receipt_vs_structured"][
+            "mean_estimated_risk_difference"
+        ]
     )
 
-    rows, _ = _assignment_rows(8, 8, 4, 73917)
+    rows, _ = _assignment_rows(9, 9, 6, 73917)
     outcomes = [
-        1 if row["condition"] == "receipt" else 0
+        0 if row["condition"] == "raw" else 1
         for row in rows
     ]
-    contrast = two_way_cluster_contrast(rows, outcomes)
-    assert math.isclose(contrast["risk_difference"], 1.0)
+    contrast = two_way_cluster_contrasts(rows, outcomes)
+    assert math.isclose(
+        contrast["contrasts"]["structured_vs_raw"]["risk_difference"], 1.0
+    )
+    assert math.isclose(
+        contrast["contrasts"]["receipt_vs_structured"]["risk_difference"], 0.0
+    )
 
     for bad in (
         {**base, "scenario_id": "", "iterations": 40},
-        {**base, "scenario_id": "bad-p", "conditional_p_control": 1.0},
+        {**base, "scenario_id": "bad-p", "conditional_p_raw": 1.0},
         {**base, "scenario_id": "bad-cases", "cases_per_reviewer": 20},
         {**base, "scenario_id": "bad-sd", "reviewer_sd_logit": -0.1},
         {**base, "scenario_id": "bad-iterations", "iterations": 5},
@@ -516,10 +576,11 @@ def run_self_test() -> int:
 
     plan = run_plan({"scenarios": [base, {**base, "scenario_id": "smoke-2"}]})
     assert plan["n_scenarios"] == 2
+    assert plan["comparison_design"] == "three_condition_structured_control"
 
     print(
         "AR-P003 crossed-design planner self-test passed: deterministic "
-        "reviewer x case simulation and two-way cluster variance."
+        "three-condition reviewer x case simulation and two-way clustered contrasts."
     )
     return 0
 
@@ -527,8 +588,8 @@ def run_self_test() -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Development-only crossed reviewer x case Monte Carlo planning "
-            "for AR-P003 v0.3."
+            "Development-only three-condition crossed reviewer x case Monte Carlo "
+            "planning for AR-P003 v0.3."
         )
     )
     parser.add_argument("config", nargs="?", help="JSON planning-scenario file")
@@ -547,7 +608,7 @@ def main() -> int:
         if not isinstance(config, dict):
             raise ValueError("config must be a JSON object")
         result = run_plan(config)
-    except (OSError, json.JSONDecodeError, ValueError) as exc:
+    except (OSError, json.JSONDecodeError, ValueError, AssertionError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 

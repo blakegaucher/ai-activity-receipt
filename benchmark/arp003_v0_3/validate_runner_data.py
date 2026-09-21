@@ -92,10 +92,19 @@ def bundle_semantic_errors(doc: dict[str, Any]) -> list[str]:
                 f"cases[{index}] evidence labels must be unique within the case"
             )
 
+        structured = case["structured_event_table"]
         receipt = case["receipt"]
+        if structured is not None and structured["label"] in labels:
+            errors.append(
+                f"cases[{index}] structured-event-table label duplicates an evidence label"
+            )
         if receipt is not None and receipt["label"] in labels:
             errors.append(
                 f"cases[{index}] receipt label duplicates an evidence label"
+            )
+        if structured is not None and receipt is not None:
+            errors.append(
+                f"cases[{index}] structured_event_table and receipt are mutually exclusive"
             )
 
     return errors
@@ -187,6 +196,7 @@ def runner_static_errors() -> list[str]:
         "beforeunload",
         "URL.createObjectURL",
         "textContent = artifact.content",
+        "comparison_design: bundle.comparison_design",
         "assignment_version: bundle.assignment_version",
         "assignment_sha256: bundle.assignment_sha256",
     ]
@@ -266,8 +276,9 @@ def run_self_test() -> int:
     assert any("too long" in error for error in errors)
 
     sample_response = {
-        "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
+        "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
         "protocol_version": bundle["protocol_version"],
+        "comparison_design": bundle["comparison_design"],
         "assignment_version": bundle["assignment_version"],
         "assignment_sha256": bundle["assignment_sha256"],
         "reviewer_id": bundle["reviewer_id"],
@@ -286,7 +297,7 @@ def run_self_test() -> int:
         "cases": [
             {
                 "case_id": bundle["cases"][0]["case_id"],
-                "condition": "control",
+                "condition": "raw",
                 "started_at": "2026-09-18T12:00:00Z",
                 "submitted_at": "2026-09-18T12:01:00Z",
                 "elapsed_wall_seconds": 60.0,

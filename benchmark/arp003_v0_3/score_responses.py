@@ -32,7 +32,7 @@ EXACT_FIELDS = (
     "verification_state",
     "missing_evidence",
 )
-VALID_CONDITIONS = {"control", "receipt"}
+VALID_CONDITIONS = {"raw", "structured", "receipt"}
 
 
 def _as_set(value: Any, field: str) -> set[str]:
@@ -93,7 +93,7 @@ def validate_record(
             raise ValueError(f"missing required field {key!r}")
 
     if record["condition"] not in VALID_CONDITIONS:
-        raise ValueError("condition must be 'control' or 'receipt'")
+        raise ValueError("condition must be 'raw', 'structured', or 'receipt'")
 
     if not isinstance(record["gold"], dict) or not isinstance(record["answer"], dict):
         raise ValueError("gold and answer must be objects")
@@ -198,7 +198,7 @@ def summarize(scored: list[dict[str, Any]]) -> dict[str, Any]:
         }
 
     return {
-        "scoring_version": "AR-P003-v0.3-draft",
+        "scoring_version": "AR-P003-v0.3-three-condition-draft-v0.2",
         "composite_primary_score": None,
         "n_records": len(scored),
         "by_condition": by_condition,
@@ -229,7 +229,7 @@ def run_self_test(
         {
             "reviewer_id": "smoke-r1",
             "case_id": "smoke-1",
-            "condition": "control",
+            "condition": "raw",
             "stratum": "ordinary",
             "elapsed_seconds": 60,
             "gold": {
@@ -253,7 +253,7 @@ def run_self_test(
         {
             "reviewer_id": "smoke-r2",
             "case_id": "smoke-2",
-            "condition": "receipt",
+            "condition": "structured",
             "stratum": "ordinary",
             "elapsed_seconds": 45,
             "gold": {
@@ -277,7 +277,7 @@ def run_self_test(
         {
             "reviewer_id": "smoke-r3",
             "case_id": "smoke-3",
-            "condition": "control",
+            "condition": "receipt",
             "stratum": "stale_receipt",
             "elapsed_seconds": 75,
             "gold": {
@@ -312,7 +312,8 @@ def run_self_test(
     summary = summarize(scored)
     assert summary["n_records"] == 3
     assert summary["composite_primary_score"] is None
-    assert summary["by_condition"]["control"]["n"] == 2
+    assert summary["by_condition"]["raw"]["n"] == 1
+    assert summary["by_condition"]["structured"]["n"] == 1
     assert summary["by_condition"]["receipt"]["n"] == 1
     print("AR-P003 scoring self-test passed.")
     return 0

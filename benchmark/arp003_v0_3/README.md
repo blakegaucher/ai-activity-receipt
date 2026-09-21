@@ -9,7 +9,7 @@ This directory contains **development infrastructure** for the next human-center
 - `protocol.json` — machine-readable candidate protocol scaffold.
 - `score_responses.py` — deterministic component-level scorer with a built-in synthetic self-test.
 - `response-record.schema.json` — JSON Schema for one analysis-side reviewer/case scoring record.
-- `generate_assignment.py` — seeded reviewer/case assignment generator that avoids showing the same case twice to one reviewer, balances case exposure, and guarantees per-reviewer/per-case control-vs-Receipt imbalance of at most one observation.
+- `generate_assignment.py` — seeded reviewer/case assignment generator for the selected raw / neutral-structured / Receipt design; it avoids repeat exposure to the same case and keeps each reviewer/case condition count within one observation across the three conditions.
 - `freeze_manifest.py` — content-bound SHA-256 manifest utility that reads the exact protocol version/hash, rejects duplicate paths, computes an aggregate artifact-set digest and deterministic freeze content ID, and can require `protocol.frozen=true`.
 - `freeze-manifest.schema.json` — machine-readable v0.2 freeze-manifest contract.
 - `case-package.schema.json` — development manifest schema for reviewer-facing evidence, Receipt, and analysis-only files.
@@ -40,9 +40,10 @@ This directory contains **development infrastructure** for the next human-center
 - `browser-smoke-record.example.json` — deliberately incomplete/not-run template; not smoke-test evidence.
 - `validate_browser_smoke.py` — prevents incomplete templates or major defects from masquerading as a passing manual smoke record.
 
-The human-readable preregistration draft is in:
+The human-readable preregistration draft and first explicit methodology decision are in:
 
 - `../../docs/AR-P003-V0.3-PROTOCOL.md`
+- `../../docs/AR-P003-V0.3-COMPARISON-CONDITIONS-DECISION-2026-09-20.md`
 
 ## Data boundary
 
@@ -58,15 +59,15 @@ The synthetic records embedded in the scorer self-test are developer checks only
 
 ### Assignment balance guarantee
 
-Condition labels are assigned only after reviewer/case incidence is selected. The current generator treats that incidence structure as a bipartite graph and uses deterministic balanced edge coloring based on Euler circuits.
+Condition labels are assigned only after reviewer/case incidence is selected. The current version uses deterministic equitable bipartite b-matching to allocate raw, structured, and Receipt conditions.
 
 For every generated assignment:
 
 - each reviewer sees each selected case only once;
 - case exposure differs by at most one across cases;
-- each reviewer has control-vs-Receipt count imbalance of at most one;
-- each case has control-vs-Receipt count imbalance of at most one;
-- even-degree reviewers/cases receive an exact 50/50 condition split.
+- each reviewer's largest-minus-smallest raw/structured/Receipt count is at most one;
+- each case's largest-minus-smallest raw/structured/Receipt count is at most one;
+- when a relevant degree is divisible by three, its split is exactly one-third per condition.
 
 The generator also emits reviewer-, case-, and stratum-level condition diagnostics. Stratum-level totals are diagnostic rather than a mathematical guarantee; they should be inspected before the final assignment is frozen.
 
@@ -82,7 +83,7 @@ Example shape:
 {
   "reviewer_id": "pseudonymous-reviewer-id",
   "case_id": "case-id",
-  "condition": "control",
+  "condition": "raw",
   "stratum": "ordinary",
   "elapsed_seconds": 83.4,
   "gold": {
@@ -163,11 +164,12 @@ See `../../docs/AR-P003-V0.3-PLANNING.md`.
 
 The case-package linter is designed to catch mechanical corpus mistakes **before** a future sealed set is frozen.
 
-A case manifest uses one shared `reviewer_evidence_files` list for both conditions and a separate `receipt_file`. This encodes the ordinary comparison contract as:
+A case manifest uses one shared `reviewer_evidence_files` list plus separate `structured_control_file` and `receipt_file` artifacts. This encodes the selected ordinary comparison contract as:
 
 ```text
-control = shared underlying evidence
-receipt = same shared underlying evidence + Receipt
+raw        = shared underlying evidence
+structured = same shared underlying evidence + neutral structured event table
+receipt    = same shared underlying evidence + Receipt
 ```
 
 The linter also requires analysis-only files (including gold labels) to remain disjoint from reviewer-facing files, rejects unsafe or missing paths, checks that stale/incomplete/conflicting strata use the matching Receipt state, scans exact prespecified leakage markers, and reports SHA-256 hashes for linked files.
@@ -190,7 +192,7 @@ Do not treat a development manifest as the final confirmatory freeze unless it a
 
 Generated reviewer bundles now carry the exact assignment version and SHA-256 digest. The offline runner propagates those fields into response exports.
 
-The analysis-side merge requires the exact assignment JSON and treats it—not the reviewer export—as authoritative for reviewer membership, case order, and control/Receipt condition. Final scorer input is rejected if the response was edited or mixed with a different assignment.
+The analysis-side merge requires the exact assignment JSON and treats it—not the reviewer export—as authoritative for reviewer membership, case order, and raw/structured/Receipt condition. Final scorer input is rejected if the response was edited or mixed with a different assignment.
 
 This is an integrity control for the development study pipeline. It is not cryptographic signer authentication and does not prevent a malicious party who can replace every analysis artifact consistently.
 
@@ -218,7 +220,7 @@ Before the first timed case, the runner now requires a three-question **pre-case
 
 After that gate, reviewers complete one **untimed structured practice reconstruction** using a fixed synthetic training example. They must correctly use the same action/source/incident/authorization/verification/missing-evidence controls before the first study case begins. The export records only practice version, attempt count, and pass time; the practice answer is not included in scorer input.
 
-The analysis-side bundle builder now closes the development packaging loop: it reads the seeded assignment and linted case manifests, verifies the assignment's hidden stratum against each case manifest, gives control reviewers only shared evidence, gives Receipt reviewers the same evidence plus the Receipt, and emits gold/stratum data to a separate hidden analysis bundle.
+The analysis-side bundle builder now closes the development packaging loop: it reads the seeded assignment and linted case manifests, verifies the assignment's hidden stratum against each case manifest, gives raw reviewers shared evidence only, structured reviewers that same evidence plus the neutral table, Receipt reviewers that same evidence plus the Receipt, and emits gold/stratum data to a separate hidden analysis bundle.
 
 See `../../docs/AR-P003-V0.3-OFFLINE-RUNNER.md`.
 
@@ -235,7 +237,7 @@ Files:
 - `validate_methodology_decisions.py`
 - `../../docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md`
 
-The ledger currently leaves comparison conditions, primary endpoint, primary timing clock, challenge architecture, reviewer population, and meaningful effect/precision target unresolved. CI rejects a frozen protocol while required methodology decisions remain unresolved.
+The ledger records `comparison_conditions` as selected (`three_condition_structured_control`) and leaves primary endpoint, primary timing clock, challenge architecture, reviewer population, and meaningful effect/precision target unresolved. CI rejects a frozen protocol while required methodology decisions remain unresolved.
 
 Run:
 

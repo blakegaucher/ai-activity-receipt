@@ -160,6 +160,9 @@ jobs:
       - name: Run AR-P003 assignment-generator self-test
         run: python benchmark/arp003_v0_3/generate_assignment.py --self-test
 
+      - name: Run AR-P003 neutral structured-control renderer self-test
+        run: python benchmark/arp003_v0_3/render_structured_control.py --self-test
+
       - name: Run AR-P003 case-package linter self-test
         run: python benchmark/arp003_v0_3/lint_case_packages.py --self-test
 

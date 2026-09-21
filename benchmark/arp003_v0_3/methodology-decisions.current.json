@@ -1,18 +1,20 @@
 {
   "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.1",
-  "protocol_version": "v0.3-draft-2026-09-18",
+  "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
   "status": "development_unresolved",
   "decisions": [
     {
       "decision_id": "comparison_conditions",
       "title": "Comparison-condition design",
       "pre_freeze_required": true,
-      "status": "unresolved",
-      "current_implementation": "Two conditions: underlying evidence only vs the same underlying evidence plus Activity Receipt.",
-      "selected_candidate": null,
+      "status": "selected",
+      "current_implementation": "Selected three-condition development design: raw heterogeneous evidence only; neutral structured event table plus the same underlying evidence; Activity Receipt plus the same underlying evidence. Versioned implementation is required before the comparison-condition freeze gate is complete.",
+      "selected_candidate": "three_condition_structured_control",
       "evidence_refs": [
-        "benchmark/arp003_v0_3/protocol.json",
-        "docs/AR-P003-V0.3-PROTOCOL.md"
+        "docs/AR-P003-V0.3-COMPARISON-CONDITIONS-DECISION-2026-09-20.md",
+        "benchmark/arp003_v0_3/methodology-impact-map.json",
+        "docs/AR-P003-V0.3-DECISION-SUPPORT.md",
+        "AI_Activity_Receipt_Research_and_v03_Protocol.pdf"
       ],
       "candidates": [
         {
@@ -33,7 +35,8 @@
           ]
         }
       ],
-      "notes": "The 2026-09-15 research review recommended a structured-log control, while the later repository draft currently implements two conditions. Do not silently treat these as reconciled."
+      "notes": "The earlier two-condition repository draft and the 2026-09-15 research-review recommendation remain preserved as conflicting historical inputs. The owner explicitly selected three_condition_structured_control on 2026-09-20; two_condition_current remains listed but is not selected.",
+      "rationale": "Selected explicitly by the project owner to separate benefit from generic evidence organization/structuring from any additional benefit attributable specifically to the Activity Receipt presentation/semantic layer. The three conditions are raw heterogeneous evidence only; a neutral structured event table plus the same underlying evidence; and Activity Receipt plus the same underlying evidence."
     },
     {
       "decision_id": "primary_endpoint",

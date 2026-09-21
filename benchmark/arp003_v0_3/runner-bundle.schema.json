@@ -1,11 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AR-P003 v0.3 Development Offline Runner Bundle",
+  "title": "AR-P003 v0.3 Development Three-Condition Offline Runner Bundle",
   "description": "Reviewer-facing development bundle only. Gold labels, hidden strata, and analysis-only files are prohibited. Resource limits are defensive development-runner bounds, not study-design claims.",
   "type": "object",
   "required": [
     "bundle_version",
     "protocol_version",
+    "comparison_design",
     "assignment_version",
     "assignment_sha256",
     "reviewer_id",
@@ -13,7 +14,7 @@
   ],
   "properties": {
     "bundle_version": {
-      "const": "AR-P003-v0.3-dev-runner-bundle-v0.2"
+      "const": "AR-P003-v0.3-dev-runner-bundle-v0.3"
     },
     "protocol_version": {
       "type": "string",
@@ -33,6 +34,7 @@
         "required": [
           "case_id",
           "evidence",
+          "structured_event_table",
           "receipt",
           "answer_options"
         ],
@@ -79,6 +81,16 @@
               }
             },
             "additionalProperties": false
+          },
+          "structured_event_table": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/$defs/artifact"
+              }
+            ]
           }
         },
         "additionalProperties": false
@@ -93,6 +105,9 @@
     "assignment_sha256": {
       "type": "string",
       "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "comparison_design": {
+      "const": "three_condition_structured_control"
     }
   },
   "$defs": {

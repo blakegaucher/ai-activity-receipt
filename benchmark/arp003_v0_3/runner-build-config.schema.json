@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AR-P003 v0.3 Development Runner Build Config",
+  "title": "AR-P003 v0.3 Development Three-Condition Runner Build Config",
   "description": "Analysis-side configuration for converting case packages + assignments into reviewer bundles and a hidden analysis bundle.",
   "type": "object",
   "required": [
@@ -10,7 +10,7 @@
   ],
   "properties": {
     "build_config_version": {
-      "const": "AR-P003-v0.3-dev-runner-build-v0.1"
+      "const": "AR-P003-v0.3-dev-runner-build-v0.2"
     },
     "protocol_version": {
       "type": "string",

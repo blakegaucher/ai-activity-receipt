@@ -224,9 +224,14 @@ def run_self_test() -> int:
     assert any("LEDGER-06" in error for error in errors)
 
     unresolved_with_selection = copy.deepcopy(ledger)
-    unresolved_with_selection["decisions"][0]["selected_candidate"] = (
-        unresolved_with_selection["decisions"][0]["candidates"][0]["candidate_id"]
+    unresolved_target = next(
+        item
+        for item in unresolved_with_selection["decisions"]
+        if item["status"] == "unresolved"
     )
+    unresolved_target["selected_candidate"] = unresolved_target["candidates"][0][
+        "candidate_id"
+    ]
     errors = validate(unresolved_with_selection, schema, protocol)
     assert any("LEDGER-08" in error for error in errors)
 
@@ -274,8 +279,8 @@ def run_self_test() -> int:
         assert not errors, errors
 
     print(
-        "AR-P003 methodology-decision ledger self-test passed: current "
-        "unresolved state, valid synthetic selections, and adversarial mutations."
+        "AR-P003 methodology-decision ledger self-test passed: current mixed "
+        "selected/unresolved state, valid synthetic selections, and adversarial mutations."
     )
     return 0
 

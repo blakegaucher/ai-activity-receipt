@@ -24,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.18"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.19"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -229,11 +229,21 @@ CHECKS: list[dict[str, Any]] = [
         "artifacts": ["benchmark/arp003_v0_3/generate_assignment.py"],
     },
     {
+        "id": "arp003-structured-control-renderer",
+        "argv": ["benchmark/arp003_v0_3/render_structured_control.py", "--self-test"],
+        "artifacts": [
+            "benchmark/arp003_v0_3/render_structured_control.py",
+            "activity-record.schema.json",
+            "derive_receipt.py",
+        ],
+    },
+    {
         "id": "arp003-case-package-lint",
         "argv": ["benchmark/arp003_v0_3/lint_case_packages.py", "--self-test"],
         "artifacts": [
             "benchmark/arp003_v0_3/lint_case_packages.py",
             "benchmark/arp003_v0_3/case-package.schema.json",
+            "benchmark/arp003_v0_3/render_structured_control.py",
         ],
     },
     {

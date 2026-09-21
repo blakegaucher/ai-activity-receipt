@@ -95,7 +95,7 @@ def expected_rows_for_reviewer(
             )
         cases.add(case_id)
 
-        if condition not in {"control", "receipt"}:
+        if condition not in {"raw", "structured", "receipt"}:
             raise ValueError(
                 f"assignment condition for case {case_id!r} is invalid"
             )
@@ -142,6 +142,10 @@ def merge(
 
     if response["protocol_version"] != analysis["protocol_version"]:
         raise ValueError("response and analysis protocol_version values differ")
+    if response.get("comparison_design") != "three_condition_structured_control":
+        raise ValueError("response comparison_design is unsupported")
+    if analysis.get("comparison_design") != "three_condition_structured_control":
+        raise ValueError("analysis comparison_design is unsupported")
 
     assignment_version = assignment.get("assignment_version")
     if response["assignment_version"] != assignment_version:
@@ -237,14 +241,14 @@ def run_self_test() -> int:
     }
 
     assignment = {
-        "assignment_version": "AR-P003-v0.3-draft-assignment-v0.2",
+        "assignment_version": "AR-P003-v0.3-draft-assignment-v0.3",
         "assignments": [
             {
                 "reviewer_id": "dev-reviewer-001",
                 "case_id": "DEV-RUNNER-001",
                 "stratum": "ordinary",
                 "order": 1,
-                "condition": "control",
+                "condition": "raw",
             }
         ],
     }
@@ -258,8 +262,9 @@ def run_self_test() -> int:
         assignment_digest = sha256_file(assignment_path)
 
         response = {
-            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.4",
-            "protocol_version": "v0.3-development-only",
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
+            "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
+            "comparison_design": "three_condition_structured_control",
             "assignment_version": assignment["assignment_version"],
             "assignment_sha256": assignment_digest,
             "reviewer_id": "dev-reviewer-001",
@@ -278,7 +283,7 @@ def run_self_test() -> int:
             "cases": [
                 {
                     "case_id": "DEV-RUNNER-001",
-                    "condition": "control",
+                    "condition": "raw",
                     "started_at": "2026-09-18T12:00:00Z",
                     "submitted_at": "2026-09-18T12:01:00Z",
                     "elapsed_wall_seconds": 60.0,
@@ -290,8 +295,9 @@ def run_self_test() -> int:
             ],
         }
         analysis = {
-            "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.1",
-            "protocol_version": "v0.3-development-only",
+            "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.2",
+            "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
+            "comparison_design": "three_condition_structured_control",
             "cases": [
                 {
                     "case_id": "DEV-RUNNER-001",

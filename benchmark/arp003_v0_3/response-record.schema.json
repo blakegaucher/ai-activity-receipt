@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AR-P003 v0.3 Scoring Record",
+  "title": "AR-P003 v0.3 Three-Condition Scoring Record",
   "description": "Development schema for one pseudonymous reviewer-case scoring record. Gold labels are analysis-side data and are not reviewer-facing.",
   "type": "object",
   "required": [
@@ -24,7 +24,8 @@
     "condition": {
       "type": "string",
       "enum": [
-        "control",
+        "raw",
+        "structured",
         "receipt"
       ]
     },
