@@ -35,7 +35,7 @@ BUNDLE_SCHEMA = BENCH / "runner-bundle.schema.json"
 ANALYSIS_SCHEMA = BENCH / "runner-analysis.schema.json"
 
 ASSIGNMENT_VERSION_PREFIX = "AR-P003-v0.3-draft-assignment-"
-BUILD_OUTPUT_VERSION = "AR-P003-v0.3-dev-runner-build-output-v0.3"
+BUILD_OUTPUT_VERSION = "AR-P003-v0.3-dev-runner-build-output-v0.4"
 
 
 def load_json(path: Path) -> Any:
@@ -424,9 +424,10 @@ def build(
         )
 
     analysis_bundle = {
-        "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.2",
+        "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.3",
         "protocol_version": config["protocol_version"],
         "comparison_design": "three_condition_structured_control",
+        "challenge_design": "integrated_challenge_strata",
         "cases": hidden_cases,
     }
     analysis_errors = schema_errors(analysis_bundle, analysis_schema)
