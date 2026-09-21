@@ -1,12 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AR-P003 v0.3 Development Three-Condition Offline Runner Response Export",
+  "title": "AR-P003 v0.3 Development Endpoint-Aware Offline Runner Response Export",
   "description": "Reviewer-side response export. It deliberately contains no gold labels. Defensive cardinality/string limits reduce accidental or hostile local resource exhaustion.",
   "type": "object",
   "required": [
     "response_bundle_version",
     "protocol_version",
     "comparison_design",
+    "primary_endpoint",
     "assignment_version",
     "assignment_sha256",
     "reviewer_id",
@@ -18,7 +19,7 @@
   ],
   "properties": {
     "response_bundle_version": {
-      "const": "AR-P003-v0.3-dev-runner-response-v0.5"
+      "const": "AR-P003-v0.3-dev-runner-response-v0.6"
     },
     "protocol_version": {
       "type": "string",
@@ -109,6 +110,38 @@
     },
     "comparison_design": {
       "const": "three_condition_structured_control"
+    },
+    "primary_endpoint": {
+      "type": "object",
+      "required": [
+        "endpoint_id",
+        "deadline_seconds",
+        "primary_timing_clock",
+        "timing_candidates",
+        "timeout_enforcement"
+      ],
+      "properties": {
+        "endpoint_id": {
+          "const": "correct_completion_by_180s"
+        },
+        "deadline_seconds": {
+          "const": 180
+        },
+        "primary_timing_clock": {
+          "const": "unresolved"
+        },
+        "timing_candidates": {
+          "type": "array",
+          "const": [
+            "active_time_primary",
+            "wall_deadline_with_hidden_sensitivity"
+          ]
+        },
+        "timeout_enforcement": {
+          "const": "development_not_enforced_until_primary_timing_clock_selected"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "$defs": {
