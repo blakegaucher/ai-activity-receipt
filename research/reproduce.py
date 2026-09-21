@@ -24,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.18"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.19"
 
 CHECKS: list[dict[str, Any]] = [
     {
