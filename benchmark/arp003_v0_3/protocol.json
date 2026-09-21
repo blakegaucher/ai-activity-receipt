@@ -1,6 +1,6 @@
 {
   "protocol_id": "AR-P003",
-  "version": "v0.3-draft-2026-09-20-three-condition-v0.1",
+  "version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
   "status": "candidate_preregistration_draft",
   "frozen": false,
   "research_question": "Do a neutral structured event table and an AI Activity Receipt, each added to the same underlying heterogeneous evidence, change independent human reconstruction accuracy, reliability, or time relative to raw evidence, and does the Receipt add benefit beyond generic structuring?",
@@ -25,7 +25,9 @@
     "max_case_condition_imbalance": 1,
     "balance_all_cases_across_conditions": true,
     "inspect_stratum_condition_balance_before_freeze": true,
-    "freeze_generator_version_and_diagnostics": true
+    "freeze_generator_version_and_diagnostics": true,
+    "challenge_allocation_status": "not_frozen",
+    "challenge_strata_share_same_three_condition_architecture": true
   },
   "primary_targets": [
     "material_actions",
@@ -108,9 +110,17 @@
     "unresolved_decisions": [
       "primary_endpoint",
       "primary_timing_clock",
-      "challenge_design",
       "reviewer_population",
       "effect_precision_target"
     ]
+  },
+  "challenge_design": {
+    "selected_candidate": "integrated_challenge_strata",
+    "architecture": "ordinary_and_challenge_cases_in_one_crossed_assignment",
+    "separate_robustness_cohort": false,
+    "ordinary_and_challenge_reporting": "separate",
+    "final_stratum_counts_frozen": false,
+    "final_challenge_allocation_rule_frozen": false,
+    "human_execution_authorized": false
   }
 }
