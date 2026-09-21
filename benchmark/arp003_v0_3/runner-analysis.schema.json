@@ -1,17 +1,18 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AR-P003 v0.3 Development Three-Condition Runner Analysis Bundle",
+  "title": "AR-P003 v0.3 Development Integrated-Challenge Analysis Bundle",
   "description": "Analysis-side hidden case metadata. This file must never be reviewer-facing. Defensive limits mirror reviewer-side cardinality bounds where applicable.",
   "type": "object",
   "required": [
     "analysis_bundle_version",
     "protocol_version",
     "comparison_design",
+    "challenge_design",
     "cases"
   ],
   "properties": {
     "analysis_bundle_version": {
-      "const": "AR-P003-v0.3-dev-runner-analysis-v0.2"
+      "const": "AR-P003-v0.3-dev-runner-analysis-v0.3"
     },
     "protocol_version": {
       "type": "string",
@@ -53,6 +54,9 @@
     },
     "comparison_design": {
       "const": "three_condition_structured_control"
+    },
+    "challenge_design": {
+      "const": "integrated_challenge_strata"
     }
   },
   "$defs": {
