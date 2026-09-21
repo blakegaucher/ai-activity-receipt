@@ -283,7 +283,7 @@ def run_self_test() -> int:
             "cases": [
                 {
                     "case_id": "DEV-RUNNER-001",
-                    "condition": "control",
+                    "condition": "raw",
                     "started_at": "2026-09-18T12:00:00Z",
                     "submitted_at": "2026-09-18T12:01:00Z",
                     "elapsed_wall_seconds": 60.0,
