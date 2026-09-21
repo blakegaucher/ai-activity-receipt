@@ -45,6 +45,10 @@ REQUIRED_DECISIONS = {
     "effect_precision_target",
 }
 
+PRIMARY_ENDPOINT_CANDIDATE = "correct_completion_by_180s"
+PRIMARY_ENDPOINT_DEADLINE_SECONDS = 180
+PRIMARY_TIMING_CLOCK_UNRESOLVED = "unresolved"
+
 REVIEWER_POPULATION_CANDIDATE = "relevant_professional_reviewers"
 REVIEWER_POPULATION_DOMAINS = [
     "technical_audit",
@@ -245,6 +249,70 @@ def semantic_errors(
             "LEDGER-11 protocol.json cannot be frozen while required "
             "methodology decisions remain unresolved"
         )
+
+    primary_endpoint_decision = decisions_by_id.get("primary_endpoint")
+    if (
+        primary_endpoint_decision
+        and primary_endpoint_decision.get("status") == "selected"
+    ):
+        if (
+            primary_endpoint_decision.get("selected_candidate")
+            != PRIMARY_ENDPOINT_CANDIDATE
+        ):
+            errors.append(
+                "LEDGER-13 selected primary_endpoint must resolve to "
+                f"{PRIMARY_ENDPOINT_CANDIDATE!r} for this protocol version"
+            )
+
+        endpoint = protocol.get("primary_endpoint")
+        if not isinstance(endpoint, dict):
+            errors.append(
+                "LEDGER-14 selected primary_endpoint requires a structured "
+                "protocol.json primary_endpoint object"
+            )
+        else:
+            expected_values = {
+                "decision_id": "primary_endpoint",
+                "selected_candidate": PRIMARY_ENDPOINT_CANDIDATE,
+                "endpoint_id": PRIMARY_ENDPOINT_CANDIDATE,
+                "outcome_type": "binary",
+                "deadline_seconds": PRIMARY_ENDPOINT_DEADLINE_SECONDS,
+                "primary_timing_clock": PRIMARY_TIMING_CLOCK_UNRESOLVED,
+                "confirmatory_derivation_status": (
+                    "blocked_until_primary_timing_clock_selected"
+                ),
+                "component_endpoints_role": "secondary_diagnostic_not_co_primary",
+                "critical_false_clearance_role": (
+                    "separate_prespecified_safety_endpoint"
+                ),
+                "critical_false_clearance_threshold": (
+                    "unresolved_effect_precision_target"
+                ),
+            }
+            for key, expected in expected_values.items():
+                if endpoint.get(key) != expected:
+                    errors.append(
+                        "LEDGER-15 protocol primary_endpoint field "
+                        f"{key!r} does not match the selected design"
+                    )
+
+        timing = protocol.get("timing")
+        if not isinstance(timing, dict):
+            errors.append(
+                "LEDGER-16 selected primary_endpoint requires protocol timing "
+                "state to remain explicit"
+            )
+        else:
+            if timing.get("primary_timing_clock") != PRIMARY_TIMING_CLOCK_UNRESOLVED:
+                errors.append(
+                    "LEDGER-17 primary_timing_clock must remain unresolved "
+                    "until its separate owner decision"
+                )
+            if timing.get("deadline_seconds") != PRIMARY_ENDPOINT_DEADLINE_SECONDS:
+                errors.append(
+                    "LEDGER-18 selected primary endpoint requires a 180-second "
+                    "development deadline contract"
+                )
 
     reviewer_decision = decisions_by_id.get("reviewer_population")
     if reviewer_decision and reviewer_decision.get("status") == "selected":
@@ -505,6 +573,38 @@ def run_self_test() -> int:
     protocol_mismatch["version"] = "other-version"
     errors = validate(ledger, schema, protocol_mismatch)
     assert any("LEDGER-01" in error for error in errors)
+
+    wrong_primary_candidate = copy.deepcopy(ledger)
+    primary_decision = next(
+        item
+        for item in wrong_primary_candidate["decisions"]
+        if item["decision_id"] == "primary_endpoint"
+    )
+    primary_decision["selected_candidate"] = "component_endpoint_set"
+    errors = validate(wrong_primary_candidate, schema, protocol)
+    assert any("selected primary_endpoint" in error for error in errors), errors
+
+    missing_primary = copy.deepcopy(protocol)
+    missing_primary.pop("primary_endpoint")
+    errors = validate(ledger, schema, missing_primary)
+    assert any("structured protocol.json primary_endpoint" in error for error in errors)
+
+    endpoint_mutations = (
+        ("deadline_seconds", 181),
+        ("primary_timing_clock", "active_time_primary"),
+        ("component_endpoints_role", "co_primary"),
+        ("critical_false_clearance_role", "folded_into_primary"),
+    )
+    for key, value in endpoint_mutations:
+        mutated_protocol = copy.deepcopy(protocol)
+        mutated_protocol["primary_endpoint"][key] = value
+        errors = validate(ledger, schema, mutated_protocol)
+        assert any("primary_endpoint field" in error for error in errors), (key, errors)
+
+    selected_timing_protocol = copy.deepcopy(protocol)
+    selected_timing_protocol["timing"]["primary_timing_clock"] = "active_time_primary"
+    errors = validate(ledger, schema, selected_timing_protocol)
+    assert any("must remain unresolved" in error for error in errors), errors
 
     wrong_population_candidate = copy.deepcopy(ledger)
     population_decision = next(
