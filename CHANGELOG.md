@@ -1,5 +1,15 @@
 ## Unreleased
 
+### Repository licensing — Apache-2.0
+
+- record Blake Gaucher's explicit 2026 owner decision to license covered project-authored public repository material under **Apache License 2.0**;
+- add the complete standard top-level `LICENSE` text and an informational `NOTICE` with Blake Gaucher's copyright attribution;
+- make future private human-study/participant/reviewer/hidden-analysis material explicitly outside automatic public-release scope;
+- preserve third-party upstream terms/notices and make clear that Apache-2.0 does not grant trademark or endorsement rights in Ancient Immortal Art or AI Activity Receipt;
+- keep ARC / solver and other competition lanes separate from this repository decision;
+- advance the third-party inventory to v0.2, machine-readable continuity to v0.17, and the aggregate reproducibility suite to v0.21 so the published license state is guarded deterministically;
+- preserve older dated continuity/history documents that accurately recorded the earlier no-license state.
+
 ### AR-P003 integrated challenge-design decision
 
 - select `challenge_design = integrated_challenge_strata` while preserving the rejected `separate_robustness_cohort` alternative;
