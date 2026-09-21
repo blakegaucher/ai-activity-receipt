@@ -149,7 +149,7 @@ def write_json(path: Path, value: Any) -> None:
 
 def clean_leakage() -> dict[str, Any]:
     return {
-        "audit_version": "AR-P003-v0.3-leakage-audit-v0.1",
+        "audit_version": "AR-P003-v0.3-leakage-audit-v0.2",
         "status": "development_audit",
         "build_manifest_sha256": "sha256:" + ("1" * 64),
         "analysis_sha256": "sha256:" + ("2" * 64),
@@ -163,12 +163,14 @@ def clean_leakage() -> dict[str, Any]:
             {
                 "case_id": "case-1",
                 "stratum": "ordinary",
-                "conditions_present": ["control", "receipt"],
-                "n_presentations": 2,
+                "conditions_present": ["raw", "receipt", "structured"],
+                "n_presentations": 3,
                 "evidence_sha256": "sha256:" + ("3" * 64),
                 "evidence_chars": 300,
+                "structured_chars": 90,
                 "receipt_chars": 120,
-                "presentation_expansion_ratio": 1.4,
+                "structured_presentation_expansion_ratio": 1.3,
+                "receipt_presentation_expansion_ratio": 1.4,
                 "answer_option_audit": {
                     "material_actions": {
                         "n_gold": 1,
@@ -193,6 +195,11 @@ def clean_leakage() -> dict[str, Any]:
                     },
                 },
                 "literal_gold_mentions": {
+                    "material_actions": ["analyze"],
+                    "material_sources": ["source-A"],
+                    "incidents": [],
+                },
+                "structured_literal_gold_mentions": {
                     "material_actions": ["analyze"],
                     "material_sources": ["source-A"],
                     "incidents": [],
