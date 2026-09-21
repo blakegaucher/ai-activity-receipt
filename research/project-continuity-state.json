@@ -1,6 +1,6 @@
 {
-  "snapshot_version": "project-continuity-v0.15",
-  "snapshot_date": "2026-09-20",
+  "snapshot_version": "project-continuity-v0.16",
+  "snapshot_date": "2026-09-21",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
   "historical": {
@@ -51,7 +51,9 @@
           "condition_order_case_verification": true,
           "incomplete_session_rejected": true,
           "assignment_contract": "AR-P003-v0.3-draft-assignment-v0.3",
-          "comparison_design": "three_condition_structured_control"
+          "comparison_design": "three_condition_structured_control",
+          "analysis_contract": "AR-P003-v0.3-dev-runner-analysis-v0.3",
+          "challenge_design": "integrated_challenge_strata"
         }
       },
       "methodology_decision_ledger": {
@@ -60,7 +62,7 @@
         "comparison_conditions": "selected:three_condition_structured_control",
         "primary_endpoint": "unresolved",
         "primary_timing_clock": "unresolved",
-        "challenge_design": "unresolved",
+        "challenge_design": "selected:integrated_challenge_strata",
         "reviewer_population": "unresolved",
         "effect_precision_target": "unresolved",
         "freeze_readiness_crosscheck": true,
@@ -70,8 +72,9 @@
           "completeness_guard": true,
           "research_review_effect_thresholds_preserved_as_candidate": true
         },
-        "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
-        "comparison_conditions_freeze_readiness": "complete"
+        "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
+        "comparison_conditions_freeze_readiness": "complete",
+        "challenge_strata_freeze_readiness": "prepared"
       },
       "leakage_validation": {
         "status": "prepared_not_complete",
@@ -117,7 +120,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.19",
+      "suite_version": "ai-activity-receipt-repro-v0.20",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,
