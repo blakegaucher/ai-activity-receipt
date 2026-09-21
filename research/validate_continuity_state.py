@@ -55,7 +55,7 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.13":
+    if state.get("snapshot_version") != "project-continuity-v0.14":
         errors.append("machine-readable continuity snapshot_version is stale")
     if state.get("snapshot_date") != "2026-09-20":
         errors.append("machine-readable continuity snapshot_date is stale")
@@ -241,25 +241,28 @@ def main() -> int:
     if codeql.get("post_remediation_javascript_typescript") != "success":
         errors.append("post-remediation JavaScript/TypeScript CodeQL status is stale")
     if codeql.get("alert_inventory") != (
-        "owner_ui_verified_1_open_1_closed_alert_1_open_2026-09-20"
+        "owner_ui_verified_0_open_2_closed_2026-09-20"
     ):
         errors.append(
             "CodeQL alert-inventory continuity is stale relative to authenticated "
             "owner dashboard evidence"
         )
-    if codeql.get("post_remediation_open_high_alert_count") != 1:
+    if codeql.get("post_remediation_open_high_alert_count") != 0:
         errors.append("CodeQL open-High alert count continuity is stale")
-    if codeql.get("open_original_alerts") != [1]:
+    if codeql.get("open_original_alerts") != []:
         errors.append("CodeQL remaining original-alert continuity is stale")
-    if codeql.get("closed_original_alerts") != [2]:
+    if codeql.get("closed_original_alerts") != [1, 2]:
         errors.append("CodeQL closed original-alert continuity is stale")
     if codeql.get("alert_1_post_second_remediation_dashboard_verification") != (
-        "pending_owner_ui_after_main_merge"
+        "owner_ui_verified_closed_after_pr_76_on_main_2026-09-20"
     ):
         errors.append(
-            "CodeQL alert #1 second-remediation dashboard gate changed without "
-            "authenticated owner evidence"
+            "CodeQL alert #1 final dashboard verification continuity is stale"
         )
+    if codeql.get("all_original_alerts_resolved") is not True:
+        errors.append("CodeQL original-alert resolution continuity is stale")
+    if codeql.get("final_original_alert_state") != "0_open_2_closed":
+        errors.append("CodeQL final original-alert state continuity is stale")
     if codeql.get("alert_1_second_remediation_pr") != 75:
         errors.append("CodeQL alert #1 second-remediation PR continuity is stale")
     if codeql.get("alert_1_second_remediation_merge_commit") != (
@@ -278,6 +281,22 @@ def main() -> int:
         "remove_sensitive_heuristic_names_from_printable_diagnostic_dataflow"
     ):
         errors.append("CodeQL alert #1 heuristic-followup strategy continuity is stale")
+    if codeql.get("alert_1_heuristic_followup_pr") != 76:
+        errors.append("CodeQL alert #1 heuristic-followup PR continuity is stale")
+    if codeql.get("alert_1_heuristic_followup_merge_commit") != (
+        "9c03d91de065511bc7397f93a12e40cb747eb3e7"
+    ):
+        errors.append("CodeQL alert #1 heuristic-followup merge continuity is stale")
+    if codeql.get("alert_1_heuristic_followup_validation_run") != 164:
+        errors.append("CodeQL alert #1 heuristic-followup validation run is stale")
+    if codeql.get("alert_1_heuristic_followup_codeql_run") != 81:
+        errors.append("CodeQL alert #1 heuristic-followup CodeQL run is stale")
+    if security.get("security_alert_notifications") != (
+        "enabled_owner_verified_2026-09-20"
+    ):
+        errors.append("owner Security-alert notification continuity is stale")
+    if security.get("issue_37") != "closed_completed_2026-09-20":
+        errors.append("repository security issue #37 continuity is stale")
     if (dev.get("reproducibility_runner") or {}).get("external_reproduction_handoff") is not True:
         errors.append("external reproduction handoff continuity flag unexpectedly changed")
 
