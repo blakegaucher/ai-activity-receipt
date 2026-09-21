@@ -1,14 +1,15 @@
 {
   "protocol_id": "AR-P003",
-  "version": "v0.3-draft-2026-09-18",
+  "version": "v0.3-draft-2026-09-20-three-condition-v0.1",
   "status": "candidate_preregistration_draft",
   "frozen": false,
-  "research_question": "Does adding a standardized AI Activity Receipt to the same underlying evidence change independent human reconstruction accuracy, reliability, or time?",
+  "research_question": "Do a neutral structured event table and an AI Activity Receipt, each added to the same underlying heterogeneous evidence, change independent human reconstruction accuracy, reliability, or time relative to raw evidence, and does the Receipt add benefit beyond generic structuring?",
   "conditions": {
-    "control": "heterogeneous underlying evidence only",
+    "raw": "heterogeneous underlying evidence only",
+    "structured": "same underlying evidence plus a neutral structured event table",
     "receipt": "same underlying evidence plus standardized Activity Receipt"
   },
-  "ordinary_case_rule": "Receipt material facts must be derivable from the same underlying evidence available in control.",
+  "ordinary_case_rule": "All material facts shown in the neutral structured event table or Activity Receipt must be derivable from the same underlying evidence available in the raw condition; presentation layers may organize but must not manufacture evidence.",
   "challenge_strata": [
     "stale_receipt",
     "incomplete_receipt",
@@ -18,8 +19,8 @@
     "design": "randomized_balanced_incomplete_block",
     "same_case_both_conditions_per_reviewer": false,
     "independently_randomize_case_order": true,
-    "assignment_version": "AR-P003-v0.3-draft-assignment-v0.2",
-    "condition_balance_method": "balanced_bipartite_edge_coloring_v1",
+    "assignment_version": "AR-P003-v0.3-draft-assignment-v0.3",
+    "condition_balance_method": "equitable_three_condition_b_matching_v1",
     "max_reviewer_condition_imbalance": 1,
     "max_case_condition_imbalance": 1,
     "balance_all_cases_across_conditions": true,
@@ -80,12 +81,14 @@
   "private_chain_of_thought_collected": false,
   "repository_smoke_data_is_confirmatory": false,
   "case_package_contract": {
-    "version": "AR-P003-v0.3-dev-case-v0.1",
-    "condition_contract": "same_evidence_plus_receipt",
+    "version": "AR-P003-v0.3-dev-case-v0.2",
+    "condition_contract": "same_evidence_plus_neutral_structured_or_receipt_v1",
     "reviewer_analysis_file_separation_required": true,
     "path_traversal_rejected": true,
     "forbidden_marker_scan_required_before_freeze": true,
-    "challenge_state_must_match_stratum": true
+    "challenge_state_must_match_stratum": true,
+    "structured_control_file_required": true,
+    "structured_control_evidence_symmetry_audit_required": true
   },
   "sample_size_planning": {
     "status": "development_not_frozen",
@@ -103,7 +106,6 @@
     "path": "benchmark/arp003_v0_3/methodology-decisions.current.json",
     "required_before_freeze": true,
     "unresolved_decisions": [
-      "comparison_conditions",
       "primary_endpoint",
       "primary_timing_clock",
       "challenge_design",
