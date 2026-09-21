@@ -83,6 +83,13 @@ REVIEWER_SCOPE_RULE = (
     "no_generalization_from_a_convenience_or_unrepresentative_sample"
 )
 
+PRIMARY_ENDPOINT_CANDIDATE = "correct_completion_by_180s"
+PRIMARY_ENDPOINT_DEADLINE = 180
+PRIMARY_TIMING_CANDIDATES = [
+    "active_time_primary",
+    "wall_deadline_with_hidden_sensitivity",
+]
+
 REVIEWER_DOCUMENTATION_MARKERS = {
     "reviewer instructions": (
         "relevant professional reviewers",
@@ -282,6 +289,95 @@ def semantic_errors(
                         f"{key!r} does not match the selected frozen design"
                     )
 
+    endpoint_decision = decisions_by_id.get("primary_endpoint")
+    if endpoint_decision and endpoint_decision.get("status") == "selected":
+        if endpoint_decision.get("selected_candidate") != PRIMARY_ENDPOINT_CANDIDATE:
+            errors.append(
+                "LEDGER-16 selected primary_endpoint must resolve to "
+                f"{PRIMARY_ENDPOINT_CANDIDATE!r} for this protocol version"
+            )
+
+        endpoint = protocol.get("primary_endpoint")
+        if not isinstance(endpoint, dict):
+            errors.append(
+                "LEDGER-17 selected primary_endpoint requires a structured "
+                "protocol.json primary_endpoint object"
+            )
+        else:
+            expected_endpoint = {
+                "decision_id": "primary_endpoint",
+                "selected_candidate": PRIMARY_ENDPOINT_CANDIDATE,
+                "endpoint_id": PRIMARY_ENDPOINT_CANDIDATE,
+                "outcome_type": "binary",
+                "deadline_seconds": PRIMARY_ENDPOINT_DEADLINE,
+                "required_judgments_rule": (
+                    "case_specific_frozen_primary_endpoint_contract"
+                ),
+                "acceptable_evidence_rule": (
+                    "each_required_judgment_must_have_at_least_one_prespecified_"
+                    "acceptable_support_set_for_the_assigned_condition"
+                ),
+                "primary_timing_clock": "unresolved",
+                "timing_candidates": PRIMARY_TIMING_CANDIDATES,
+                "confirmatory_derivation_status": (
+                    "blocked_until_primary_timing_clock_selected"
+                ),
+                "component_endpoints_role": "secondary_diagnostic_not_co_primary",
+                "critical_false_clearance_role": (
+                    "separate_prespecified_safety_endpoint"
+                ),
+                "critical_false_clearance_threshold": (
+                    "unresolved_effect_precision_target"
+                ),
+            }
+            for key, expected in expected_endpoint.items():
+                if endpoint.get(key) != expected:
+                    errors.append(
+                        "LEDGER-18 protocol primary_endpoint field "
+                        f"{key!r} does not match the selected design"
+                    )
+
+            contingency = endpoint.get("development_only_contingency") or {}
+            if contingency.get("allowed_before_confirmatory_freeze_only") is not True:
+                errors.append("LEDGER-19 endpoint contingency must be pre-freeze only")
+            if contingency.get("automatic_component_endpoint_promotion") is not False:
+                errors.append(
+                    "LEDGER-19 endpoint contingency must prohibit automatic "
+                    "component-endpoint promotion"
+                )
+            if contingency.get("confirmatory_outcome_inspection_allowed") is not False:
+                errors.append(
+                    "LEDGER-19 endpoint contingency must prohibit confirmatory "
+                    "outcome inspection"
+                )
+
+        timing_decision = decisions_by_id.get("primary_timing_clock") or {}
+        if (
+            timing_decision.get("status") != "unresolved"
+            or timing_decision.get("selected_candidate") is not None
+        ):
+            errors.append(
+                "LEDGER-20 selecting primary_endpoint must not silently select "
+                "primary_timing_clock"
+            )
+        effect_decision = decisions_by_id.get("effect_precision_target") or {}
+        if (
+            effect_decision.get("status") != "unresolved"
+            or effect_decision.get("selected_candidate") is not None
+        ):
+            errors.append(
+                "LEDGER-21 selecting primary_endpoint must not select "
+                "effect_precision_target"
+            )
+        timing = protocol.get("timing") or {}
+        if timing.get("primary_timing_clock") != "unresolved":
+            errors.append(
+                "LEDGER-22 protocol timing must remain unresolved until the "
+                "separate timing decision is selected"
+            )
+        if timing.get("candidates") != PRIMARY_TIMING_CANDIDATES:
+            errors.append("LEDGER-22 protocol timing candidate set changed")
+
     return errors
 
 
@@ -439,6 +535,36 @@ def run_self_test() -> int:
         errors = validate(ledger, schema, mutated_protocol)
         assert any("LEDGER-15" in error for error in errors), (key, errors)
 
+    endpoint_mutations = (
+        ("deadline_seconds", 181),
+        ("primary_timing_clock", "active_time_primary"),
+        ("component_endpoints_role", "co_primary"),
+        ("critical_false_clearance_role", "folded_into_primary"),
+    )
+    for key, value in endpoint_mutations:
+        mutated_protocol = copy.deepcopy(protocol)
+        mutated_protocol["primary_endpoint"][key] = value
+        errors = validate(ledger, schema, mutated_protocol)
+        assert any("LEDGER-18" in error for error in errors), (key, errors)
+
+    selected_timing = copy.deepcopy(ledger)
+    timing_decision = next(
+        item for item in selected_timing["decisions"]
+        if item["decision_id"] == "primary_timing_clock"
+    )
+    timing_decision["status"] = "selected"
+    timing_decision["selected_candidate"] = "active_time_primary"
+    timing_decision["rationale"] = "Synthetic invalid mutation."
+    errors = validate(selected_timing, schema, protocol)
+    assert any("LEDGER-20" in error for error in errors), errors
+
+    bad_contingency = copy.deepcopy(protocol)
+    bad_contingency["primary_endpoint"]["development_only_contingency"][
+        "automatic_component_endpoint_promotion"
+    ] = True
+    errors = validate(ledger, schema, bad_contingency)
+    assert any("LEDGER-19" in error for error in errors), errors
+
     # Required decision IDs remain required even if an input flips their flags.
     optionalized = copy.deepcopy(ledger)
     for decision in optionalized["decisions"]:
@@ -462,6 +588,8 @@ def run_self_test() -> int:
         decision["status"] = "selected"
         if decision["decision_id"] == "reviewer_population":
             decision["selected_candidate"] = REVIEWER_POPULATION_CANDIDATE
+        elif decision["decision_id"] == "primary_endpoint":
+            decision["selected_candidate"] = PRIMARY_ENDPOINT_CANDIDATE
         else:
             decision["selected_candidate"] = decision["candidates"][0]["candidate_id"]
         decision["rationale"] = "Synthetic self-test selection only."
