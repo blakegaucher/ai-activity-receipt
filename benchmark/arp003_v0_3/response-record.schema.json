@@ -1,16 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AR-P003 v0.3 Three-Condition Scoring Record",
-  "description": "Development schema for one pseudonymous reviewer-case scoring record. Gold labels are analysis-side data and are not reviewer-facing.",
+  "title": "AR-P003 v0.3 Endpoint-Aware Three-Condition Scoring Record",
+  "description": "Development schema for one pseudonymous reviewer-case scoring record. Gold labels and the case-specific endpoint contract are analysis-side data and are not reviewer-facing.",
   "type": "object",
   "required": [
     "reviewer_id",
     "case_id",
     "condition",
     "stratum",
-    "elapsed_seconds",
     "gold",
-    "answer"
+    "answer",
+    "record_version",
+    "elapsed_wall_seconds",
+    "elapsed_active_seconds",
+    "primary_endpoint_contract"
   ],
   "properties": {
     "reviewer_id": {
@@ -33,15 +36,25 @@
       "type": "string",
       "minLength": 1
     },
-    "elapsed_seconds": {
-      "type": "number",
-      "exclusiveMinimum": 0
-    },
     "gold": {
       "$ref": "#/$defs/reconstruction"
     },
     "answer": {
       "$ref": "#/$defs/reviewerAnswer"
+    },
+    "record_version": {
+      "const": "AR-P003-v0.3-scoring-record-v0.2"
+    },
+    "elapsed_wall_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "elapsed_active_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "primary_endpoint_contract": {
+      "$ref": "#/$defs/primaryEndpointContract"
     }
   },
   "$defs": {
@@ -130,6 +143,286 @@
         "verification_state",
         "missing_evidence"
       ],
+      "additionalProperties": false
+    },
+    "supportSetList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "primaryEndpointContract": {
+      "type": "object",
+      "required": [
+        "contract_version",
+        "case_id",
+        "endpoint_id",
+        "deadline_seconds",
+        "required_judgments",
+        "critical_false_clearance_checks"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "AR-P003-v0.3-primary-endpoint-case-v0.1"
+        },
+        "case_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "endpoint_id": {
+          "const": "correct_completion_by_180s"
+        },
+        "deadline_seconds": {
+          "const": 180
+        },
+        "required_judgments": {
+          "type": "object",
+          "minProperties": 1,
+          "properties": {
+            "material_actions": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "set_exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "authorization_violation": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "material_sources": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "set_exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "incidents": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "set_exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "verification_state": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "missing_evidence": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "critical_false_clearance_checks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": [
+              "field",
+              "rule"
+            ],
+            "properties": {
+              "field": {
+                "type": "string",
+                "enum": [
+                  "authorization_violation",
+                  "incidents",
+                  "verification_state",
+                  "missing_evidence"
+                ]
+              },
+              "rule": {
+                "type": "string",
+                "enum": [
+                  "boolean_true_to_false",
+                  "nonempty_set_to_empty",
+                  "adverse_verification_to_clear"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
       "additionalProperties": false
     }
   },
