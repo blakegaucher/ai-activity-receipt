@@ -1,38 +1,37 @@
 # Repository License Decision Preflight
 
-> **Status:** Preparation only — no repository license has been selected.  
-> **Snapshot:** 2026-09-19  
-> This document is a technical/governance inventory, not legal advice.
+> **Status:** Preflight clear; owner decision recorded as **Apache License 2.0**.  
+> **Decision date:** 2026-09-21  
+> **Copyright holder:** Blake Gaucher  
+> This document is a technical/governance inventory, not legal advice or patent clearance.
 
-The repository is public, but public visibility is not the same as an open-source license.
+Issue #44 required an explicit owner decision before the public repository could grant broad reuse rights. Blake Gaucher has now selected Apache-2.0 for covered project-authored public repository material.
 
-Issue #44 intentionally keeps the owner decision open. This preflight reduces the factual work needed before Blake Gaucher / Ancient Immortal Art chooses terms.
+## Preflight result
 
-## Current repository status
+The live repository was rechecked before applying the decision.
 
-- no top-level `LICENSE` file is present;
-- `docs/LICENSING.md` explicitly records that no open-source license has been selected;
-- the repository should not currently be described as MIT-, MIT-0-, Apache-, BSD-, CC-, or otherwise open-source licensed;
-- technical reviewers may inspect the public repository, but broad reuse/redistribution permission should not be inferred from public visibility.
+- Direct Python requirements exactly match the machine-readable inventory.
+- GitHub Action repositories used by the current workflows exactly match the inventory.
+- All 21 locked package names exactly match the recorded transitive package-name snapshot.
+- Every inventoried direct dependency, Action, and referenced DSSE implementation remains recorded as non-vendored.
+- The current tree contains no obvious `vendor/`, `third_party/`, embedded dependency source subtree, or pre-existing project license/notice subtree.
+- No new unresolved incompatible or unclear dependency/material issue was identified by this technical inventory check.
+
+This result means the documented inventory did not reveal a new blocker. It does **not** constitute a legal compatibility opinion, patent clearance, or verification of every transitive package's current license text.
 
 ## Direct Python dependencies
 
-Observed upstream license files were reviewed on 2026-09-19.
+Observed upstream license files were originally reviewed on 2026-09-19; the live requirement set was rechecked on 2026-09-21.
 
 | Dependency | Current project range | Upstream repository | Observed upstream license | Vendored here? |
 | --- | --- | --- | --- | --- |
 | `jsonschema` | `jsonschema[format]>=4.23,<5` | `python-jsonschema/jsonschema` | MIT | No |
 | `cryptography` | `cryptography>=50.0.1,<51` | `pyca/cryptography` | Apache-2.0 **or** BSD-3-Clause | No |
 
-The exact CI snapshot in `requirements-lock.txt` also contains transitive packages.
-
-Their names are captured in `research/third-party-inventory.json`, but this pass did **not** individually reverify every transitive package's current license text because their source is not vendored in this repository.
-
-Before vendoring or redistributing third-party package source/assets, review the exact upstream terms for that material.
+The exact CI snapshot in `requirements-lock.txt` contains transitive packages. Their package names are recorded in `research/third-party-inventory.json`; their source is not vendored here. Review exact upstream terms before redistributing or vendoring third-party source/assets.
 
 ## GitHub Actions dependencies
-
-The committed workflows currently reference these external Action repositories:
 
 | Action repository | Repository use | Observed upstream license | Vendored here? |
 | --- | --- | --- | --- |
@@ -41,87 +40,33 @@ The committed workflows currently reference these external Action repositories:
 | `actions/upload-artifact` | reproducibility-report upload | MIT | No |
 | `github/codeql-action` | CodeQL advanced setup | MIT | No |
 
-The workflows pin immutable commit SHAs. Pinning improves reproducibility/supply-chain discipline; it does not change upstream license obligations.
+The workflows pin immutable commit SHAs. Pinning supports reproducibility and supply-chain discipline; it does not change upstream license obligations.
 
-## DSSE reference implementation
+## DSSE and external specifications
 
-The research DSSE prototype is project code implementing the documented DSSE v1 envelope/PAE behavior.
+The research DSSE prototype is project-authored code implementing documented DSSE v1 envelope/PAE behavior. The upstream `secure-systems-lab/dsse` repository's observed license is Apache-2.0, and upstream source is not vendored here.
 
-The upstream `secure-systems-lab/dsse` repository's observed license is Apache-2.0.
+The repository also references external standards/protocols including JSON Schema, W3C PROV / PROV-O, OpenTelemetry / GenAI conventions, Model Context Protocol, Agent2Agent, OAuth RFCs, C2PA, and DSSE.
 
-The upstream source package is not vendored in this repository.
+References and interoperability mappings do not transfer ownership or license rights in those specifications to this project. Do not copy or adapt third-party text/source without checking and preserving applicable terms and notices.
 
-The project documentation cites the protocol and upstream implementation for comparison/test-vector context. Any future direct copying/adaptation of source must preserve whatever notices the applicable upstream license requires.
+## Owner licensing decision
 
-## Standards and specifications referenced
+The repository-wide default for **project-authored public material actually published here** is Apache License 2.0.
 
-The repository also references external standards/protocols such as:
+Covered material includes source code, validators and research utilities, adapters, benchmark tooling, the offline runner, project documentation, project-authored schemas, examples, synthetic fixtures, and synthetic benchmark material.
 
-- JSON Schema;
-- W3C PROV / PROV-O;
-- OpenTelemetry / GenAI conventions;
-- Model Context Protocol;
-- Agent2Agent;
-- OAuth RFCs;
-- C2PA;
-- DSSE.
+The complete standard Apache License 2.0 text is published as top-level `LICENSE`. `NOTICE` records Blake Gaucher's 2026 copyright attribution and the non-trademark/third-party boundary.
 
-A citation or interoperability mapping is not the same thing as incorporating the standard's source code or relicensing its text.
+## Explicit exclusions and boundaries
 
-Do not copy large specification text into the repository without checking the applicable publication/license terms.
+Future human-study, participant, reviewer, hidden-analysis, personal, or privacy-sensitive material is **not** automatically authorized for public release by the repository license. Such material remains private unless a separate release, privacy, ethics, and licensing decision is explicitly made.
 
-## Repository-tree observation
+Third-party material remains governed by its applicable upstream terms and required notices. This repository license does not claim ownership of third-party specifications, libraries, Actions, standards, or adapted material.
 
-At this snapshot, the repository tree contains project code, schemas, examples, documentation, workflows, and benchmark/research artifacts.
+Apache-2.0 does not grant trademark rights. Ancient Immortal Art and AI Activity Receipt names/branding are not made freely licensed trademarks or endorsement rights by this decision.
 
-No `vendor/`, `third_party/`, embedded package source tree, or other obvious vendored dependency subtree is present.
-
-That observation reduces one licensing risk, but it is not a legal originality opinion.
-
-## Candidate owner choices
-
-The project owner still needs to choose the repository's licensing model deliberately.
-
-Common permissive options to consider include:
-
-| Option | Practical characteristic | Decision consideration |
-| --- | --- | --- |
-| **MIT-0** | very short permissive software license without an attribution condition | low-friction reuse; no express patent grant |
-| **MIT** | short permissive software license with notice preservation | familiar and broadly used |
-| **Apache-2.0** | permissive license with explicit patent terms and notice requirements | stronger patent language; more compliance text |
-| **BSD-3-Clause** | permissive software license with notice and non-endorsement terms | familiar alternative to MIT |
-| **CC0** | public-domain dedication/fallback-license approach | often considered for data/fixtures; software use should be chosen deliberately |
-
-This table does **not** recommend or select a license.
-
-## Scope decisions the owner should make
-
-Before closing the license-governance issue, decide separately what covers:
-
-1. **Project-authored source code**
-   - validators;
-   - adapters;
-   - research utilities;
-   - benchmark tooling;
-   - offline runner.
-
-2. **Project documentation**
-   - README/docs;
-   - architecture notes;
-   - research writeups.
-
-3. **Synthetic schemas/examples/fixtures**
-   - JSON Schemas;
-   - synthetic Receipt/record examples;
-   - synthetic benchmark material.
-
-4. **Future human-study material**
-   - participant/reviewer responses should remain private unless a separate ethics/privacy/release decision is made;
-   - a repository code license should not automatically be assumed to authorize publication of human-participant data.
-
-5. **Competition reuse**
-   - ARC/competition work is a separate project lane;
-   - if code from this repository is ever reused in a competition entry, check that competition's current license/open-source rules at that time rather than silently transferring assumptions between lanes.
+ARC / solver and other competition lanes remain separate. Do not transfer this licensing decision into another repository or competition without checking that lane's current rules.
 
 ## Machine-readable preflight
 
@@ -131,28 +76,10 @@ Run:
 python research/validate_third_party_inventory.py
 ```
 
-The check verifies only repository consistency:
-
-- each direct Python requirement is listed;
-- each external GitHub Action repository used by current workflows is listed;
-- the exact lock-package names match the transitive snapshot list;
-- current inventory entries state that upstream source is not vendored;
-- `docs/LICENSING.md` still records the no-license state.
-
-It does **not** determine legal compatibility or choose terms.
-
-## Recommended decision sequence
-
-1. Review this preflight and issue #44.
-2. Decide whether code/docs/fixtures use one license or separate licenses.
-3. If needed, obtain legal advice for patent, Indigenous IP/cultural material, commercial, or contributor questions.
-4. Publish the selected license file(s).
-5. Update `docs/LICENSING.md`, README, CONTRIBUTING, CITATION, continuity state, and issue #44.
-6. Re-run CI, CodeQL, and the aggregate reproducibility suite.
-7. Only then describe the repository using the selected license name.
+The check verifies direct requirements, workflow Action repositories, lock-package names, non-vendoring status, the Apache-2.0 `LICENSE`, `NOTICE` attribution, and the private/third-party/trademark boundaries. The aggregate reproducibility suite also binds `LICENSE` and `NOTICE`.
 
 ## Evidence boundary
 
-Completing this preflight means the project has a documented dependency/action inventory and a clearer owner decision path.
+Publishing Apache-2.0 grants reuse rights to covered public project material subject to the license terms.
 
-It does **not** grant permission, provide legal clearance, certify third-party-license compatibility, or make the repository open source.
+It does **not** establish customer validation, commercial readiness, standards conformance, certification, patent clearance, trademark permission, human-study approval, security certification, or competition eligibility.
