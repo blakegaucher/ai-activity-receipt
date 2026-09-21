@@ -16,7 +16,7 @@
   ],
   "properties": {
     "audit_version": {
-      "const": "AR-P003-v0.3-leakage-audit-v0.1"
+      "const": "AR-P003-v0.3-leakage-audit-v0.2"
     },
     "status": {
       "const": "development_audit"
@@ -65,11 +65,14 @@
           "evidence_sha256",
           "evidence_chars",
           "receipt_chars",
-          "presentation_expansion_ratio",
           "answer_option_audit",
           "literal_gold_mentions",
           "high_risk_flags",
-          "review_flags"
+          "review_flags",
+          "structured_chars",
+          "structured_presentation_expansion_ratio",
+          "receipt_presentation_expansion_ratio",
+          "structured_literal_gold_mentions"
         ],
         "properties": {
           "case_id": {
@@ -86,7 +89,8 @@
             "items": {
               "type": "string",
               "enum": [
-                "control",
+                "raw",
+                "structured",
                 "receipt"
               ]
             }
@@ -106,10 +110,6 @@
           "receipt_chars": {
             "type": "integer",
             "minimum": 0
-          },
-          "presentation_expansion_ratio": {
-            "type": "number",
-            "minimum": 1
           },
           "answer_option_audit": {
             "type": "object",
@@ -164,6 +164,47 @@
               "type": "string",
               "minLength": 1
             }
+          },
+          "structured_chars": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "structured_presentation_expansion_ratio": {
+            "type": "number",
+            "minimum": 1
+          },
+          "receipt_presentation_expansion_ratio": {
+            "type": "number",
+            "minimum": 1
+          },
+          "structured_literal_gold_mentions": {
+            "type": "object",
+            "required": [
+              "material_actions",
+              "material_sources",
+              "incidents"
+            ],
+            "properties": {
+              "material_actions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "material_sources": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "incidents": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
           }
         },
         "additionalProperties": false
