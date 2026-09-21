@@ -6,6 +6,7 @@ authors:
   - family-names: Gaucher
     given-names: Blake
 repository-code: "https://github.com/blakegaucher/ai-activity-receipt"
+license: Apache-2.0
 abstract: >-
   An independent research repository exploring human-centered,
   provenance-aware records and compact Activity Receipts for consequential
