@@ -1,5 +1,5 @@
 {
-  "snapshot_version": "project-continuity-v0.16",
+  "snapshot_version": "project-continuity-v0.17",
   "snapshot_date": "2026-09-21",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
@@ -120,7 +120,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.20",
+      "suite_version": "ai-activity-receipt-repro-v0.21",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,
@@ -168,7 +168,7 @@
   "repository_governance": {
     "contribution_guidance": true,
     "local_private_output_gitignore": true,
-    "explicit_license_status": "not_selected",
+    "explicit_license_status": "apache-2.0",
     "security_hardening": {
       "status": "admin_controls_verified_codeql_resolved_owner_notifications_enabled",
       "dependabot_version_updates_configured": true,
@@ -237,9 +237,10 @@
       "issue_37": "closed_completed_2026-09-20"
     },
     "license_preflight_inventory": {
-      "status": "prepared_not_legal_clearance",
-      "inventory_version": "third-party-inventory-v0.1",
-      "direct_dependency_and_action_drift_check": true
+      "status": "clear_owner_decision_applied_not_legal_clearance",
+      "inventory_version": "third-party-inventory-v0.2",
+      "direct_dependency_and_action_drift_check": true,
+      "current_preflight_clear": true
     },
     "markdown_link_integrity": {
       "status": "ci_and_reproducibility_guard",
@@ -253,10 +254,22 @@
       "duplicate_keys_rejected": true,
       "declared_draft_2020_12_schemas_meta_validated": true,
       "instance_semantics_delegated_to_specialized_validators": true
+    },
+    "repository_license": {
+      "spdx_id": "Apache-2.0",
+      "copyright_holder": "Blake Gaucher",
+      "copyright_year": 2026,
+      "license_file": "LICENSE",
+      "notice_file": "NOTICE",
+      "scope": "project_authored_public_repository_material",
+      "private_human_study_material_auto_released": false,
+      "third_party_terms_preserved": true,
+      "trademark_rights_granted": false,
+      "cross_competition_lane_transfer": false,
+      "issue_44": "closed_completed_2026-09-21"
     }
   },
   "open_project_governance_gates": [
-    "explicit_repository_license_selection",
     "manual_AR_P003_browser_device_smoke_testing"
   ]
 }
