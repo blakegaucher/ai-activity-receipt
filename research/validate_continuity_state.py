@@ -21,7 +21,7 @@ RUNNER_RESPONSE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-response.s
 LATEST_CONTINUITY = (
     ROOT
     / "docs"
-    / "PROJECT-CONTINUITY-2026-09-21-AR-P003-REVIEWER-POPULATION.md"
+    / "PROJECT-CONTINUITY-2026-09-21-AR-P003-PRIMARY-ENDPOINT.md"
 )
 EXPECTED_FREEZE = (
     "8a381f4ae20a5f6824e513c7f96920fdf3cfe6b00b0b8d301127f5e0b659d0fd"
@@ -59,7 +59,7 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.18":
+    if state.get("snapshot_version") != "project-continuity-v0.19":
         errors.append("machine-readable continuity snapshot_version is stale")
     if state.get("snapshot_date") != "2026-09-21":
         errors.append("machine-readable continuity snapshot_date is stale")
@@ -102,7 +102,7 @@ def main() -> int:
             "three_condition_structured_control"
         )
     if methodology.get("protocol_version") != (
-        "v0.3-draft-2026-09-21-professional-reviewers-v0.1"
+        "v0.3-draft-2026-09-21-primary-endpoint-v0.1"
     ):
         errors.append("AR-P003 selected methodology protocol-version continuity is stale")
     if methodology.get("comparison_conditions_freeze_readiness") != "complete":
@@ -149,8 +149,50 @@ def main() -> int:
     if population != expected_population:
         errors.append("AR-P003 reviewer-population continuity details are stale")
 
+    if methodology.get("primary_endpoint") != (
+        "selected:correct_completion_by_180s"
+    ):
+        errors.append(
+            "AR-P003 primary_endpoint must remain explicitly selected as "
+            "correct_completion_by_180s"
+        )
+    if methodology.get("primary_endpoint_freeze_readiness") != "complete":
+        errors.append("AR-P003 primary-endpoint readiness continuity is stale")
+
+    endpoint = methodology.get("primary_endpoint_design") or {}
+    expected_endpoint = {
+        "endpoint_id": "correct_completion_by_180s",
+        "outcome_type": "binary",
+        "deadline_seconds": 180,
+        "required_judgments": (
+            "case_specific_prespecified_and_frozen_before_confirmatory_execution"
+        ),
+        "acceptable_evidence_sets": (
+            "case_and_condition_specific_prespecified_support_sets"
+        ),
+        "material_fact_failure": (
+            "extra_required_set_fact_or_mismatched_authorization_state_fails"
+        ),
+        "timeout_failure": "deadline_miss_cannot_succeed",
+        "component_endpoints": "secondary_diagnostic_not_co_primary",
+        "critical_false_clearance": "separate_prespecified_safety_endpoint",
+        "critical_false_clearance_threshold": (
+            "unresolved_effect_precision_target"
+        ),
+        "primary_timing_clock": "unresolved",
+        "timing_candidates": [
+            "active_time_primary",
+            "wall_deadline_with_hidden_sensitivity",
+        ],
+        "confirmatory_derivation": (
+            "blocked_until_primary_timing_clock_selected"
+        ),
+        "automatic_fallback_primary": False,
+    }
+    if endpoint != expected_endpoint:
+        errors.append("AR-P003 primary-endpoint continuity details are stale")
+
     required_methodology_unresolved = {
-        "primary_endpoint",
         "primary_timing_clock",
         "effect_precision_target",
     }
@@ -195,11 +237,24 @@ def main() -> int:
     ):
         errors.append("AR-P003 comparison-design runner continuity is stale")
     if assignment_binding.get("analysis_contract") != (
-        "AR-P003-v0.3-dev-runner-analysis-v0.3"
+        "AR-P003-v0.3-dev-runner-analysis-v0.4"
     ):
         errors.append("AR-P003 hidden analysis contract continuity is stale")
     if assignment_binding.get("challenge_design") != "integrated_challenge_strata":
         errors.append("AR-P003 challenge-design runner continuity is stale")
+
+    runner_endpoint = runner.get("primary_endpoint") or {}
+    expected_runner_endpoint = {
+        "endpoint_id": "correct_completion_by_180s",
+        "primary_timing_clock": "unresolved",
+        "wall_and_active_recorded": True,
+        "confirmatory_timeout_enforcement": (
+            "blocked_until_primary_timing_clock_selected"
+        ),
+        "scoring_record_contract": "AR-P003-v0.3-scoring-record-v0.2",
+    }
+    if runner_endpoint != expected_runner_endpoint:
+        errors.append("AR-P003 endpoint-aware runner continuity is stale")
 
     freeze_manifest = arp003.get("freeze_manifest") or {}
     if freeze_manifest.get("version") != "AR-P003-v0.3-freeze-manifest-v0.2":
