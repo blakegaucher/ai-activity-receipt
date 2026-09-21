@@ -242,8 +242,18 @@ def run_self_test(schema: dict[str, Any]) -> int:
             "2026-09-18T08:00:00Z tool=send_email status=completed\n",
             encoding="utf-8",
         )
+        canonical_record = load_json(
+            Path(__file__).resolve().parents[2]
+            / "examples"
+            / "canonical-record.json"
+        )
+        canonical_path = root / "analysis" / "canonical-record.json"
+        canonical_path.write_text(
+            json.dumps(canonical_record, indent=2) + "\n",
+            encoding="utf-8",
+        )
         (root / "structured" / "events-table.md").write_text(
-            "| time | operation | status |\\n|---|---|---|\\n|08:00|send_email|completed|\\n",
+            render_file(canonical_path),
             encoding="utf-8",
         )
         (root / "receipt" / "receipt.json").write_text(
@@ -264,7 +274,10 @@ def run_self_test(schema: dict[str, Any]) -> int:
             "structured_control_file": "structured/events-table.md",
             "structured_control_record_file": "analysis/canonical-record.json",
             "receipt_file": "receipt/receipt.json",
-            "analysis_files": ["analysis/gold.json"],
+            "analysis_files": [
+                "analysis/gold.json",
+                "analysis/canonical-record.json",
+            ],
             "receipt_state": "current",
             "forbidden_reviewer_markers": ["GOLD_ONLY_MARKER"],
             "notes": "Development-only smoke case.",
