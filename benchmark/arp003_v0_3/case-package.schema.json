@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AR-P003 v0.3 Development Case Package",
-  "description": "Development-only manifest for one reviewer case package. It is designed to enforce file separation and condition symmetry before a future sealed corpus is frozen.",
+  "title": "AR-P003 v0.3 Development Three-Condition Case Package",
+  "description": "Development-only manifest for one three-condition reviewer case package. Shared raw evidence is separated from a neutral structured-control artifact, Activity Receipt, and analysis-only files.",
   "type": "object",
   "required": [
     "package_version",
@@ -9,6 +9,7 @@
     "stratum",
     "condition_contract",
     "reviewer_evidence_files",
+    "structured_control_file",
     "receipt_file",
     "analysis_files",
     "receipt_state",
@@ -16,7 +17,7 @@
   ],
   "properties": {
     "package_version": {
-      "const": "AR-P003-v0.3-dev-case-v0.1"
+      "const": "AR-P003-v0.3-dev-case-v0.2"
     },
     "case_id": {
       "type": "string",
@@ -32,7 +33,7 @@
       ]
     },
     "condition_contract": {
-      "const": "same_evidence_plus_receipt"
+      "const": "same_evidence_plus_neutral_structured_or_receipt_v1"
     },
     "reviewer_evidence_files": {
       "type": "array",
@@ -75,6 +76,10 @@
     },
     "notes": {
       "type": "string"
+    },
+    "structured_control_file": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "additionalProperties": false
