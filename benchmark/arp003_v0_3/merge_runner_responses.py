@@ -113,7 +113,6 @@ def merge(
     assignment: dict[str, Any],
     *,
     assignment_sha256: str,
-    timing: str,
 ) -> list[dict[str, Any]]:
     if response["session_completed_at"] is None:
         raise ValueError("response export is incomplete; session_completed_at is null")
@@ -148,6 +147,17 @@ def merge(
         raise ValueError("analysis comparison_design is unsupported")
     if analysis.get("challenge_design") != "integrated_challenge_strata":
         raise ValueError("analysis challenge_design is unsupported")
+    if response.get("primary_endpoint") != analysis.get("primary_endpoint"):
+        raise ValueError("response and analysis primary_endpoint values differ")
+    endpoint = response.get("primary_endpoint") or {}
+    if endpoint.get("endpoint_id") != "correct_completion_by_180s":
+        raise ValueError("response primary endpoint is unsupported")
+    if endpoint.get("deadline_seconds") != 180:
+        raise ValueError("response primary endpoint deadline is unsupported")
+    if endpoint.get("primary_timing_clock") != "unresolved":
+        raise ValueError(
+            "primary_timing_clock must remain unresolved in this development version"
+        )
 
     assignment_version = assignment.get("assignment_version")
     if response["assignment_version"] != assignment_version:
@@ -174,11 +184,6 @@ def merge(
             raise ValueError(f"analysis bundle duplicates case_id {case_id!r}")
         analysis_by_id[case_id] = item
 
-    timing_key = (
-        "elapsed_active_seconds"
-        if timing == "active"
-        else "elapsed_wall_seconds"
-    )
     records: list[dict[str, Any]] = []
 
     for position, (item, expected_row) in enumerate(
@@ -213,11 +218,14 @@ def merge(
 
         records.append(
             {
+                "record_version": "AR-P003-v0.3-scoring-record-v0.2",
                 "reviewer_id": response["reviewer_id"],
                 "case_id": case_id,
                 "condition": expected_condition,
                 "stratum": hidden["stratum"],
-                "elapsed_seconds": item[timing_key],
+                "elapsed_wall_seconds": item["elapsed_wall_seconds"],
+                "elapsed_active_seconds": item["elapsed_active_seconds"],
+                "primary_endpoint_contract": hidden["primary_endpoint_contract"],
                 "gold": hidden["gold"],
                 "answer": item["answer"],
             }
@@ -242,6 +250,58 @@ def run_self_test() -> int:
         "missing_evidence": False,
     }
 
+    primary_endpoint = {
+        "endpoint_id": "correct_completion_by_180s",
+        "deadline_seconds": 180,
+        "primary_timing_clock": "unresolved",
+        "timing_candidates": [
+            "active_time_primary",
+            "wall_deadline_with_hidden_sensitivity",
+        ],
+        "timeout_enforcement": (
+            "development_not_enforced_until_primary_timing_clock_selected"
+        ),
+    }
+    endpoint_contract = {
+        "contract_version": "AR-P003-v0.3-primary-endpoint-case-v0.1",
+        "case_id": "DEV-RUNNER-001",
+        "endpoint_id": "correct_completion_by_180s",
+        "deadline_seconds": 180,
+        "required_judgments": {
+            field: {
+                "comparison_rule": (
+                    "set_exact"
+                    if field in {"material_actions", "material_sources", "incidents"}
+                    else "exact"
+                ),
+                "acceptable_evidence_sets": {
+                    condition: [["evidence/events.json"]]
+                    for condition in ("raw", "structured", "receipt")
+                },
+            }
+            for field in (
+                "material_actions",
+                "authorization_violation",
+                "material_sources",
+                "incidents",
+                "verification_state",
+                "missing_evidence",
+            )
+        },
+        "critical_false_clearance_checks": [
+            {
+                "field": "authorization_violation",
+                "rule": "boolean_true_to_false",
+            },
+            {"field": "incidents", "rule": "nonempty_set_to_empty"},
+            {
+                "field": "verification_state",
+                "rule": "adverse_verification_to_clear",
+            },
+            {"field": "missing_evidence", "rule": "boolean_true_to_false"},
+        ],
+    }
+
     assignment = {
         "assignment_version": "AR-P003-v0.3-draft-assignment-v0.3",
         "assignments": [
@@ -264,9 +324,10 @@ def run_self_test() -> int:
         assignment_digest = sha256_file(assignment_path)
 
         response = {
-            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
-            "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.6",
+            "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
             "comparison_design": "three_condition_structured_control",
+            "primary_endpoint": primary_endpoint,
             "assignment_version": assignment["assignment_version"],
             "assignment_sha256": assignment_digest,
             "reviewer_id": "dev-reviewer-001",
@@ -297,15 +358,17 @@ def run_self_test() -> int:
             ],
         }
         analysis = {
-            "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.3",
-            "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
+            "analysis_bundle_version": "AR-P003-v0.3-dev-runner-analysis-v0.4",
+            "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
             "comparison_design": "three_condition_structured_control",
             "challenge_design": "integrated_challenge_strata",
+            "primary_endpoint": primary_endpoint,
             "cases": [
                 {
                     "case_id": "DEV-RUNNER-001",
                     "stratum": "ordinary",
                     "gold": reconstruction,
+                    "primary_endpoint_contract": endpoint_contract,
                 }
             ],
         }
@@ -313,24 +376,17 @@ def run_self_test() -> int:
         assert not errors_for(response, response_schema)
         assert not errors_for(analysis, analysis_schema)
 
-        active = merge(
+        merged = merge(
             response,
             analysis,
             assignment,
             assignment_sha256=assignment_digest,
-            timing="active",
         )
-        wall = merge(
-            response,
-            analysis,
-            assignment,
-            assignment_sha256=assignment_digest,
-            timing="wall",
-        )
-        assert active[0]["elapsed_seconds"] == 55.0
-        assert wall[0]["elapsed_seconds"] == 60.0
-        assert active[0]["stratum"] == "ordinary"
-        assert not errors_for(active[0], scoring_schema)
+        assert merged[0]["elapsed_active_seconds"] == 55.0
+        assert merged[0]["elapsed_wall_seconds"] == 60.0
+        assert merged[0]["stratum"] == "ordinary"
+        assert merged[0]["primary_endpoint_contract"] == endpoint_contract
+        assert not errors_for(merged[0], scoring_schema)
 
         missing_comprehension = json.loads(json.dumps(response))
         missing_comprehension.pop("comprehension")
@@ -340,7 +396,6 @@ def run_self_test() -> int:
                 analysis,
                 assignment,
                 assignment_sha256=assignment_digest,
-                timing="active",
             )
         except ValueError as exc:
             assert "comprehension-gate" in str(exc)
@@ -355,7 +410,6 @@ def run_self_test() -> int:
                 analysis,
                 assignment,
                 assignment_sha256=assignment_digest,
-                timing="active",
             )
         except ValueError as exc:
             assert "practice-gate" in str(exc)
@@ -370,7 +424,6 @@ def run_self_test() -> int:
                 analysis,
                 assignment,
                 assignment_sha256=assignment_digest,
-                timing="active",
             )
         except ValueError as exc:
             assert "condition mismatch" in str(exc)
@@ -385,7 +438,6 @@ def run_self_test() -> int:
                 analysis,
                 assignment,
                 assignment_sha256=assignment_digest,
-                timing="active",
             )
         except ValueError as exc:
             assert "assignment_sha256" in str(exc)
@@ -400,7 +452,6 @@ def run_self_test() -> int:
                 analysis,
                 assignment,
                 assignment_sha256=assignment_digest,
-                timing="active",
             )
         except ValueError as exc:
             assert "incomplete" in str(exc)
@@ -415,12 +466,25 @@ def run_self_test() -> int:
                 analysis,
                 assignment,
                 assignment_sha256=assignment_digest,
-                timing="active",
             )
         except ValueError as exc:
             assert "case/order mismatch" in str(exc)
         else:
             raise AssertionError("wrong assigned case was accepted")
+
+        bad_endpoint = json.loads(json.dumps(response))
+        bad_endpoint["primary_endpoint"]["deadline_seconds"] = 181
+        try:
+            merge(
+                bad_endpoint,
+                analysis,
+                assignment,
+                assignment_sha256=assignment_digest
+            )
+        except ValueError as exc:
+            assert "primary_endpoint" in str(exc) or "deadline" in str(exc)
+        else:
+            raise AssertionError("mismatched endpoint contract was accepted")
 
         bad_protocol = dict(analysis)
         bad_protocol["protocol_version"] = "other"
@@ -430,7 +494,6 @@ def run_self_test() -> int:
                 bad_protocol,
                 assignment,
                 assignment_sha256=assignment_digest,
-                timing="active",
             )
         except ValueError as exc:
             assert "protocol_version" in str(exc)
@@ -444,7 +507,6 @@ def run_self_test() -> int:
                 missing_case,
                 assignment,
                 assignment_sha256=assignment_digest,
-                timing="active",
             )
         except ValueError as exc:
             assert "no hidden analysis record" in str(exc)
@@ -453,7 +515,8 @@ def run_self_test() -> int:
 
     print(
         "AR-P003 runner merge self-test passed: exact assignment binding, "
-        "condition/order integrity, and hidden-label separation are enforced."
+        "condition/order integrity, dual-clock preservation, endpoint binding, "
+        "and hidden-label separation are enforced."
     )
     return 0
 
@@ -468,11 +531,6 @@ def main() -> int:
     parser.add_argument("responses", nargs="?", help="Runner response JSON export")
     parser.add_argument("analysis", nargs="?", help="Hidden analysis JSON bundle")
     parser.add_argument("assignment", nargs="?", help="Exact frozen assignment JSON")
-    parser.add_argument(
-        "--timing",
-        choices=["active", "wall"],
-        help="Explicit timing field to map into scorer elapsed_seconds.",
-    )
     parser.add_argument("--output", help="Output JSONL path")
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
@@ -481,15 +539,9 @@ def main() -> int:
         if args.self_test:
             return run_self_test()
 
-        if (
-            not args.responses
-            or not args.analysis
-            or not args.assignment
-            or not args.timing
-        ):
+        if not args.responses or not args.analysis or not args.assignment:
             parser.error(
-                "provide responses, analysis, assignment, and "
-                "--timing active|wall, or use --self-test"
+                "provide responses, analysis, and assignment, or use --self-test"
             )
 
         response_schema = load_json(RUNNER_RESPONSE_SCHEMA)
@@ -517,7 +569,6 @@ def main() -> int:
             analysis,
             assignment,
             assignment_sha256=sha256_file(assignment_path),
-            timing=args.timing,
         )
         for index, record in enumerate(records):
             record_errors = errors_for(record, scoring_schema)
