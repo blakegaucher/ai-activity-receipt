@@ -285,3 +285,41 @@ Fresh follow-up branch:
 The follow-up keeps `HIGH_CONFIDENCE_SECRET_PATTERNS` and the repository-wide scan unchanged, but removes heuristic-sensitive naming and wording from the printable diagnostic path. It also routes the synthetic probe through the real generic stderr renderer using an in-memory capture and asserts that the probe value, arbitrary scanned text, and dynamic filename are absent.
 
 This is a source-model hardening refinement. It is not a dismissal, CodeQL suppression, reduction in scanner coverage, or claim that the authenticated dashboard is already clear.
+
+
+## 2026-09-20 final authenticated repository-security verification
+
+This section supersedes the earlier **remaining admin verification** language for current status while preserving the earlier sections as historical evidence of what was still pending at those points in time.
+
+Authenticated owner evidence on current `main`:
+
+`9c03d91de065511bc7397f93a12e40cb747eb3e7`
+
+verifies:
+
+- GitHub Security → Code scanning filter `is:open branch:main`: **0 Open / 2 Closed**;
+- GitHub displays **“All alerts are resolved.”**;
+- both original High **Clear-text logging of sensitive information** findings are resolved;
+- custom repository event subscription: **Security alerts — enabled**.
+
+The final source-hardening follow-up was PR #76, whose merge produced the current `main` commit above.
+
+Issue #37 is closed as completed because its two remaining acceptance conditions are now independently satisfied:
+
+1. no unresolved original CodeQL alert remains on `main`;
+2. the owner Security-alert notification subscription is enabled.
+
+No CodeQL rule was suppressed or dismissed to create this state, and the tracked-pattern security scan remains enabled.
+
+### Evidence boundary
+
+This establishes that the configured repository security controls are enabled and the two known CodeQL findings are resolved.
+
+It does **not** establish:
+
+- vulnerability-free software;
+- penetration-test coverage;
+- production security;
+- security certification;
+- customer validation;
+- commercial readiness.
