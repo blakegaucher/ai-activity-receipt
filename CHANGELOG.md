@@ -1,5 +1,16 @@
 ## Unreleased
 
+### AR-P003 three-condition comparison decision
+
+- record the first explicit v0.3 preregistration methodology selection: `comparison_conditions = three_condition_structured_control`;
+- preserve `two_condition_current` and the earlier methodology conflict in the decision ledger;
+- version the development protocol as `v0.3-draft-2026-09-20-three-condition-v0.1`;
+- version assignment, case-package, runner bundle/response/analysis/build, scoring, leakage-audit, and crossed-planning contracts for raw / neutral-structured / Receipt presentations;
+- preserve exact underlying-evidence symmetry while allowing only the selected neutral structured table or Receipt presentation layer per case;
+- add deterministic three-condition assignment balancing and raw-vs-structured / structured-vs-Receipt crossed-planning contrasts;
+- mark only the comparison-condition freeze-readiness gate complete; all other methodology decisions and the human-execution hard stop remain unchanged.
+
+
 ### Repository security-admin gate completed
 
 - record authenticated owner Code scanning evidence on `main`: **0 open / 2 closed**, with GitHub reporting **All alerts are resolved**;
