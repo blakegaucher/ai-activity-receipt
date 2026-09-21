@@ -547,7 +547,7 @@ def run_self_test() -> int:
 
         config = {
             "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.2",
-            "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
+            "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
             "cases": [
                 {
                     "case_id": "case-1",
