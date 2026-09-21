@@ -24,6 +24,7 @@ if str(BENCH) not in sys.path:
 from build_runner_bundles import build  # noqa: E402
 from generate_assignment import generate  # noqa: E402
 from merge_runner_responses import merge  # noqa: E402
+from render_structured_control import render_record  # noqa: E402
 from score_responses import score_record, summarize  # noqa: E402
 
 
@@ -51,8 +52,55 @@ def make_case(
         evidence_text + "\n",
         encoding="utf-8",
     )
+    source_ids = list(gold["material_sources"])
+    actor_id = "agent-pipeline"
+    principal_id = "user-pipeline"
+    events = []
+    for index, operation in enumerate(gold["material_actions"], start=1):
+        events.append(
+            {
+                "event_id": f"{case_id}-event-{index}",
+                "occurred_at": f"2026-09-18T12:{index:02d}:00Z",
+                "actor_id": actor_id,
+                "operation": operation,
+                "status": "completed",
+                "authorization": "approved",
+                "authorization_decided_at": f"2026-09-18T12:{index-1:02d}:30Z",
+                "consequential": True,
+                "material": True,
+                "source_refs": source_ids,
+            }
+        )
+    canonical_record = {
+        "record_id": f"record-{case_id}",
+        "record_schema_version": "candidate-record-v0.1",
+        "trace_id": f"trace-{case_id}",
+        "system": {"agent_id": actor_id, "version": "pipeline-smoke"},
+        "actors": [
+            {"actor_id": principal_id, "kind": "human", "role": "principal"},
+            {"actor_id": actor_id, "kind": "agent", "role": "delegate"},
+        ],
+        "authority": {
+            "principal": principal_id,
+            "delegate": actor_id,
+            "scope": list(gold["material_actions"]) or ["read"],
+            "prohibited": [],
+            "valid_from": "2026-09-18T12:00:00Z",
+            "valid_until": "2026-09-18T13:00:00Z",
+        },
+        "sources": [
+            {"source_id": source_id, "role": "supports_result", "material": True}
+            for source_id in source_ids
+        ],
+        "events": events,
+        "verification": {"state": "not_required", "evidence_refs": []},
+        "incidents": [],
+        "integrity": {"generated_at": "2026-09-18T12:30:00Z"},
+        "notes": "Synthetic pipeline smoke canonical record.",
+    }
+    write_json(case_dir / "analysis" / "canonical-record.json", canonical_record)
     (case_dir / "structured" / "events-table.md").write_text(
-        "| field | value |\n|---|---|\n|case|" + case_id + "|\n|summary|neutral event organization|\n",
+        render_record(canonical_record),
         encoding="utf-8",
     )
     write_json(
@@ -72,8 +120,12 @@ def make_case(
         "condition_contract": "same_evidence_plus_neutral_structured_or_receipt_v1",
         "reviewer_evidence_files": ["evidence/events.txt"],
         "structured_control_file": "structured/events-table.md",
+        "structured_control_record_file": "analysis/canonical-record.json",
         "receipt_file": "receipt/receipt.json",
-        "analysis_files": ["analysis/gold.json"],
+        "analysis_files": [
+            "analysis/gold.json",
+            "analysis/canonical-record.json",
+        ],
         "receipt_state": receipt_state,
         "forbidden_reviewer_markers": [f"HIDDEN_{case_id.upper()}"],
         "notes": "Synthetic end-to-end pipeline smoke case.",
