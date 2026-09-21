@@ -185,8 +185,8 @@
     "required_judgments_rule": "case_specific_frozen_primary_endpoint_contract",
     "acceptable_evidence_rule": "each_required_judgment_must_have_at_least_one_prespecified_acceptable_support_set_for_the_assigned_condition",
     "correctness_rule": "all_prespecified_required_judgments_for_the_case_must_be_correct",
-    "fabricated_material_fact_failure_rule": "any_extra_required_set_fact_or_unsupported_authorization_state_fails_primary",
-    "timeout_failure_rule": "a_trial_over_the_frozen_180_second_primary_clock_or_otherwise_timed_out_cannot_succeed",
+    "material_fact_failure_rule": "extra_required_set_facts_or_mismatched_authorization_state_fail_primary",
+    "timeout_failure_rule": "a_trial_over_the_frozen_180_second_primary_clock_cannot_succeed",
     "primary_timing_clock": "unresolved",
     "timing_candidates": [
       "active_time_primary",
