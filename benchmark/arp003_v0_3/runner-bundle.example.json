@@ -1,6 +1,19 @@
 {
-  "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.3",
-  "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
+  "bundle_version": "AR-P003-v0.3-dev-runner-bundle-v0.4",
+  "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
+  "comparison_design": "three_condition_structured_control",
+  "primary_endpoint": {
+    "endpoint_id": "correct_completion_by_180s",
+    "deadline_seconds": 180,
+    "primary_timing_clock": "unresolved",
+    "timing_candidates": [
+      "active_time_primary",
+      "wall_deadline_with_hidden_sensitivity"
+    ],
+    "timeout_enforcement": "development_not_enforced_until_primary_timing_clock_selected"
+  },
+  "assignment_version": "AR-P003-v0.3-draft-assignment-v0.3",
+  "assignment_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
   "reviewer_id": "dev-reviewer-001",
   "cases": [
     {
@@ -84,8 +97,5 @@
         "incidents": []
       }
     }
-  ],
-  "assignment_version": "AR-P003-v0.3-draft-assignment-v0.3",
-  "assignment_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
-  "comparison_design": "three_condition_structured_control"
+  ]
 }
