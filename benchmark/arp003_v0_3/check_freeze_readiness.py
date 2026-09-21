@@ -374,17 +374,26 @@ def run_self_test() -> int:
     errors = validate(ready, schema, ready_protocol, stale_status)
     assert any("requires methodology ledger status" in error for error in errors), errors
 
-    # Additional required decisions must also be resolved before readiness.
+    # Additional required unresolved decisions must also block readiness.
     extra_required = copy.deepcopy(resolved_methodology)
-    extra = copy.deepcopy(methodology["decisions"][0])
+    unresolved_template = next(
+        item for item in methodology["decisions"]
+        if item["status"] == "unresolved"
+    )
+    extra = copy.deepcopy(unresolved_template)
     extra["decision_id"] = "synthetic_additional_required_decision"
     extra_required["decisions"].append(extra)
     extra_required["status"] = "development_unresolved"
     errors = validate(ready, schema, ready_protocol, extra_required)
     assert any(extra["decision_id"] in error for error in errors), errors
 
-    # Every mapped gate is cross-checked even before an overall ready claim.
-    for gate_id in METHODOLOGY_GATE_MAP:
+    # Every mapped gate whose methodology decision is still unresolved is
+    # cross-checked even before an overall ready claim. Already selected
+    # comparison_conditions is intentionally excluded from this negative test.
+    current_methodology_status = methodology_status_map(methodology)
+    for gate_id, decision_id in METHODOLOGY_GATE_MAP.items():
+        if current_methodology_status[decision_id] == "selected":
+            continue
         for gate_status in ("complete", "not_applicable"):
             premature_gate = copy.deepcopy(current)
             premature_gate["gates"][gate_id]["status"] = gate_status
