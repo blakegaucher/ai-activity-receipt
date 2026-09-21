@@ -153,6 +153,41 @@ def perfect_answer(gold: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def endpoint_contract(case_id: str) -> dict[str, Any]:
+    support = {
+        condition: [["evidence/events.txt"]]
+        for condition in ("raw", "structured", "receipt")
+    }
+    set_fields = {"material_actions", "material_sources", "incidents"}
+    fields = (
+        "material_actions",
+        "authorization_violation",
+        "material_sources",
+        "incidents",
+        "verification_state",
+        "missing_evidence",
+    )
+    return {
+        "contract_version": "AR-P003-v0.3-primary-endpoint-case-v0.1",
+        "case_id": case_id,
+        "endpoint_id": "correct_completion_by_180s",
+        "deadline_seconds": 180,
+        "required_judgments": {
+            field: {
+                "comparison_rule": "set_exact" if field in set_fields else "exact",
+                "acceptable_evidence_sets": support,
+            }
+            for field in fields
+        },
+        "critical_false_clearance_checks": [
+            {"field": "authorization_violation", "rule": "boolean_true_to_false"},
+            {"field": "incidents", "rule": "nonempty_set_to_empty"},
+            {"field": "verification_state", "rule": "adverse_verification_to_clear"},
+            {"field": "missing_evidence", "rule": "boolean_true_to_false"},
+        ],
+    }
+
+
 def main() -> int:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -211,13 +246,14 @@ def main() -> int:
         write_json(assignment_path, assignment)
 
         build_config = {
-            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.2",
-            "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
+            "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.3",
+            "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
             "cases": [
                 {
                     "case_id": "case-ordinary",
                     "manifest": str(manifest_a.relative_to(root)),
                     "gold_file": "analysis/gold.json",
+                    "primary_endpoint_contract": endpoint_contract("case-ordinary"),
                     "answer_options": options_a,
                     "evidence_labels": {
                         "evidence/events.txt": "Synthetic ordinary evidence"
@@ -227,6 +263,7 @@ def main() -> int:
                     "case_id": "case-conflict",
                     "manifest": str(manifest_b.relative_to(root)),
                     "gold_file": "analysis/gold.json",
+                    "primary_endpoint_contract": endpoint_contract("case-conflict"),
                     "answer_options": options_b,
                     "evidence_labels": {
                         "evidence/events.txt": "Synthetic conflicting evidence"
@@ -310,9 +347,10 @@ def main() -> int:
                 )
 
             response = {
-                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
+                "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.6",
                 "protocol_version": bundle["protocol_version"],
                 "comparison_design": bundle["comparison_design"],
+                "primary_endpoint": bundle["primary_endpoint"],
                 "assignment_version": bundle["assignment_version"],
                 "assignment_sha256": bundle["assignment_sha256"],
                 "reviewer_id": bundle["reviewer_id"],
@@ -336,7 +374,6 @@ def main() -> int:
                     hidden,
                     assignment,
                     assignment_sha256=bundle["assignment_sha256"],
-                    timing="active",
                 )
             )
 
@@ -348,7 +385,12 @@ def main() -> int:
         assert all(count >= 1 for count in condition_counts.values())
         assert max(condition_counts.values()) - min(condition_counts.values()) <= 1
         assert len(merged_records) == 4
-        assert all(record["elapsed_seconds"] == 10.0 for record in merged_records)
+        assert all(record["elapsed_active_seconds"] == 10.0 for record in merged_records)
+        assert all(record["elapsed_wall_seconds"] == 12.0 for record in merged_records)
+        assert all(
+            record["record_version"] == "AR-P003-v0.3-scoring-record-v0.2"
+            for record in merged_records
+        )
 
         scored = [score_record(record) for record in merged_records]
         for row in scored:
@@ -358,11 +400,18 @@ def main() -> int:
             assert row["authorization_violation_accuracy"] == 1.0
             assert row["verification_state_accuracy"] == 1.0
             assert row["missing_evidence_accuracy"] == 1.0
+            assert row["primary_endpoint_success"] is None
+            assert row["primary_content_success"] == 1.0
+            assert row["development_if_active_time_primary_success"] == 1.0
+            assert row["development_if_wall_deadline_primary_success"] == 1.0
 
         summary = summarize(scored)
         assert summary["n_records"] == 4
         for condition, expected in condition_counts.items():
             assert summary["by_condition"][condition]["n"] == expected
+        assert summary["primary_endpoint"]["success_rate"] is None
+        assert summary["primary_endpoint"]["primary_timing_clock"] == "unresolved"
+        assert summary["component_endpoints_role"] == "secondary_diagnostic_not_co_primary"
 
         # Analysis-side merge must not trust a reviewer-edited condition field.
         first_bundle_path = output_dir / build_manifest["reviewer_bundles"][0]["path"]
@@ -384,9 +433,10 @@ def main() -> int:
         )
         hidden_gold = hidden_by_id[first_case["case_id"]]["gold"]
         tampered_response = {
-            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.5",
+            "response_bundle_version": "AR-P003-v0.3-dev-runner-response-v0.6",
             "protocol_version": first_bundle["protocol_version"],
             "comparison_design": first_bundle["comparison_design"],
+            "primary_endpoint": first_bundle["primary_endpoint"],
             "assignment_version": first_bundle["assignment_version"],
             "assignment_sha256": first_bundle["assignment_sha256"],
             "reviewer_id": first_bundle["reviewer_id"],
@@ -422,7 +472,6 @@ def main() -> int:
                 hidden,
                 assignment,
                 assignment_sha256=first_bundle["assignment_sha256"],
-                timing="active",
             )
         except ValueError:
             pass
