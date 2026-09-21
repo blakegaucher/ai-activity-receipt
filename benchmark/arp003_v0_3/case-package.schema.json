@@ -10,6 +10,7 @@
     "condition_contract",
     "reviewer_evidence_files",
     "structured_control_file",
+    "structured_control_record_file",
     "receipt_file",
     "analysis_files",
     "receipt_state",
@@ -80,6 +81,11 @@
     "structured_control_file": {
       "type": "string",
       "minLength": 1
+    },
+    "structured_control_record_file": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Analysis-side canonical Activity Record used by the deterministic neutral structured-control renderer. Must also be listed in analysis_files."
     }
   },
   "additionalProperties": false
