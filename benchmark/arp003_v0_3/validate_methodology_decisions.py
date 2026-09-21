@@ -352,31 +352,31 @@ def semantic_errors(
                 )
 
         timing_decision = decisions_by_id.get("primary_timing_clock") or {}
-        if (
-            timing_decision.get("status") != "unresolved"
-            or timing_decision.get("selected_candidate") is not None
-        ):
-            errors.append(
-                "LEDGER-20 selecting primary_endpoint must not silently select "
-                "primary_timing_clock"
-            )
+        if timing_decision.get("status") == "unresolved":
+            if timing_decision.get("selected_candidate") is not None:
+                errors.append(
+                    "LEDGER-20 unresolved primary_timing_clock must not carry "
+                    "a selected candidate"
+                )
+            timing = protocol.get("timing") or {}
+            if timing.get("primary_timing_clock") != "unresolved":
+                errors.append(
+                    "LEDGER-22 protocol timing must remain unresolved until the "
+                    "separate timing decision is selected"
+                )
+            if timing.get("candidates") != PRIMARY_TIMING_CANDIDATES:
+                errors.append("LEDGER-22 protocol timing candidate set changed")
+
         effect_decision = decisions_by_id.get("effect_precision_target") or {}
         if (
-            effect_decision.get("status") != "unresolved"
-            or effect_decision.get("selected_candidate") is not None
+            effect_decision.get("status") == "unresolved"
+            and endpoint.get("critical_false_clearance_threshold")
+            != "unresolved_effect_precision_target"
         ):
             errors.append(
-                "LEDGER-21 selecting primary_endpoint must not select "
-                "effect_precision_target"
+                "LEDGER-21 unresolved effect_precision_target requires the "
+                "critical-false-clearance threshold to remain unresolved"
             )
-        timing = protocol.get("timing") or {}
-        if timing.get("primary_timing_clock") != "unresolved":
-            errors.append(
-                "LEDGER-22 protocol timing must remain unresolved until the "
-                "separate timing decision is selected"
-            )
-        if timing.get("candidates") != PRIMARY_TIMING_CANDIDATES:
-            errors.append("LEDGER-22 protocol timing candidate set changed")
 
     return errors
 
@@ -562,16 +562,10 @@ def run_self_test() -> int:
         errors = validate(ledger, schema, mutated_protocol)
         assert any("LEDGER-18" in error for error in errors), (key, errors)
 
-    selected_timing = copy.deepcopy(ledger)
-    timing_decision = next(
-        item for item in selected_timing["decisions"]
-        if item["decision_id"] == "primary_timing_clock"
-    )
-    timing_decision["status"] = "selected"
-    timing_decision["selected_candidate"] = "active_time_primary"
-    timing_decision["rationale"] = "Synthetic invalid mutation."
-    errors = validate(selected_timing, schema, protocol)
-    assert any("LEDGER-20" in error for error in errors), errors
+    silently_selected_clock = copy.deepcopy(protocol)
+    silently_selected_clock["timing"]["primary_timing_clock"] = "active_time_primary"
+    errors = validate(ledger, schema, silently_selected_clock)
+    assert any("LEDGER-22" in error for error in errors), errors
 
     bad_contingency = copy.deepcopy(protocol)
     bad_contingency["primary_endpoint"]["development_only_contingency"][
