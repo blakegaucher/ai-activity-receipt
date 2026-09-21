@@ -268,3 +268,20 @@ Do not close issue #37 until both conditions are independently verified:
 2. the repository owner's Security-alert notification setting/delivery is confirmed.
 
 Green CodeQL workflow execution alone is not evidence of a zero-alert inventory.
+
+
+### Alert #1 heuristic-source follow-up after PR #75
+
+PR #75 merged as `b8e10da52be098fe7bf2b68e065e7fae5dcb6263` and post-merge validation run #162 plus CodeQL run #79 succeeded.
+
+A subsequent review of the upstream Python CodeQL query implementation found that the clear-text logging query does not rely only on runtime secret bytes. Its sensitive-data model also heuristically marks values assigned to names containing `secret`, and it models sensitive-looking function names and string literals.
+
+That matters because PR #75 still used diagnostic-side identifiers such as `SAFE_SECRET_DIAGNOSTICS` and `secret_diagnostic_regression_errors`. The fixed allowlisted strings were runtime-safe, but the **right-hand side assigned to a sensitive-looking variable name** can itself be modeled as a sensitive source and then flow through the generic `errors` list to stderr.
+
+Fresh follow-up branch:
+
+`codeql-alert-1-heuristic-source-hardening`
+
+The follow-up keeps `HIGH_CONFIDENCE_SECRET_PATTERNS` and the repository-wide scan unchanged, but removes heuristic-sensitive naming and wording from the printable diagnostic path. It also routes the synthetic probe through the real generic stderr renderer using an in-memory capture and asserts that the probe value, arbitrary scanned text, and dynamic filename are absent.
+
+This is a source-model hardening refinement. It is not a dismissal, CodeQL suppression, reduction in scanner coverage, or claim that the authenticated dashboard is already clear.

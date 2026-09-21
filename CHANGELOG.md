@@ -1,5 +1,14 @@
 ## Unreleased
 
+### CodeQL alert #1 heuristic-source follow-up
+
+- record that PR #75 merged successfully but authenticated post-merge alert inventory still requires owner UI evidence;
+- inspect the upstream Python CodeQL sensitive-data model and identify sensitive-looking diagnostic variable/function names as independent taint sources for the generic stderr sink;
+- preserve `HIGH_CONFIDENCE_SECRET_PATTERNS`, repository-wide scanning, and failure semantics;
+- replace diagnostic-side sensitive-looking identifiers/printable labels with neutral fixed pattern categories;
+- exercise the actual generic stderr renderer in the synthetic non-echo regression;
+- keep issue #37 open pending authenticated alert inventory and owner Security-alert notification confirmation.
+
 ### CodeQL alert #1 detection/diagnostic separation
 
 - record authenticated owner evidence that the post-remediation inventory is **1 open / 1 closed**, with original alert #1 still open in `research/security_smoke_test.py`;

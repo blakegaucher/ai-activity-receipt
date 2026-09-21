@@ -55,7 +55,7 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.12":
+    if state.get("snapshot_version") != "project-continuity-v0.13":
         errors.append("machine-readable continuity snapshot_version is stale")
     if state.get("snapshot_date") != "2026-09-20":
         errors.append("machine-readable continuity snapshot_date is stale")
@@ -260,6 +260,24 @@ def main() -> int:
             "CodeQL alert #1 second-remediation dashboard gate changed without "
             "authenticated owner evidence"
         )
+    if codeql.get("alert_1_second_remediation_pr") != 75:
+        errors.append("CodeQL alert #1 second-remediation PR continuity is stale")
+    if codeql.get("alert_1_second_remediation_merge_commit") != (
+        "b8e10da52be098fe7bf2b68e065e7fae5dcb6263"
+    ):
+        errors.append("CodeQL alert #1 second-remediation merge continuity is stale")
+    if codeql.get("alert_1_second_remediation_validation_run") != 162:
+        errors.append("CodeQL alert #1 second-remediation validation run is stale")
+    if codeql.get("alert_1_second_remediation_codeql_run") != 79:
+        errors.append("CodeQL alert #1 second-remediation CodeQL run is stale")
+    if codeql.get("alert_1_heuristic_followup_branch") != (
+        "codeql-alert-1-heuristic-source-hardening"
+    ):
+        errors.append("CodeQL alert #1 heuristic-followup branch continuity is stale")
+    if codeql.get("alert_1_heuristic_followup_strategy") != (
+        "remove_sensitive_heuristic_names_from_printable_diagnostic_dataflow"
+    ):
+        errors.append("CodeQL alert #1 heuristic-followup strategy continuity is stale")
     if (dev.get("reproducibility_runner") or {}).get("external_reproduction_handoff") is not True:
         errors.append("external reproduction handoff continuity flag unexpectedly changed")
 
