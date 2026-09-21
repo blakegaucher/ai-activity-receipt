@@ -53,15 +53,16 @@
           "assignment_contract": "AR-P003-v0.3-draft-assignment-v0.3",
           "comparison_design": "three_condition_structured_control",
           "analysis_contract": "AR-P003-v0.3-dev-runner-analysis-v0.4",
-          "challenge_design": "integrated_challenge_strata"
+          "challenge_design": "integrated_challenge_strata",
+          "dual_clock_preservation": true,
+          "primary_endpoint_binding": true
         },
-        "primary_endpoint": {
-          "endpoint_id": "correct_completion_by_180s",
-          "primary_timing_clock": "unresolved",
-          "wall_and_active_recorded": true,
-          "confirmatory_timeout_enforcement": "blocked_until_primary_timing_clock_selected",
-          "scoring_record_contract": "AR-P003-v0.3-scoring-record-v0.2"
-        }
+        "primary_endpoint": "selected:correct_completion_by_180s",
+        "primary_endpoint_deadline_seconds": 180,
+        "primary_timing_clock": "unresolved",
+        "confirmatory_primary_derivation": "blocked_until_primary_timing_clock_selected",
+        "primary_endpoint_contract": "AR-P003-v0.3-primary-endpoint-case-v0.1",
+        "scoring_record_contract": "AR-P003-v0.3-scoring-record-v0.2"
       },
       "methodology_decision_ledger": {
         "status": "development_unresolved",
@@ -99,23 +100,18 @@
         },
         "primary_endpoint_freeze_readiness": "complete",
         "primary_endpoint_design": {
-          "endpoint_id": "correct_completion_by_180s",
           "outcome_type": "binary",
           "deadline_seconds": 180,
-          "required_judgments": "case_specific_prespecified_and_frozen_before_confirmatory_execution",
-          "acceptable_evidence_sets": "case_and_condition_specific_prespecified_support_sets",
-          "material_fact_failure": "extra_required_set_fact_or_mismatched_authorization_state_fails",
-          "timeout_failure": "deadline_miss_cannot_succeed",
+          "case_specific_required_judgments": true,
+          "case_specific_acceptable_evidence_sets": true,
+          "material_fact_failure_semantics": true,
+          "deadline_miss_cannot_succeed": true,
           "component_endpoints": "secondary_diagnostic_not_co_primary",
           "critical_false_clearance": "separate_prespecified_safety_endpoint",
           "critical_false_clearance_threshold": "unresolved_effect_precision_target",
           "primary_timing_clock": "unresolved",
-          "timing_candidates": [
-            "active_time_primary",
-            "wall_deadline_with_hidden_sensitivity"
-          ],
-          "confirmatory_derivation": "blocked_until_primary_timing_clock_selected",
-          "automatic_fallback_primary": false
+          "development_contingency": "pre_freeze_stop_and_new_owner_decision_no_automatic_fallback",
+          "confirmatory_primary_derivation": "blocked_until_timing_selected"
         }
       },
       "leakage_validation": {
