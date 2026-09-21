@@ -1,5 +1,16 @@
 ## Unreleased
 
+### AR-P003 integrated challenge-design decision
+
+- select `challenge_design = integrated_challenge_strata` while preserving the rejected `separate_robustness_cohort` alternative;
+- version the development protocol as `v0.3-draft-2026-09-21-integrated-challenge-v0.1`;
+- version the hidden analysis contract to `AR-P003-v0.3-dev-runner-analysis-v0.3`;
+- add explicit ordinary-versus-challenge reporting while retaining per-stratum reporting;
+- bind crossed planning to the selected integrated architecture without freezing challenge allocation or final sample size;
+- extend assignment smoke coverage to stale, incomplete, and conflicting challenge strata;
+- keep the issue #47 challenge-strata gate open because final sealed counts/allocation, final stratum balance, and final-corpus leakage/manual review remain incomplete.
+
+
 ### AR-P003 three-condition comparison decision
 
 - record the first explicit v0.3 preregistration methodology selection: `comparison_conditions = three_condition_structured_control`;
