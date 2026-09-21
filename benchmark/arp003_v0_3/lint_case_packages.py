@@ -19,6 +19,8 @@ from typing import Any
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
 
+from render_structured_control import render_file
+
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_SCHEMA = ROOT / "case-package.schema.json"
@@ -103,6 +105,7 @@ def lint_package(
 
     reviewer_raw = list(manifest["reviewer_evidence_files"])
     structured_raw = manifest["structured_control_file"]
+    structured_record_raw = manifest["structured_control_record_file"]
     receipt_raw = manifest["receipt_file"]
     analysis_raw = list(manifest["analysis_files"])
 
@@ -121,6 +124,14 @@ def lint_package(
     if structured_raw in analysis_set:
         errors.append(
             f"{manifest_path}: structured_control_file must be separate from analysis_files"
+        )
+    if structured_record_raw not in analysis_set:
+        errors.append(
+            f"{manifest_path}: structured_control_record_file must be listed in analysis_files"
+        )
+    if structured_record_raw in reviewer_set or structured_record_raw == receipt_raw:
+        errors.append(
+            f"{manifest_path}: structured_control_record_file must remain analysis-side"
         )
     if receipt_raw in reviewer_set:
         errors.append(
@@ -145,6 +156,23 @@ def lint_package(
             errors.append(f"{manifest_path}: {error}")
         elif path is not None:
             resolved[raw] = path
+
+    if errors:
+        return errors, None
+
+    try:
+        expected_structured = render_file(resolved[structured_record_raw])
+        actual_structured = resolved[structured_raw].read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        errors.append(
+            f"{manifest_path}: unable to verify structured-control derivation: {exc}"
+        )
+    else:
+        if actual_structured != expected_structured:
+            errors.append(
+                f"{manifest_path}: structured_control_file does not exactly match "
+                "the deterministic rendering of structured_control_record_file"
+            )
 
     if errors:
         return errors, None
@@ -180,6 +208,7 @@ def lint_package(
         ],
         "structured_control": {
             "path": structured_raw,
+            "derived_from_record_path": structured_record_raw,
             "sha256": sha256_file(resolved[structured_raw]),
             "size_bytes": resolved[structured_raw].stat().st_size,
         },
@@ -233,6 +262,7 @@ def run_self_test(schema: dict[str, Any]) -> int:
             "condition_contract": "same_evidence_plus_neutral_structured_or_receipt_v1",
             "reviewer_evidence_files": ["evidence/events.log"],
             "structured_control_file": "structured/events-table.md",
+            "structured_control_record_file": "analysis/canonical-record.json",
             "receipt_file": "receipt/receipt.json",
             "analysis_files": ["analysis/gold.json"],
             "receipt_state": "current",
@@ -251,6 +281,10 @@ def run_self_test(schema: dict[str, Any]) -> int:
         assert report["case_id"] == "dev-smoke-ordinary"
         assert report["reviewer_evidence"][0]["sha256"].startswith("sha256:")
         assert report["structured_control"]["sha256"].startswith("sha256:")
+        assert (
+            report["structured_control"]["derived_from_record_path"]
+            == "analysis/canonical-record.json"
+        )
 
         # Gold/analysis material cannot be reviewer-facing.
         overlap = dict(manifest)
@@ -274,6 +308,25 @@ def run_self_test(schema: dict[str, Any]) -> int:
         )
         errors, _ = lint_package(manifest_path, schema)
         assert any("structured_control_file must be separate" in error for error in errors)
+
+        # Structured-control rendering drift must be rejected.
+        drifted_table = (root / "structured" / "events-table.md").read_text(
+            encoding="utf-8"
+        )
+        (root / "structured" / "events-table.md").write_text(
+            drifted_table + "unexpected row\n",
+            encoding="utf-8",
+        )
+        manifest_path.write_text(
+            json.dumps(manifest, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        errors, _ = lint_package(manifest_path, schema)
+        assert any("does not exactly match" in error for error in errors)
+        (root / "structured" / "events-table.md").write_text(
+            drifted_table,
+            encoding="utf-8",
+        )
 
         # Path traversal must be rejected.
         traversal = dict(manifest)
