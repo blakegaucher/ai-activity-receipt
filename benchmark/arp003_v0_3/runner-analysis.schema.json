@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AR-P003 v0.3 Development Integrated-Challenge Analysis Bundle",
+  "title": "AR-P003 v0.3 Development Endpoint-Aware Integrated-Challenge Analysis Bundle",
   "description": "Analysis-side hidden case metadata. This file must never be reviewer-facing. Defensive limits mirror reviewer-side cardinality bounds where applicable.",
   "type": "object",
   "required": [
@@ -8,11 +8,12 @@
     "protocol_version",
     "comparison_design",
     "challenge_design",
+    "primary_endpoint",
     "cases"
   ],
   "properties": {
     "analysis_bundle_version": {
-      "const": "AR-P003-v0.3-dev-runner-analysis-v0.3"
+      "const": "AR-P003-v0.3-dev-runner-analysis-v0.4"
     },
     "protocol_version": {
       "type": "string",
@@ -27,7 +28,8 @@
         "required": [
           "case_id",
           "stratum",
-          "gold"
+          "gold",
+          "primary_endpoint_contract"
         ],
         "properties": {
           "case_id": {
@@ -46,6 +48,9 @@
           },
           "gold": {
             "$ref": "#/$defs/reconstruction"
+          },
+          "primary_endpoint_contract": {
+            "$ref": "#/$defs/primaryEndpointContract"
           }
         },
         "additionalProperties": false
@@ -57,6 +62,9 @@
     },
     "challenge_design": {
       "const": "integrated_challenge_strata"
+    },
+    "primary_endpoint": {
+      "$ref": "#/$defs/publicPrimaryEndpoint"
     }
   },
   "$defs": {
@@ -108,6 +116,318 @@
         },
         "missing_evidence": {
           "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "supportSetList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "publicPrimaryEndpoint": {
+      "type": "object",
+      "required": [
+        "endpoint_id",
+        "deadline_seconds",
+        "primary_timing_clock",
+        "timing_candidates",
+        "timeout_enforcement"
+      ],
+      "properties": {
+        "endpoint_id": {
+          "const": "correct_completion_by_180s"
+        },
+        "deadline_seconds": {
+          "const": 180
+        },
+        "primary_timing_clock": {
+          "const": "unresolved"
+        },
+        "timing_candidates": {
+          "type": "array",
+          "const": [
+            "active_time_primary",
+            "wall_deadline_with_hidden_sensitivity"
+          ]
+        },
+        "timeout_enforcement": {
+          "const": "development_not_enforced_until_primary_timing_clock_selected"
+        }
+      },
+      "additionalProperties": false
+    },
+    "primaryEndpointContract": {
+      "type": "object",
+      "required": [
+        "contract_version",
+        "case_id",
+        "endpoint_id",
+        "deadline_seconds",
+        "required_judgments",
+        "critical_false_clearance_checks"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "AR-P003-v0.3-primary-endpoint-case-v0.1"
+        },
+        "case_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "endpoint_id": {
+          "const": "correct_completion_by_180s"
+        },
+        "deadline_seconds": {
+          "const": 180
+        },
+        "required_judgments": {
+          "type": "object",
+          "minProperties": 1,
+          "properties": {
+            "material_actions": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "set_exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "authorization_violation": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "material_sources": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "set_exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "incidents": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "set_exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "verification_state": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "missing_evidence": {
+              "type": "object",
+              "required": [
+                "comparison_rule",
+                "acceptable_evidence_sets"
+              ],
+              "properties": {
+                "comparison_rule": {
+                  "const": "exact"
+                },
+                "acceptable_evidence_sets": {
+                  "type": "object",
+                  "required": [
+                    "raw",
+                    "structured",
+                    "receipt"
+                  ],
+                  "properties": {
+                    "raw": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "structured": {
+                      "$ref": "#/$defs/supportSetList"
+                    },
+                    "receipt": {
+                      "$ref": "#/$defs/supportSetList"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "critical_false_clearance_checks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": [
+              "field",
+              "rule"
+            ],
+            "properties": {
+              "field": {
+                "type": "string",
+                "enum": [
+                  "authorization_violation",
+                  "incidents",
+                  "verification_state",
+                  "missing_evidence"
+                ]
+              },
+              "rule": {
+                "type": "string",
+                "enum": [
+                  "boolean_true_to_false",
+                  "nonempty_set_to_empty",
+                  "adverse_verification_to_clear"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "notes": {
+          "type": "string"
         }
       },
       "additionalProperties": false
