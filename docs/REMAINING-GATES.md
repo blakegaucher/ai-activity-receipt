@@ -1,6 +1,6 @@
 # Remaining Gates Dashboard
 
-> **Snapshot:** 2026-09-19  
+> **Snapshot:** 2026-09-20  
 > **Purpose:** Show the shortest path from the current repository state to the next evidence-bearing milestones without confusing technical preparation with external, human, commercial, or administrative evidence.
 
 The repository is technically active and CI-green, but several important gates **cannot be completed by adding more code alone**.
@@ -30,36 +30,22 @@ These are engineering/research accomplishments. They do not close the gates belo
 
 ### Main protection — issue #36
 
-**Status:** Open; owner/admin action required.
+**Status:** Completed and closed.
 
-Required:
-
-- protect `main` with a GitHub ruleset/branch protection;
-- require the primary validation check;
-- require CodeQL Python and JavaScript/TypeScript checks;
-- block force-push and branch deletion;
-- verify the rule actually blocks merge before checks complete.
-
-The API still reports no repository rulesets.
+Authenticated/admin verification established that the `Protect main` ruleset is active, required validation + CodeQL checks are enforced, force-push/non-fast-forward updates and branch deletion are blocked, and the protected workflow was exercised without weakening the ruleset.
 
 ### Security settings — issue #37
 
-**Status:** Partially complete.
+**Status:** Completed and closed.
 
-Complete:
+Authenticated owner evidence on 2026-09-20 verifies:
 
-- CodeQL advanced setup is on `main`;
-- Python scan is green;
-- JavaScript/TypeScript scan is green.
+- GitHub Security → Code scanning with `is:open branch:main`: **0 Open / 2 Closed**;
+- GitHub displays **“All alerts are resolved.”**;
+- both original High CodeQL clear-text-logging findings are resolved on `main`;
+- custom repository notifications: **Security alerts — enabled**.
 
-Still manual/admin:
-
-- private vulnerability reporting;
-- Dependabot security alerts/security updates;
-- owner security-alert notifications;
-- inspect the CodeQL alert inventory.
-
-A green CodeQL workflow is not evidence that the alert count is zero.
+This closes the repository-admin security-settings gate. The result establishes the configured control/alert state only; it is not evidence of vulnerability-free or production-secure software.
 
 ### Repository license — issue #44
 
@@ -195,12 +181,11 @@ Technical GitHub activity must not be counted as customer validation or revenue 
 
 For repository work, the shortest non-circular sequence is:
 
-1. owner/admin: issues #36 and #37;
-2. owner/IP: issue #44;
-3. manual runner smoke test: issue #38;
-4. AR-P003 design/freeze work: issue #47;
-5. independent reproduction: issue #39;
-6. only then decide whether additional technical integration work has a stronger evidence payoff than commercialization/customer-validation work.
+1. owner/IP: issue #44;
+2. manual runner smoke test: issue #38;
+3. AR-P003 design/freeze work: issue #47;
+4. independent reproduction: issue #39;
+5. only then decide whether additional technical integration work has a stronger evidence payoff than commercialization/customer-validation work.
 
 ## Change-control rule
 
