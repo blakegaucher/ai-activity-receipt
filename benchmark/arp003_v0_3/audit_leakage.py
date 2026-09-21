@@ -131,6 +131,10 @@ def audit_build(build_dir: Path) -> dict[str, Any]:
         item["case_id"]: item
         for item in manifest.get("answer_option_audit") or []
     }
+    structured_audits = {
+        item["case_id"]: item
+        for item in manifest.get("structured_control_audit") or []
+    }
 
     presentations: dict[str, list[tuple[str, dict[str, Any]]]] = {}
     for summary in manifest["reviewer_bundles"]:
@@ -206,6 +210,15 @@ def audit_build(build_dir: Path) -> dict[str, Any]:
         audit = option_audits.get(case_id)
         if not isinstance(audit, dict):
             raise ValueError(f"case {case_id!r} has no answer_option_audit entry")
+        structured_audit = structured_audits.get(case_id)
+        if not isinstance(structured_audit, dict):
+            raise ValueError(
+                f"case {case_id!r} has no structured_control_audit entry"
+            )
+        if structured_audit.get("exact_renderer_match") is not True:
+            raise ValueError(
+                f"case {case_id!r} structured-control derivation was not verified"
+            )
 
         high_risk: list[str] = []
         review: list[str] = []
@@ -252,6 +265,16 @@ def audit_build(build_dir: Path) -> dict[str, Any]:
                 "receipt_chars": receipt_char_count,
                 "structured_presentation_expansion_ratio": round(structured_ratio, 6),
                 "receipt_presentation_expansion_ratio": round(receipt_ratio, 6),
+                "structured_control_derivation": {
+                    "renderer_version": structured_audit["renderer_version"],
+                    "canonical_record_sha256": structured_audit[
+                        "canonical_record_sha256"
+                    ],
+                    "structured_table_sha256": structured_audit[
+                        "structured_table_sha256"
+                    ],
+                    "exact_renderer_match": True,
+                },
                 "answer_option_audit": {
                     endpoint: audit[endpoint]
                     for endpoint in ("material_actions", "material_sources", "incidents")
@@ -383,6 +406,15 @@ def make_self_test_build(root: Path) -> Path:
         "reviewer_bundles": [
             {"reviewer_id": "R1", "path": "reviewer_bundles/R1.json"},
             {"reviewer_id": "R2", "path": "reviewer_bundles/R2.json"},
+        ],
+        "structured_control_audit": [
+            {
+                "case_id": "case-1",
+                "renderer_version": "AR-P003-v0.3-neutral-event-table-v0.1",
+                "canonical_record_sha256": "sha256:" + ("4" * 64),
+                "structured_table_sha256": "sha256:" + ("5" * 64),
+                "exact_renderer_match": True,
+            }
         ],
         "answer_option_audit": [
             {
