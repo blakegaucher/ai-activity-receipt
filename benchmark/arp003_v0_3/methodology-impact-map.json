@@ -84,8 +84,8 @@
           "required_before_execution": [
             "freeze required judgments and acceptable evidence sets per final sealed case",
             "select and freeze primary_timing_clock before confirmatory freeze",
-            "enforce and test the 180-second timeout rule under the frozen timing clock",
-            "preserve fabricated-material-fact and unsupported-authorization failure semantics",
+            "enforce and test the 180-second deadline rule under the frozen timing clock",
+            "preserve material-fact and unsupported-authorization failure semantics",
             "preserve critical false clearance as a separate safety endpoint",
             "replan crossed-design power for the binary primary estimand after effect_precision_target is selected"
           ],
