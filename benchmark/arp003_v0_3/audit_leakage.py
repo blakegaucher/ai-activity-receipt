@@ -406,6 +406,7 @@ def make_self_test_build(root: Path) -> Path:
         "reviewer_bundles": [
             {"reviewer_id": "R1", "path": "reviewer_bundles/R1.json"},
             {"reviewer_id": "R2", "path": "reviewer_bundles/R2.json"},
+            {"reviewer_id": "R3", "path": "reviewer_bundles/R3.json"},
         ],
         "structured_control_audit": [
             {
