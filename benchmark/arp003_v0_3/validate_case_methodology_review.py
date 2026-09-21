@@ -171,6 +171,12 @@ def clean_leakage() -> dict[str, Any]:
                 "receipt_chars": 120,
                 "structured_presentation_expansion_ratio": 1.3,
                 "receipt_presentation_expansion_ratio": 1.4,
+                "structured_control_derivation": {
+                    "renderer_version": "AR-P003-v0.3-neutral-event-table-v0.1",
+                    "canonical_record_sha256": "sha256:" + ("4" * 64),
+                    "structured_table_sha256": "sha256:" + ("5" * 64),
+                    "exact_renderer_match": True,
+                },
                 "answer_option_audit": {
                     "material_actions": {
                         "n_gold": 1,
