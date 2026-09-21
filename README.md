@@ -18,7 +18,7 @@ The project is developing a **model-neutral activity record and human-facing rec
 - **Evidence:** primarily synthetic/technical engineering evidence.
 - **Human study:** AR-P003 v0.3 is development-only, not frozen, and not executed.
 - **Security:** validation and CodeQL workflows are active; this is not a security certification or proof of zero vulnerabilities.
-- **License:** no explicit repository license has been selected yet; public visibility does not imply unrestricted reuse. The third-party/license decision preflight is complete, but the owner choice remains open. See [Licensing Status](docs/LICENSING.md) and [License Decision Preflight](docs/LICENSE-PREFLIGHT.md).
+- **License:** project-authored public repository material is licensed under the **Apache License 2.0**. This does **not** authorize release of future private human-study/participant/reviewer/hidden-analysis material, transfer third-party rights, or grant trademark/endorsement rights in Ancient Immortal Art or AI Activity Receipt. See [LICENSE](LICENSE), [NOTICE](NOTICE), [Licensing Status](docs/LICENSING.md), and [License Preflight](docs/LICENSE-PREFLIGHT.md).
 
 ## Reproduce the repository-local checks
 
@@ -80,6 +80,8 @@ A passing run reproduces repository-local deterministic/synthetic checks only. I
 - [Security Policy](SECURITY.md)
 - [Repository Security Hardening](docs/SECURITY-HARDENING.md)
 - [Citation Metadata](CITATION.cff)
+- [Apache License 2.0](LICENSE)
+- [Notice](NOTICE)
 - [Licensing Status](docs/LICENSING.md)
 - [License Decision Preflight](docs/LICENSE-PREFLIGHT.md)
 - [Executable validator](validate_receipts.py)

@@ -24,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.20"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.21"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -131,6 +131,8 @@ CHECKS: list[dict[str, Any]] = [
             "research/third-party-inventory.json",
             "docs/LICENSE-PREFLIGHT.md",
             "docs/LICENSING.md",
+            "LICENSE",
+            "NOTICE",
             "requirements.txt",
             "requirements-lock.txt",
             ".github/workflows/validate-receipts.yml",

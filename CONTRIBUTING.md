@@ -64,4 +64,8 @@ Do not publish secrets or participant data in a public issue. Use a private repo
 
 ## Licensing
 
-The repository does not currently publish an explicit open-source license. See [docs/LICENSING.md](docs/LICENSING.md) before assuming reuse or redistribution rights.
+Project-authored public repository material is licensed under the **Apache License 2.0**. See [LICENSE](LICENSE), [NOTICE](NOTICE), and [docs/LICENSING.md](docs/LICENSING.md).
+
+Do not submit third-party code, text, fixtures, or assets unless their provenance and required notices are clear and compatible with inclusion. Future human-study, participant, reviewer, hidden-analysis, personal, or privacy-sensitive material remains outside the public-release scope unless a separate release/privacy/ethics/licensing decision is made.
+
+The Apache-2.0 repository license does not grant trademark or endorsement rights in Ancient Immortal Art or AI Activity Receipt.

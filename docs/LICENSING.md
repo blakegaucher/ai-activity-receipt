@@ -1,57 +1,78 @@
 # Licensing Status
 
-> **Status:** Governance decision still open.
+> **Status:** Project-authored public repository material is licensed under the **Apache License 2.0**.
 
-This repository does not currently include an explicit open-source license.
+**Copyright:** 2026 Blake Gaucher  
+**SPDX identifier:** `Apache-2.0`
 
-That means the project should not describe the repository as MIT-, Apache-, CC-, or otherwise open-source licensed until Blake Gaucher / Ancient Immortal Art deliberately selects and publishes a license.
+The complete license text is published at the repository root as [`LICENSE`](../LICENSE). The repository also carries [`NOTICE`](../NOTICE).
 
-## Decision preflight completed
+## Covered project-authored public material
 
-The factual preflight is now published at [Repository License Decision Preflight](LICENSE-PREFLIGHT.md).
+Unless a file explicitly states otherwise, Apache-2.0 applies to project-authored material that is actually published in this public repository, including:
 
-It records:
+- source code;
+- validators and research utilities;
+- adapters;
+- benchmark tooling;
+- the offline runner;
+- project documentation;
+- project-authored schemas;
+- examples;
+- synthetic fixtures;
+- synthetic benchmark material.
 
-- direct Python dependencies and observed upstream license files;
-- external GitHub Action repositories used by the workflows;
-- the exact transitive lock-package name snapshot;
-- the DSSE reference implementation boundary;
-- standards/specification citation boundaries;
-- a machine-readable inventory and drift check.
+The license grants reuse rights to the covered public repository material subject to its terms.
 
-This reduces the remaining work to an explicit owner/IP decision. It does **not** grant a license or provide legal clearance.
+## Private and future human-study boundary
 
-## Why this is kept explicit
+The repository license does **not** automatically authorize publication or release of future:
 
-The repository is public for research transparency and reproducibility, but public visibility and an open-source license are different things.
+- human-study or participant data;
+- reviewer responses or reviewer exports;
+- hidden-analysis or gold-label material;
+- personal information;
+- privacy-sensitive material;
+- secrets or private credentials.
 
-Before a broader external-reproduction or contribution phase, the project should decide:
-
-- whether code and documentation use the same or different licenses;
-- whether synthetic benchmark fixtures are covered by the code license;
-- whether any third-party-derived material requires notices or different terms;
-- how future human-study material will be licensed, if released at all.
-
-## License-decision preflight now available
-
-A dated dependency/action/protocol-reference inventory and owner decision checklist are available at [LICENSE-PREFLIGHT.md](LICENSE-PREFLIGHT.md).
-
-The machine-readable inventory is `research/third-party-inventory.json`, with a deterministic drift check at `research/validate_third_party_inventory.py`.
-
-This preparation does **not** select or grant a license. The owner decision remains open.
+Such material must remain private unless a separate release, privacy, ethics, and licensing decision is explicitly made. A private artifact does not become Apache-2.0 material merely because this repository uses Apache-2.0.
 
 ## Third-party material
 
-References to standards, protocols, specifications, or external projects do not transfer their licenses to this repository.
+Third-party material remains governed by its applicable upstream license, copyright, notice, specification, or terms.
 
-Any copied or adapted third-party source must retain the notices required by its own license.
+This repository license does not claim ownership of third-party:
 
-## Current project rule
+- specifications or standards;
+- libraries or packages;
+- GitHub Actions;
+- protocol implementations;
+- copied or adapted material.
 
-Until an explicit license is published:
+Required upstream notices must be preserved when applicable. The current machine-readable inventory is `research/third-party-inventory.json`, validated by `research/validate_third_party_inventory.py`.
 
-- do not state that this repository is licensed under a named open-source license;
-- do not imply that public availability is permission for unrestricted reuse;
-- track licensing as a release/governance prerequisite rather than silently choosing terms during technical development.
+## Names, branding, and endorsement
 
-This file records repository status only and is not legal advice.
+Apache-2.0 does not grant trademark rights. The names **Ancient Immortal Art** and **AI Activity Receipt**, associated branding, and any endorsement rights are not licensed as trademarks merely because covered repository material is available under Apache-2.0.
+
+The repository license also does not imply ownership of, sponsorship by, approval from, adoption by, certification by, or endorsement from any third party.
+
+## Separate competition lanes
+
+ARC / solver work and other competition lanes remain separate. This repository licensing decision must not be transferred to another repository, submission, or competition without checking that lane's current rules, ownership, disclosure, and license requirements.
+
+## Evidence boundary
+
+Apache-2.0 changes reuse permission for covered public project material. It does **not** establish:
+
+- customer validation;
+- commercial readiness;
+- standards conformance;
+- certification;
+- patent clearance;
+- trademark permission;
+- human-study approval;
+- security certification;
+- competition eligibility.
+
+The dependency/action preflight record is maintained at [`LICENSE-PREFLIGHT.md`](LICENSE-PREFLIGHT.md). This file records repository status and boundaries; it is not legal advice.

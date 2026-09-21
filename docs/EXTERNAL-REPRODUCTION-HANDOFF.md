@@ -133,11 +133,9 @@ Keep this result separate from the exact-lock reproduction.
 
 ## Repository license note
 
-This repository currently has **no explicit open-source license selected**.
+Project-authored public repository material is licensed under the **Apache License 2.0**. See top-level `LICENSE`, `NOTICE`, and `docs/LICENSING.md`.
 
-That status is intentionally documented in `docs/LICENSING.md`.
-
-External reviewers may inspect and test the public repository for this reproduction exercise, but broad reuse/redistribution rights should not be inferred from public visibility. The project owner is tracking explicit license selection as a separate governance decision.
+That license does not automatically release future private human-study, participant, reviewer, hidden-analysis, personal, or privacy-sensitive material; does not relicense third-party material; and does not grant trademark or endorsement rights in Ancient Immortal Art or AI Activity Receipt.
 
 ## Acceptance for Phase 6
 
