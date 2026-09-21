@@ -1,0 +1,17 @@
+AI Activity Receipt
+Copyright 2026 Blake Gaucher
+
+This product includes software, documentation, schemas, examples, synthetic
+fixtures, benchmark tooling, adapters, validators, research utilities, and
+other project-authored public repository material developed by Blake Gaucher.
+
+The Apache License, Version 2.0 does not grant trademark or endorsement rights
+in the names "Ancient Immortal Art" or "AI Activity Receipt". See Section 6 of
+the License.
+
+Third-party dependencies, GitHub Actions, standards, specifications, and
+referenced upstream projects remain governed by their applicable upstream
+licenses and notices. The current inventory records no vendored third-party
+source in this repository.
+
+This NOTICE is informational only and does not modify the License.
