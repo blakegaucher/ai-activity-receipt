@@ -27,6 +27,7 @@ if str(BENCH) not in sys.path:
 
 from lint_case_packages import lint_package, safe_relative_file  # noqa: E402
 from validate_runner_data import validate_bundle  # noqa: E402
+from render_structured_control import render_file  # noqa: E402
 
 CASE_SCHEMA = BENCH / "case-package.schema.json"
 BUILD_SCHEMA = BENCH / "runner-build-config.schema.json"
@@ -242,6 +243,19 @@ def build(
         )
         if error or structured_path is None:
             raise ValueError(error or "unable to resolve structured-control file")
+        structured_record_path, error = safe_relative_file(
+            package_root,
+            manifest["structured_control_record_file"],
+        )
+        if error or structured_record_path is None:
+            raise ValueError(error or "unable to resolve structured-control record")
+        expected_structured = render_file(structured_record_path)
+        actual_structured = structured_path.read_text(encoding="utf-8")
+        if actual_structured != expected_structured:
+            raise ValueError(
+                f"case {case_id!r} structured-control table does not match "
+                "the deterministic canonical-record rendering"
+            )
         structured_artifact = read_text_artifact(
             structured_path,
             label="Neutral structured event table",
@@ -471,8 +485,13 @@ def run_self_test() -> int:
             + "\n",
             encoding="utf-8",
         )
+        canonical_record = load_json(ROOT / "examples" / "canonical-record.json")
+        (case_dir / "analysis" / "canonical-record.json").write_text(
+            json.dumps(canonical_record, indent=2) + "\n",
+            encoding="utf-8",
+        )
         (case_dir / "structured" / "events-table.md").write_text(
-            "| time | operation | status |\n|---|---|---|\n|08:00|analyze|completed|\n",
+            render_file(case_dir / "analysis" / "canonical-record.json"),
             encoding="utf-8",
         )
         (case_dir / "receipt" / "receipt.json").write_text(
@@ -499,8 +518,12 @@ def run_self_test() -> int:
             "condition_contract": "same_evidence_plus_neutral_structured_or_receipt_v1",
             "reviewer_evidence_files": ["evidence/events.json"],
             "structured_control_file": "structured/events-table.md",
+            "structured_control_record_file": "analysis/canonical-record.json",
             "receipt_file": "receipt/receipt.json",
-            "analysis_files": ["analysis/gold.json"],
+            "analysis_files": [
+                "analysis/gold.json",
+                "analysis/canonical-record.json",
+            ],
             "receipt_state": "current",
             "forbidden_reviewer_markers": ["GOLD_ONLY_MARKER"],
         }
