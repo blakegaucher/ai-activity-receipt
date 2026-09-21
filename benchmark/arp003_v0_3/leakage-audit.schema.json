@@ -65,6 +65,7 @@
           "evidence_sha256",
           "evidence_chars",
           "receipt_chars",
+          "structured_control_derivation",
           "answer_option_audit",
           "literal_gold_mentions",
           "high_risk_flags",
@@ -202,6 +203,32 @@
                 "items": {
                   "type": "string"
                 }
+              }
+            },
+            "additionalProperties": false
+          },
+          "structured_control_derivation": {
+            "type": "object",
+            "required": [
+              "renderer_version",
+              "canonical_record_sha256",
+              "structured_table_sha256",
+              "exact_renderer_match"
+            ],
+            "properties": {
+              "renderer_version": {
+                "const": "AR-P003-v0.3-neutral-event-table-v0.1"
+              },
+              "canonical_record_sha256": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "structured_table_sha256": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "exact_renderer_match": {
+                "const": true
               }
             },
             "additionalProperties": false
