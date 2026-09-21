@@ -1,6 +1,6 @@
 {
   "protocol_id": "AR-P003",
-  "version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
+  "version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
   "status": "candidate_preregistration_draft",
   "frozen": false,
   "research_question": "Do a neutral structured event table and an AI Activity Receipt, each added to the same underlying heterogeneous evidence, change independent human reconstruction accuracy, reliability, or time relative to raw evidence, and does the Receipt add benefit beyond generic structuring?",
@@ -36,6 +36,48 @@
     "freeze_generator_version_and_diagnostics": true,
     "challenge_allocation_status": "not_frozen",
     "challenge_strata_share_same_three_condition_architecture": true
+  },
+  "reviewer_population": {
+    "decision_id": "reviewer_population",
+    "selected_candidate": "relevant_professional_reviewers",
+    "target_population": "relevant_professional_reviewers",
+    "eligible_domains": [
+      "technical_audit",
+      "cybersecurity",
+      "compliance",
+      "ai_governance",
+      "incident_investigation_or_review",
+      "software_or_system_operations",
+      "technical_assurance",
+      "closely_related_evidence_review_work"
+    ],
+    "minimum_relevant_experience_years": 1,
+    "experience_bands": [
+      "1_to_2_years",
+      "3_to_5_years",
+      "6_plus_years"
+    ],
+    "english_proficiency_rule": "sufficient_to_understand_technical_evidence_instructions_and_structured_response_interface",
+    "degree_required": false,
+    "certification_required": false,
+    "specific_job_title_required": false,
+    "prior_general_ai_activity_receipt_familiarity": "permitted_and_recorded",
+    "exclusions": [
+      "constructed_or_materially_edited_sealed_evaluation_cases",
+      "created_or_accessed_hidden_gold_answers",
+      "participated_in_scoring_rule_development_using_sealed_cases",
+      "scored_confirmatory_responses",
+      "accessed_protected_confirmatory_analysis_before_assigned_cases_complete"
+    ],
+    "study_case_assistance": {
+      "external_web_search": "prohibited",
+      "external_ai_assistants": "prohibited",
+      "another_person": "prohibited",
+      "outside_tools_or_evidence_not_supplied_by_study": "prohibited",
+      "amendment_rule": "only_an_explicitly_versioned_protocol_amendment_before_confirmatory_execution_may_authorize_an_exception"
+    },
+    "scope_of_inference": "claims_limited_to_the_relevant_professional_population_actually_recruited_no_generalization_from_a_convenience_or_unrepresentative_sample",
+    "recruitment_authorized": false
   },
   "primary_targets": [
     "material_actions",
@@ -118,7 +160,6 @@
     "unresolved_decisions": [
       "primary_endpoint",
       "primary_timing_clock",
-      "reviewer_population",
       "effect_precision_target"
     ]
   }

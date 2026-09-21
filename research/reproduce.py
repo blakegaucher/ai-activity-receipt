@@ -24,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.21"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.22"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -103,6 +103,7 @@ CHECKS: list[dict[str, Any]] = [
         "artifacts": [
             "research/validate_continuity_state.py",
             "research/project-continuity-state.json",
+            "docs/PROJECT-CONTINUITY-2026-09-21-AR-P003-REVIEWER-POPULATION.md",
             "docs/PROJECT-CONTINUITY-2026-09-20-SECURITY.md",
             "docs/AR-P003-V0.2.3-HISTORICAL-BASELINE.md",
         ],
@@ -204,6 +205,9 @@ CHECKS: list[dict[str, Any]] = [
             "benchmark/arp003_v0_3/methodology-decisions.current.json",
             "benchmark/arp003_v0_3/protocol.json",
             "docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md",
+            "docs/AR-P003-V0.3-REVIEWER-POPULATION-DECISION-2026-09-21.md",
+            "docs/AR-P003-V0.3-RECRUITMENT-ELIGIBILITY.md",
+            "docs/AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md",
         ],
     },
     {
@@ -346,6 +350,8 @@ CHECKS: list[dict[str, Any]] = [
             "benchmark/arp003_v0_3/methodology-decisions.schema.json",
             "benchmark/arp003_v0_3/validate_methodology_decisions.py",
             "docs/AR-P003-V0.3-FREEZE-READINESS.md",
+            "docs/AR-P003-V0.3-REVIEWER-POPULATION-DECISION-2026-09-21.md",
+            "docs/AR-P003-V0.3-RECRUITMENT-ELIGIBILITY.md",
         ],
     },
     {

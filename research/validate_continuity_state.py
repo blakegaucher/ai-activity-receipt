@@ -18,7 +18,11 @@ STATE = ROOT / "research" / "project-continuity-state.json"
 REPRO = ROOT / "research" / "reproduce.py"
 RUNNER_BUNDLE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-bundle.schema.json"
 RUNNER_RESPONSE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-response.schema.json"
-LATEST_CONTINUITY = ROOT / "docs" / "PROJECT-CONTINUITY-2026-09-21-AR-P003.md"
+LATEST_CONTINUITY = (
+    ROOT
+    / "docs"
+    / "PROJECT-CONTINUITY-2026-09-21-AR-P003-REVIEWER-POPULATION.md"
+)
 EXPECTED_FREEZE = (
     "8a381f4ae20a5f6824e513c7f96920fdf3cfe6b00b0b8d301127f5e0b659d0fd"
 )
@@ -55,7 +59,7 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.17":
+    if state.get("snapshot_version") != "project-continuity-v0.18":
         errors.append("machine-readable continuity snapshot_version is stale")
     if state.get("snapshot_date") != "2026-09-21":
         errors.append("machine-readable continuity snapshot_date is stale")
@@ -98,9 +102,9 @@ def main() -> int:
             "three_condition_structured_control"
         )
     if methodology.get("protocol_version") != (
-        "v0.3-draft-2026-09-21-integrated-challenge-v0.1"
+        "v0.3-draft-2026-09-21-professional-reviewers-v0.1"
     ):
-        errors.append("AR-P003 selected comparison protocol-version continuity is stale")
+        errors.append("AR-P003 selected methodology protocol-version continuity is stale")
     if methodology.get("comparison_conditions_freeze_readiness") != "complete":
         errors.append("AR-P003 comparison-condition readiness continuity is stale")
 
@@ -115,10 +119,39 @@ def main() -> int:
             "until counts/allocation/final-corpus review are frozen"
         )
 
+    if methodology.get("reviewer_population") != (
+        "selected:relevant_professional_reviewers"
+    ):
+        errors.append(
+            "AR-P003 reviewer_population must remain explicitly selected as "
+            "relevant_professional_reviewers"
+        )
+    if methodology.get("reviewer_population_freeze_readiness") != "complete":
+        errors.append("AR-P003 reviewer-population readiness continuity is stale")
+
+    population = methodology.get("reviewer_population_design") or {}
+    expected_population = {
+        "minimum_relevant_experience_years": 1,
+        "experience_bands": [
+            "1_to_2_years",
+            "3_to_5_years",
+            "6_plus_years",
+        ],
+        "english_proficiency_required": True,
+        "degree_certification_or_specific_title_required": False,
+        "prior_general_ai_activity_receipt_familiarity": "permitted_and_recorded",
+        "external_assistance_during_study_cases": (
+            "prohibited_absent_pre_execution_versioned_amendment"
+        ),
+        "claims_scoped_to_population_actually_recruited": True,
+        "recruitment_authorized": False,
+    }
+    if population != expected_population:
+        errors.append("AR-P003 reviewer-population continuity details are stale")
+
     required_methodology_unresolved = {
         "primary_endpoint",
         "primary_timing_clock",
-        "reviewer_population",
         "effect_precision_target",
     }
     for decision_id in required_methodology_unresolved:

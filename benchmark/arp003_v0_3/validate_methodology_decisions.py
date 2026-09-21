@@ -29,6 +29,12 @@ LEDGER_PATH = (
     ROOT / "benchmark" / "arp003_v0_3" / "methodology-decisions.current.json"
 )
 PROTOCOL_PATH = ROOT / "benchmark" / "arp003_v0_3" / "protocol.json"
+REVIEWER_INSTRUCTIONS_PATH = (
+    ROOT / "docs" / "AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md"
+)
+RECRUITMENT_ELIGIBILITY_PATH = (
+    ROOT / "docs" / "AR-P003-V0.3-RECRUITMENT-ELIGIBILITY.md"
+)
 
 REQUIRED_DECISIONS = {
     "comparison_conditions",
@@ -37,6 +43,77 @@ REQUIRED_DECISIONS = {
     "challenge_design",
     "reviewer_population",
     "effect_precision_target",
+}
+
+REVIEWER_POPULATION_CANDIDATE = "relevant_professional_reviewers"
+REVIEWER_POPULATION_DOMAINS = [
+    "technical_audit",
+    "cybersecurity",
+    "compliance",
+    "ai_governance",
+    "incident_investigation_or_review",
+    "software_or_system_operations",
+    "technical_assurance",
+    "closely_related_evidence_review_work",
+]
+REVIEWER_EXPERIENCE_BANDS = [
+    "1_to_2_years",
+    "3_to_5_years",
+    "6_plus_years",
+]
+REVIEWER_EXCLUSIONS = [
+    "constructed_or_materially_edited_sealed_evaluation_cases",
+    "created_or_accessed_hidden_gold_answers",
+    "participated_in_scoring_rule_development_using_sealed_cases",
+    "scored_confirmatory_responses",
+    "accessed_protected_confirmatory_analysis_before_assigned_cases_complete",
+]
+REVIEWER_ASSISTANCE_RULE = {
+    "external_web_search": "prohibited",
+    "external_ai_assistants": "prohibited",
+    "another_person": "prohibited",
+    "outside_tools_or_evidence_not_supplied_by_study": "prohibited",
+    "amendment_rule": (
+        "only_an_explicitly_versioned_protocol_amendment_before_"
+        "confirmatory_execution_may_authorize_an_exception"
+    ),
+}
+REVIEWER_SCOPE_RULE = (
+    "claims_limited_to_the_relevant_professional_population_actually_recruited_"
+    "no_generalization_from_a_convenience_or_unrepresentative_sample"
+)
+
+REVIEWER_DOCUMENTATION_MARKERS = {
+    "reviewer instructions": (
+        "relevant professional reviewers",
+        "at least 1 year",
+        "1–2 years",
+        "3–5 years",
+        "6+ years",
+        "sufficient English proficiency",
+        "No particular degree, certification, or job title is required",
+        "Prior general familiarity with AI Activity Receipt is permitted and recorded",
+        "external web search",
+        "external AI assistant",
+        "another person",
+        "outside tool or evidence not supplied by the study",
+        "recruitment is not authorized",
+    ),
+    "recruitment eligibility": (
+        "relevant professional or practical experience",
+        "at least 1 year",
+        "1–2 years",
+        "3–5 years",
+        "6+ years",
+        "sufficient English proficiency",
+        "A degree, certification, or particular job title is not required",
+        "prior general familiarity with AI Activity Receipt",
+        "external web search",
+        "external AI assistants",
+        "another person",
+        "outside tools/evidence not supplied by the study",
+        "No reviewer recruitment or human execution is authorized",
+    ),
 }
 
 
@@ -85,8 +162,10 @@ def semantic_errors(
 
     selected_required = 0
     required_total = 0
+    decisions_by_id: dict[str, dict[str, Any]] = {}
 
     for index, decision in enumerate(decisions):
+        decisions_by_id[decision["decision_id"]] = decision
         candidates = decision["candidates"]
         candidate_ids = [item["candidate_id"] for item in candidates]
         if len(candidate_ids) != len(set(candidate_ids)):
@@ -160,6 +239,49 @@ def semantic_errors(
             "methodology decisions remain unresolved"
         )
 
+    reviewer_decision = decisions_by_id.get("reviewer_population")
+    if reviewer_decision and reviewer_decision.get("status") == "selected":
+        if reviewer_decision.get("selected_candidate") != REVIEWER_POPULATION_CANDIDATE:
+            errors.append(
+                "LEDGER-13 selected reviewer_population must resolve to "
+                f"{REVIEWER_POPULATION_CANDIDATE!r} for this protocol version"
+            )
+        population = protocol.get("reviewer_population")
+        if not isinstance(population, dict):
+            errors.append(
+                "LEDGER-14 selected reviewer_population requires a structured "
+                "protocol.json reviewer_population object"
+            )
+        else:
+            expected_values = {
+                "decision_id": "reviewer_population",
+                "selected_candidate": REVIEWER_POPULATION_CANDIDATE,
+                "target_population": REVIEWER_POPULATION_CANDIDATE,
+                "eligible_domains": REVIEWER_POPULATION_DOMAINS,
+                "minimum_relevant_experience_years": 1,
+                "experience_bands": REVIEWER_EXPERIENCE_BANDS,
+                "english_proficiency_rule": (
+                    "sufficient_to_understand_technical_evidence_instructions_"
+                    "and_structured_response_interface"
+                ),
+                "degree_required": False,
+                "certification_required": False,
+                "specific_job_title_required": False,
+                "prior_general_ai_activity_receipt_familiarity": (
+                    "permitted_and_recorded"
+                ),
+                "exclusions": REVIEWER_EXCLUSIONS,
+                "study_case_assistance": REVIEWER_ASSISTANCE_RULE,
+                "scope_of_inference": REVIEWER_SCOPE_RULE,
+                "recruitment_authorized": False,
+            }
+            for key, expected in expected_values.items():
+                if population.get(key) != expected:
+                    errors.append(
+                        "LEDGER-15 protocol reviewer_population field "
+                        f"{key!r} does not match the selected frozen design"
+                    )
+
     return errors
 
 
@@ -178,14 +300,52 @@ def validate(
     return semantic_errors(ledger, protocol)
 
 
+def reviewer_documentation_errors(
+    instructions: str,
+    recruitment: str,
+) -> list[str]:
+    errors: list[str] = []
+    documents = {
+        "reviewer instructions": instructions,
+        "recruitment eligibility": recruitment,
+    }
+    for label, markers in REVIEWER_DOCUMENTATION_MARKERS.items():
+        text = documents[label]
+        for marker in markers:
+            if marker not in text:
+                errors.append(
+                    f"LEDGER-DOC-01 {label} is missing selected-population marker "
+                    f"{marker!r}"
+                )
+    return errors
+
+
 def run_self_test() -> int:
     schema = load_json(SCHEMA_PATH)
     ledger = load_json(LEDGER_PATH)
     protocol = load_json(PROTOCOL_PATH)
+    instructions = REVIEWER_INSTRUCTIONS_PATH.read_text(encoding="utf-8")
+    recruitment = RECRUITMENT_ELIGIBILITY_PATH.read_text(encoding="utf-8")
     Draft202012Validator.check_schema(schema)
 
     errors = validate(ledger, schema, protocol)
     assert not errors, errors
+    errors = reviewer_documentation_errors(instructions, recruitment)
+    assert not errors, errors
+
+    missing_instruction_rule = instructions.replace(
+        "external AI assistant", "outside automated helper", 1
+    )
+    errors = reviewer_documentation_errors(missing_instruction_rule, recruitment)
+    assert any("LEDGER-DOC-01" in error for error in errors), errors
+
+    missing_recruitment_rule = recruitment.replace(
+        "No reviewer recruitment or human execution is authorized",
+        "Recruitment status is pending",
+        1,
+    )
+    errors = reviewer_documentation_errors(instructions, missing_recruitment_rule)
+    assert any("LEDGER-DOC-01" in error for error in errors), errors
 
     duplicate = copy.deepcopy(ledger)
     duplicate["decisions"].append(copy.deepcopy(duplicate["decisions"][0]))
@@ -250,6 +410,35 @@ def run_self_test() -> int:
     errors = validate(ledger, schema, protocol_mismatch)
     assert any("LEDGER-01" in error for error in errors)
 
+    wrong_population_candidate = copy.deepcopy(ledger)
+    population_decision = next(
+        item
+        for item in wrong_population_candidate["decisions"]
+        if item["decision_id"] == "reviewer_population"
+    )
+    population_decision["selected_candidate"] = "population_to_be_selected"
+    errors = validate(wrong_population_candidate, schema, protocol)
+    assert any("LEDGER-13" in error for error in errors), errors
+
+    missing_population = copy.deepcopy(protocol)
+    missing_population.pop("reviewer_population")
+    errors = validate(ledger, schema, missing_population)
+    assert any("LEDGER-14" in error for error in errors), errors
+
+    population_mutations = (
+        ("minimum_relevant_experience_years", 0),
+        ("experience_bands", ["1_to_2_years", "6_plus_years"]),
+        ("prior_general_ai_activity_receipt_familiarity", "prohibited"),
+        ("exclusions", REVIEWER_EXCLUSIONS[:-1]),
+        ("study_case_assistance", {"external_web_search": "permitted"}),
+        ("recruitment_authorized", True),
+    )
+    for key, value in population_mutations:
+        mutated_protocol = copy.deepcopy(protocol)
+        mutated_protocol["reviewer_population"][key] = value
+        errors = validate(ledger, schema, mutated_protocol)
+        assert any("LEDGER-15" in error for error in errors), (key, errors)
+
     # Required decision IDs remain required even if an input flips their flags.
     optionalized = copy.deepcopy(ledger)
     for decision in optionalized["decisions"]:
@@ -271,7 +460,10 @@ def run_self_test() -> int:
     resolved["status"] = "methodology_resolved"
     for decision in resolved["decisions"]:
         decision["status"] = "selected"
-        decision["selected_candidate"] = decision["candidates"][0]["candidate_id"]
+        if decision["decision_id"] == "reviewer_population":
+            decision["selected_candidate"] = REVIEWER_POPULATION_CANDIDATE
+        else:
+            decision["selected_candidate"] = decision["candidates"][0]["candidate_id"]
         decision["rationale"] = "Synthetic self-test selection only."
         decision["evidence_refs"] = ["synthetic://methodology-selection"]
     for test_protocol in (protocol, frozen_protocol):
@@ -290,6 +482,8 @@ def main() -> int:
         schema = load_json(SCHEMA_PATH)
         ledger = load_json(LEDGER_PATH)
         protocol = load_json(PROTOCOL_PATH)
+        instructions = REVIEWER_INSTRUCTIONS_PATH.read_text(encoding="utf-8")
+        recruitment = RECRUITMENT_ELIGIBILITY_PATH.read_text(encoding="utf-8")
         Draft202012Validator.check_schema(schema)
     except (OSError, json.JSONDecodeError, SchemaError) as exc:
         print(f"ERROR: unable to load methodology ledger/schema/protocol: {exc}", file=sys.stderr)
@@ -303,6 +497,7 @@ def main() -> int:
             return 1
 
     errors = validate(ledger, schema, protocol)
+    errors.extend(reviewer_documentation_errors(instructions, recruitment))
     if errors:
         for error in errors:
             print(f"ERROR: {error}", file=sys.stderr)

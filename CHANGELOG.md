@@ -1,5 +1,15 @@
 ## Unreleased
 
+### AR-P003 relevant-professional reviewer-population decision
+
+- select `reviewer_population = relevant_professional_reviewers` while preserving the former unresolved state and `population_to_be_selected` placeholder;
+- require at least 1 year of relevant professional/practical experience in a listed audit, cybersecurity, compliance, AI-governance, incident-review, software/system-operations, technical-assurance, or closely related evidence-review domain;
+- record 1–2, 3–5, and 6+ year experience bands; require sufficient English; require no particular degree, certification, or job title; permit and record prior general AI Activity Receipt familiarity;
+- freeze exclusions for sealed-case construction/material editing, hidden-gold access, scoring-rule development using sealed cases, confirmatory scoring, and premature protected-analysis access;
+- prohibit external web search, external AI assistants, another person, and outside tools/evidence during study cases absent an explicitly versioned pre-execution amendment;
+- version the development protocol as `v0.3-draft-2026-09-21-professional-reviewers-v0.1`, advance continuity to v0.18 and aggregate reproducibility to v0.22, and complete only the reviewer-population freeze-readiness gate;
+- keep recruitment unauthorized and leave primary endpoint, primary timing clock, effect/precision target, final sample size/allocation/stopping, and all other AR-P003 gates unchanged.
+
 ### Repository licensing — Apache-2.0
 
 - correct the Apache-2.0 Appendix application notice from the erroneous `Copyright 2026 OpenAI` attribution to `Copyright 2026 Blake Gaucher`; this is a prospective attribution correction only and does not change the selected license, scope, or historical PR #82 evidence;

@@ -1,6 +1,6 @@
 {
   "impact_map_version": "AR-P003-v0.3-methodology-impact-map-v0.1",
-  "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
+  "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
   "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.1",
   "status": "decision_support_only_no_selection",
   "decisions": [
@@ -182,7 +182,28 @@
             "exclude case constructors/scorers and define project-familiarity rule",
             "align recruitment source with the scope of inference"
           ],
-          "notes": "This cannot be settled by code. The eventual human-audit claim must remain scoped to the population actually recruited."
+          "notes": "Historical unresolved placeholder preserved from before the owner selected a population. The eventual human-audit claim must remain scoped to the population actually recruited."
+        },
+        {
+          "candidate_id": "relevant_professional_reviewers",
+          "implementation_class": "scope_decision",
+          "impacted_artifacts": [
+            "benchmark/arp003_v0_3/protocol.json",
+            "docs/AR-P003-V0.3-PROTOCOL.md",
+            "docs/AR-P003-V0.3-REVIEWER-INSTRUCTIONS-DRAFT.md",
+            "docs/AR-P003-V0.3-RECRUITMENT-ELIGIBILITY.md",
+            "docs/AR-P003-V0.3-PLANNING.md",
+            "benchmark/arp003_v0_3/freeze-readiness.current.json"
+          ],
+          "required_before_execution": [
+            "recruit only people meeting the frozen relevant-professional eligibility rule",
+            "record the 1-2, 3-5, or 6+ year experience band",
+            "record permitted prior general AI Activity Receipt familiarity",
+            "apply all sealed-case, hidden-gold, scoring, and protected-analysis exclusions",
+            "enforce the no external web, AI, person, tool, or outside-evidence rule during study cases",
+            "limit claims to the professional population actually recruited"
+          ],
+          "notes": "Selected by the owner on 2026-09-21. Population and eligibility are complete as a methodology decision; recruitment, ethics determination, final allocation, and execution remain unauthorized or unresolved."
         }
       ]
     },

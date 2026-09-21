@@ -248,7 +248,7 @@ A candidate **AR-P003 v0.3 preregistration draft and scoring workspace are now p
 - freeze hashes for protocol/corpus/scorer artifacts;
 - independent human reviewers as the evidence arm required for any human-benefit claim.
 
-The v0.3 protocol is **not frozen or executed**. Two methodology choices are now explicit: the three-condition structured-control comparison and integrated challenge strata. Primary endpoint, active versus wall-clock timing semantics, reviewer population, and meaningful effect/precision target remain unresolved. Historical alternatives and source conflicts remain preserved in the [Methodology Decision Ledger](docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md) and [Decision Support](docs/AR-P003-V0.3-DECISION-SUPPORT.md).
+The v0.3 protocol is **not frozen or executed**. Three methodology choices are now explicit: the three-condition structured-control comparison, integrated challenge strata, and a relevant-professional reviewer population with prespecified eligibility/exclusion and no-external-assistance rules. Primary endpoint, active versus wall-clock timing semantics, and meaningful effect/precision target remain unresolved. Reviewer recruitment is not authorized. Historical alternatives and source conflicts remain preserved in the [Methodology Decision Ledger](docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md) and [Decision Support](docs/AR-P003-V0.3-DECISION-SUPPORT.md).
 
 Sample-size/power planning, final corpus, final reviewer instructions, ethics/REB/IRB review or documented determination as applicable, assignment/analysis freeze, and final hashes still must be completed before confirmatory human data collection.
 

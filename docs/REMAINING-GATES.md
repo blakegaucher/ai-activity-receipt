@@ -95,8 +95,8 @@ Use only synthetic development bundles.
 
 Before confirmatory human execution:
 
-- deliberately select the final comparison-condition design rather than inheriting the current two-condition implementation by default;
-- define reviewer population/eligibility;
+- [x] select the comparison-condition design — three-condition structured control selected and versioned;
+- [x] define reviewer population/eligibility — relevant professional reviewers selected; recruitment remains unauthorized;
 - freeze primary endpoint(s);
 - define meaningful effect/precision target;
 - freeze the assumptions/endpoint target for reviewer × case power/precision planning (design-specific crossed simulation tooling is now prepared);

@@ -79,7 +79,7 @@ A technically informed reader should be able to understand what an Activity Rece
 - [ ] Complete manual browser/device, pause/visibility, reload/download-loss, scrolling, and accessibility smoke tests for the intended study environment.
 - [x] Publish a third-party dependency/action inventory and license-decision preflight without selecting terms.
 - [x] Choose and publish an explicit repository license: **Apache License 2.0**, with explicit private human-study, third-party, trademark, and cross-competition boundaries.
-- [ ] Define target reviewer population.
+- [x] Define target reviewer population — relevant professional reviewers with prespecified eligibility/exclusion rules; no recruitment authorized.
 - [ ] Freeze primary endpoint(s) and meaningful effect/precision target.
 - [ ] Complete sample-size or precision analysis.
 - [ ] Create fresh sealed synthetic corpus.

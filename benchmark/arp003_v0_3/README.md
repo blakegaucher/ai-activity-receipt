@@ -238,7 +238,7 @@ Files:
 - `validate_methodology_decisions.py`
 - `../../docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md`
 
-The ledger records `comparison_conditions` as selected (`three_condition_structured_control`) and `challenge_design` as selected (`integrated_challenge_strata`). Primary endpoint, primary timing clock, reviewer population, and meaningful effect/precision target remain unresolved. CI rejects a frozen protocol while required methodology decisions remain unresolved.
+The ledger records `comparison_conditions` as selected (`three_condition_structured_control`), `challenge_design` as selected (`integrated_challenge_strata`), and `reviewer_population` as selected (`relevant_professional_reviewers`). Primary endpoint, primary timing clock, and meaningful effect/precision target remain unresolved. The selected population requires at least 1 year of relevant professional/practical experience, records 1–2/3–5/6+ year bands, and freezes language, familiarity, exclusion, assistance, and inference-scope rules without authorizing recruitment. CI rejects a frozen protocol while required methodology decisions remain unresolved.
 
 Run:
 

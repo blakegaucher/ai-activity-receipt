@@ -1,6 +1,6 @@
 {
   "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.1",
-  "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
+  "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
   "status": "development_unresolved",
   "decisions": [
     {
@@ -139,11 +139,14 @@
       "decision_id": "reviewer_population",
       "title": "Target reviewer population and eligibility",
       "pre_freeze_required": true,
-      "status": "unresolved",
-      "current_implementation": "Protocol requires experience bands, language proficiency, project-familiarity rules, and exclusion of case constructors/scorers, but no target population is frozen.",
-      "selected_candidate": null,
+      "status": "selected",
+      "current_implementation": "The selected population is relevant professional reviewers with at least one year of applicable practical/professional experience. The protocol freezes eligible domains, three experience bands, English proficiency, project-familiarity recording, conflict exclusions, study-case assistance restrictions, and population-scoped inference while keeping recruitment unauthorized.",
+      "selected_candidate": "relevant_professional_reviewers",
       "evidence_refs": [
-        "docs/AR-P003-V0.3-PROTOCOL.md"
+        "docs/AR-P003-V0.3-REVIEWER-POPULATION-DECISION-2026-09-21.md",
+        "docs/AR-P003-V0.3-PROTOCOL.md",
+        "docs/AR-P003-V0.3-RECRUITMENT-ELIGIBILITY.md",
+        "benchmark/arp003_v0_3/protocol.json"
       ],
       "candidates": [
         {
@@ -153,9 +156,20 @@
           "evidence_refs": [
             "docs/AR-P003-V0.3-PROTOCOL.md"
           ]
+        },
+        {
+          "candidate_id": "relevant_professional_reviewers",
+          "description": "Recruit relevant professional reviewers with at least one year of practical/professional experience in technical audit, cybersecurity, compliance, AI governance, incident investigation/review, software or system operations, technical assurance, or closely related evidence-review work, subject to the frozen eligibility, exclusion, familiarity-recording, and no-external-assistance rules.",
+          "source_class": "current_repository",
+          "evidence_refs": [
+            "docs/AR-P003-V0.3-REVIEWER-POPULATION-DECISION-2026-09-21.md",
+            "docs/AR-P003-V0.3-PROTOCOL.md",
+            "benchmark/arp003_v0_3/protocol.json"
+          ]
         }
       ],
-      "notes": "A convenience sample must not be generalized to a professional population without justification."
+      "notes": "The earlier unresolved state and population_to_be_selected placeholder remain preserved. The selected design does not authorize recruitment, set professional-domain quotas, or permit generalization from a convenience or unrepresentative sample beyond the professional population actually recruited.",
+      "rationale": "The AI Activity Receipt is intended for consequential AI activity review and governance workflows. Relevant professionals provide a more defensible test of intended audit/evidence-review use than a general convenience population; including multiple related domains improves applicability while prespecified experience bands preserve transparent reporting."
     },
     {
       "decision_id": "effect_precision_target",

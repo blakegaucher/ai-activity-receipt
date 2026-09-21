@@ -212,7 +212,7 @@ def main() -> int:
 
         build_config = {
             "build_config_version": "AR-P003-v0.3-dev-runner-build-v0.2",
-            "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
+            "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
             "cases": [
                 {
                     "case_id": "case-ordinary",
