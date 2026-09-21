@@ -151,6 +151,7 @@
     <p class="section-note">Use only the materials shown in this case. Do not provide private chain-of-thought.</p>
 
     <div id="evidence"></div>
+    <div id="structuredContainer"></div>
     <div id="receiptContainer"></div>
 
     <form id="answerForm" class="card">
@@ -240,8 +241,9 @@
 <script>
 "use strict";
 
-const EXPECTED_VERSION = "AR-P003-v0.3-dev-runner-bundle-v0.2";
-const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.3";
+const EXPECTED_VERSION = "AR-P003-v0.3-dev-runner-bundle-v0.3";
+const RESPONSE_VERSION = "AR-P003-v0.3-dev-runner-response-v0.5";
+const COMPARISON_DESIGN = "three_condition_structured_control";
 const COMPREHENSION_VERSION = "AR-P003-v0.3-comprehension-v0.1";
 const PRACTICE_VERSION = "AR-P003-v0.3-practice-v0.1";
 const MAX_BUNDLE_BYTES = 32 * 1024 * 1024;
@@ -316,6 +318,7 @@ function validateBundleBasic(doc) {
   if (!doc || typeof doc !== "object" || Array.isArray(doc)) throw new Error("Bundle must be a JSON object.");
   if (doc.bundle_version !== EXPECTED_VERSION) throw new Error("Unexpected bundle_version.");
   boundedString(doc.protocol_version, "protocol_version");
+  if (doc.comparison_design !== COMPARISON_DESIGN) throw new Error("Unexpected comparison_design.");
   boundedString(doc.assignment_version, "assignment_version");
   if (typeof doc.assignment_sha256 !== "string" || !/^sha256:[0-9a-f]{64}$/.test(doc.assignment_sha256)) throw new Error("assignment_sha256 is invalid.");
   boundedString(doc.reviewer_id, "reviewer_id");
@@ -341,8 +344,12 @@ function validateBundleBasic(doc) {
         seen.add(value);
       }
     }
+    if (!(item.structured_event_table === null || (item.structured_event_table && typeof item.structured_event_table === "object"))) throw new Error("structured_event_table must be null or an artifact.");
+    if (item.structured_event_table) validateArtifact(item.structured_event_table, "structured_event_table");
     if (!(item.receipt === null || (item.receipt && typeof item.receipt === "object"))) throw new Error("receipt must be null or an artifact.");
     if (item.receipt) validateArtifact(item.receipt, "receipt");
+    if (item.structured_event_table && item.receipt) throw new Error("structured_event_table and receipt are mutually exclusive.");
+
   }
 }
 
@@ -454,6 +461,11 @@ function startCase(index) {
   clearChildren($("evidence"));
   for (const artifact of item.evidence) $("evidence").appendChild(artifactCard(artifact, false));
 
+  clearChildren($("structuredContainer"));
+  if (item.structured_event_table) {
+    $("structuredContainer").appendChild(artifactCard(item.structured_event_table, false));
+  }
+
   clearChildren($("receiptContainer"));
   if (item.receipt) $("receiptContainer").appendChild(artifactCard(item.receipt, true));
 
@@ -510,6 +522,7 @@ function exportObject() {
   return {
     response_bundle_version: RESPONSE_VERSION,
     protocol_version: bundle.protocol_version,
+    comparison_design: bundle.comparison_design,
     assignment_version: bundle.assignment_version,
     assignment_sha256: bundle.assignment_sha256,
     reviewer_id: bundle.reviewer_id,
@@ -678,7 +691,7 @@ $("answerForm").addEventListener("submit", (event) => {
 
     results.push({
       case_id: item.case_id,
-      condition: item.receipt ? "receipt" : "control",
+      condition: item.receipt ? "receipt" : (item.structured_event_table ? "structured" : "raw"),
       started_at: caseState.startedAtIso,
       submitted_at: nowIso(),
       elapsed_wall_seconds: Number(elapsed.wall.toFixed(3)),
