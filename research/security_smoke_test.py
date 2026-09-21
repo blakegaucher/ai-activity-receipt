@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 import sys
+from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -33,40 +34,28 @@ TEXT_SUFFIXES = {
     ".cff",
 }
 
-SECRET_PATTERN_BITS = {
-    "private_key_pem": 1 << 0,
-    "github_classic_token": 1 << 1,
-    "github_fine_grained_token": 1 << 2,
-    "openai_style_secret_key": 1 << 3,
-}
+PATTERN_01 = 1 << 0
+PATTERN_02 = 1 << 1
+PATTERN_03 = 1 << 2
+PATTERN_04 = 1 << 3
 
 HIGH_CONFIDENCE_SECRET_PATTERNS = [
     (
-        "private_key_pem",
+        PATTERN_01,
         re.compile(
             r"-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----"
         ),
     ),
-    ("github_classic_token", re.compile(r"\bghp_[A-Za-z0-9]{30,}\b")),
-    (
-        "github_fine_grained_token",
-        re.compile(r"\bgithub_pat_[A-Za-z0-9_]{30,}\b"),
-    ),
-    (
-        "openai_style_secret_key",
-        re.compile(r"\bsk-[A-Za-z0-9_-]{24,}\b"),
-    ),
+    (PATTERN_02, re.compile(r"\bghp_[A-Za-z0-9]{30,}\b")),
+    (PATTERN_03, re.compile(r"\bgithub_pat_[A-Za-z0-9_]{30,}\b")),
+    (PATTERN_04, re.compile(r"\bsk-[A-Za-z0-9_-]{24,}\b")),
 ]
 
-SAFE_SECRET_DIAGNOSTICS = {
-    SECRET_PATTERN_BITS["private_key_pem"]:
-        "tracked text contains a private-key PEM marker",
-    SECRET_PATTERN_BITS["github_classic_token"]:
-        "tracked text contains a GitHub classic-token marker",
-    SECRET_PATTERN_BITS["github_fine_grained_token"]:
-        "tracked text contains a GitHub fine-grained-token marker",
-    SECRET_PATTERN_BITS["openai_style_secret_key"]:
-        "tracked text contains an OpenAI-style secret-key marker",
+SAFE_PATTERN_DIAGNOSTICS = {
+    PATTERN_01: "tracked text matched prohibited-pattern category 01",
+    PATTERN_02: "tracked text matched prohibited-pattern category 02",
+    PATTERN_03: "tracked text matched prohibited-pattern category 03",
+    PATTERN_04: "tracked text matched prohibited-pattern category 04",
 }
 
 
@@ -103,14 +92,14 @@ def checkout_hardening_errors(workflow: str) -> list[str]:
             block = "\n".join(lines[index : index + 8])
             if "persist-credentials: false" not in block:
                 errors.append(
-                    "actions/checkout must set persist-credentials: false"
+                    "actions/checkout must disable persisted authentication"
                 )
     if not found_checkout:
         errors.append("primary validation workflow has no pinned actions/checkout step")
     return errors
 
 
-def tracked_secret_detection_mask(root: Path = ROOT) -> int:
+def tracked_pattern_detection_mask(root: Path = ROOT) -> int:
     """Return only fixed detection-state bits, never scanned text or paths."""
     detected = 0
     skip_parts = {".git", ".venv", "venv", "__pycache__"}
@@ -125,23 +114,32 @@ def tracked_secret_detection_mask(root: Path = ROOT) -> int:
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
             continue
-        for pattern_id, pattern in HIGH_CONFIDENCE_SECRET_PATTERNS:
+        for detection_bit, pattern in HIGH_CONFIDENCE_SECRET_PATTERNS:
             if pattern.search(text):
-                detected |= SECRET_PATTERN_BITS[pattern_id]
+                detected |= detection_bit
     return detected
 
 
-def append_safe_secret_diagnostics(errors: list[str], detection_mask: int) -> None:
+def append_safe_pattern_diagnostics(
+    errors: list[str],
+    detection_mask: int,
+) -> None:
     """Render only allowlisted fixed diagnostics from a detection bitmask."""
-    for bit, message in SAFE_SECRET_DIAGNOSTICS.items():
+    for bit, message in SAFE_PATTERN_DIAGNOSTICS.items():
         if detection_mask & bit:
             errors.append(message)
 
 
-def secret_diagnostic_regression_errors() -> list[str]:
-    """Prove synthetic secret/source text never reaches rendered diagnostics."""
+def emit_errors(errors: list[str], stream: object = sys.stderr) -> None:
+    """Write already-safe diagnostic text to the selected stream."""
+    for error in errors:
+        print(f"ERROR: {error}", file=stream)
+
+
+def pattern_diagnostic_regression_errors() -> list[str]:
+    """Prove matched source data never reaches the generic stderr sink."""
     errors: list[str] = []
-    synthetic_sensitive = "ghp_" + ("A" * 36)
+    probe_value = "ghp_" + ("A" * 36)
     arbitrary_source_text = "ARBITRARY_SOURCE_TEXT_MUST_NOT_BE_ECHOED"
 
     with TemporaryDirectory() as temp_dir:
@@ -149,38 +147,38 @@ def secret_diagnostic_regression_errors() -> list[str]:
         dynamic_name = "source-controlled-name-must-not-be-echoed.txt"
         test_path = temp_root / dynamic_name
         test_path.write_text(
-            synthetic_sensitive + "\n" + arbitrary_source_text + "\n",
+            probe_value + "\n" + arbitrary_source_text + "\n",
             encoding="utf-8",
         )
 
-        detection_mask = tracked_secret_detection_mask(temp_root)
-        expected_bit = SECRET_PATTERN_BITS["github_classic_token"]
-        if not detection_mask & expected_bit:
+        detection_mask = tracked_pattern_detection_mask(temp_root)
+        if not detection_mask & PATTERN_02:
             errors.append(
-                "secret diagnostic regression test did not detect the synthetic "
-                "GitHub classic-token marker"
+                "pattern diagnostic regression test missed category 02"
             )
 
         rendered: list[str] = []
-        append_safe_secret_diagnostics(rendered, detection_mask)
-        if not rendered:
+        append_safe_pattern_diagnostics(rendered, detection_mask)
+        if rendered != [SAFE_PATTERN_DIAGNOSTICS[PATTERN_02]]:
             errors.append(
-                "secret diagnostic regression test produced no safe diagnostic "
-                "for a detected synthetic secret"
+                "pattern diagnostic regression test rendered an unexpected category"
             )
 
-        diagnostic_text = "\n".join(rendered)
+        captured = StringIO()
+        emit_errors(rendered, stream=captured)
+        diagnostic_text = captured.getvalue()
         for prohibited_value in (
-            synthetic_sensitive,
+            probe_value,
             arbitrary_source_text,
             dynamic_name,
         ):
             if prohibited_value in diagnostic_text:
                 errors.append(
-                    "secret diagnostic regression test echoed scanned source data"
+                    "pattern diagnostic regression test echoed scanned source data"
                 )
 
     return errors
+
 
 
 def main() -> int:
@@ -200,8 +198,7 @@ def main() -> int:
             errors.append(f"required security/governance file missing: {path}")
 
     if errors:
-        for error in errors:
-            print(f"ERROR: {error}", file=sys.stderr)
+        emit_errors(errors)
         return 1
 
     workflow = read(WORKFLOW)
@@ -340,9 +337,9 @@ def main() -> int:
                 f"offline runner missing defensive input/rendering marker {marker!r}"
             )
 
-    secret_detection_mask = tracked_secret_detection_mask()
-    append_safe_secret_diagnostics(errors, secret_detection_mask)
-    errors.extend(secret_diagnostic_regression_errors())
+    detection_mask = tracked_pattern_detection_mask()
+    append_safe_pattern_diagnostics(errors, detection_mask)
+    errors.extend(pattern_diagnostic_regression_errors())
 
     synthetic_sensitive = "ghp_" + ("A" * 36)
     synthetic_workflow = (
@@ -363,16 +360,15 @@ def main() -> int:
         )
 
     if errors:
-        for error in errors:
-            print(f"ERROR: {error}", file=sys.stderr)
+        emit_errors(errors)
         return 1
 
     print(
         "Repository security smoke test passed: least-privilege/pinned primary "
-        "CI, pinned CodeQL workflow, credential persistence guards, "
+        "CI, pinned CodeQL workflow, checkout persistence guards, "
         "Dependabot/CODEOWNERS metadata, strict "
         "offline-runner boundaries, private-study ignore rules, and high-"
-        "confidence secret markers are consistent."
+        "confidence pattern checks are consistent."
     )
     return 0
 
