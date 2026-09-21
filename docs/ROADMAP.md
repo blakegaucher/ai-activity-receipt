@@ -247,7 +247,7 @@ Determine which Receipt fields remain useful, redundant, missing, or impractical
 - [x] Add repository-file security hardening: least-privilege/pinned CI checks, checkout credential-persistence disablement, finite timeout/stale-run cancellation, Dependabot version updates, CODEOWNERS, deterministic security smoke checks, and stricter offline-runner resource/CSP bounds.
 - [x] Add and verify pinned CodeQL advanced setup for Python and JavaScript/TypeScript.
 - [x] Verify main-branch protection/ruleset, private vulnerability reporting, Dependabot alerts/security updates, code-scanning alerts, secret-scanning/secret-protection, and push protection.
-- [ ] Verify the post-remediation CodeQL alert-dashboard state for alerts #1/#2 and confirm owner security-alert notification delivery if it has not already been independently checked.
+- [x] Authenticated owner verification confirms Code scanning on `main` is **0 open / 2 closed** and custom repository **Security alerts** notifications are enabled.
 
 **Goal:** Allow people outside the project to challenge the design.
 

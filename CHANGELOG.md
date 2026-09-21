@@ -1,5 +1,15 @@
 ## Unreleased
 
+### Repository security-admin gate completed
+
+- record authenticated owner Code scanning evidence on `main`: **0 open / 2 closed**, with GitHub reporting **All alerts are resolved**;
+- record custom repository **Security alerts** notifications as enabled;
+- close issue #37 after both of its remaining acceptance conditions were independently verified;
+- advance machine-readable continuity to v0.14 and remove the completed CodeQL/notification items from open project-governance gates;
+- update the live roadmap/gates dashboard while preserving older dated security snapshots additively;
+- preserve the evidence boundary that resolved configured findings and enabled controls do not establish vulnerability-free or production-secure software.
+
+
 ### CodeQL alert #1 heuristic-source follow-up
 
 - record that PR #75 merged successfully but authenticated post-merge alert inventory still requires owner UI evidence;

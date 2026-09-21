@@ -313,3 +313,55 @@ The follow-up preserves `HIGH_CONFIDENCE_SECRET_PATTERNS`, repository-wide track
 - capturing the actual generic stderr renderer in the regression test and asserting that the synthetic probe value, arbitrary source text, and dynamic filename are absent.
 
 The authenticated CodeQL inventory remains the authority for final alert state. Issue #37 must remain open until that inventory and the owner Security-alert notification setting are both independently verified.
+
+
+## 12. Final authenticated owner verification and issue #37 closure
+
+New authenticated owner evidence on 2026-09-20 completes the remaining repository-admin security gate.
+
+Authority:
+
+- current `main`: `9c03d91de065511bc7397f93a12e40cb747eb3e7`;
+- authenticated GitHub Security UI;
+- authenticated repository event-subscription UI.
+
+Verified Code scanning filter:
+
+`is:open branch:main`
+
+Result:
+
+- **0 Open**;
+- **2 Closed**;
+- GitHub displays **“All alerts are resolved.”**
+
+Therefore both original High CodeQL findings are resolved on `main`.
+
+The final alert #1 source-model hardening follow-up was PR #76 — `Remove CodeQL-sensitive names from alert #1 diagnostic path` — merged to produce the current `main` commit above.
+
+Repository notification evidence also verifies:
+
+- custom repository notifications: **Security alerts — enabled**.
+
+This satisfies both remaining acceptance conditions documented in issue #37. Issue #37 is closed as completed.
+
+Historical sections above remain intentionally unchanged. In particular, the earlier **1 open / 1 closed** inventory and pending-notification language remain valid snapshots of the state before this final owner verification and must not be read as current status.
+
+### Final repository-admin security status
+
+Completed:
+
+- Protect main ruleset;
+- required validation and CodeQL checks;
+- private vulnerability reporting;
+- Dependabot alerts/security updates;
+- Code scanning alerts;
+- secret scanning / secret protection / push protection;
+- resolution of both original CodeQL findings;
+- owner repository **Security alerts** subscription.
+
+### Evidence boundary unchanged
+
+This establishes configured repository-control state and resolution of the two known CodeQL findings only.
+
+It does not establish vulnerability-free software, penetration-test coverage, production security, certification, customer validation, institutional endorsement, or commercial readiness.
