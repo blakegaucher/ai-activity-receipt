@@ -81,7 +81,7 @@ Use only synthetic development bundles.
 
 **Methodology-source conflicts:** explicitly tracked. Comparison conditions, integrated challenge architecture, relevant-professional reviewer population, and `primary_endpoint = correct_completion_by_180s` are selected in versioned controlled artifacts. Primary timing semantics and the meaningful effect/precision target remain unresolved. The repository continues to fail closed against confirmatory freeze and primary-outcome estimation while those required decisions and downstream gates remain open. See [AR-P003-V0.3-METHODOLOGY-DECISIONS.md](AR-P003-V0.3-METHODOLOGY-DECISIONS.md) and [AR-P003-V0.3-PRIMARY-ENDPOINT-DECISION-2026-09-21.md](AR-P003-V0.3-PRIMARY-ENDPOINT-DECISION-2026-09-21.md).
 
-**Status:** Open; human-study methodology decisions required.
+**Status:** Open; primary endpoint selected, but timing/effect and remaining human-study freeze decisions are still required.
 
 **Decision-support map:** prepared. Every current ledger candidate is now mapped to its implementation/planning consequences in [AR-P003-V0.3-DECISION-SUPPORT.md](AR-P003-V0.3-DECISION-SUPPORT.md), with a machine guard that prevents silent candidate omission or invention. The research review's proposed +5pp / 3pp / +2pp thresholds are preserved as a candidate only; no methodology choice has been made.
 
