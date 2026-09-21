@@ -1,6 +1,6 @@
 {
-  "readiness_version": "AR-P003-v0.3-freeze-readiness-v0.1",
-  "protocol_version": "v0.3-draft-2026-09-21-professional-reviewers-v0.1",
+  "readiness_version": "AR-P003-v0.3-freeze-readiness-v0.2",
+  "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
   "study_status": "development_not_ready",
   "gates": {
     "comparison_conditions": {
@@ -37,13 +37,15 @@
       "notes": "Owner selected relevant_professional_reviewers on 2026-09-21. Eligibility requires at least one year of relevant practical/professional experience; records 1-2, 3-5, or 6+ years; requires sufficient English; does not require a degree, certification, or job title; permits and records prior general AI Activity Receipt familiarity; applies sealed-case/gold/scoring/protected-analysis exclusions; prohibits external web, AI, people, and outside tools/evidence during study cases. Claims remain limited to the professional population actually recruited. This completes only the reviewer-population methodology gate; recruitment remains unauthorized."
     },
     "primary_endpoints": {
-      "status": "prepared",
+      "status": "complete",
       "evidence_refs": [
+        "docs/AR-P003-V0.3-PRIMARY-ENDPOINT-DECISION-2026-09-21.md",
         "docs/AR-P003-V0.3-PROTOCOL.md",
+        "benchmark/arp003_v0_3/protocol.json",
         "benchmark/arp003_v0_3/response-record.schema.json",
-        "benchmark/arp003_v0_3/methodology-decisions.current.json"
+        "benchmark/arp003_v0_3/score_responses.py"
       ],
-      "notes": "Candidate component endpoints exist, but the confirmatory primary endpoint or small prespecified primary set is not frozen."
+      "notes": "Owner selected correct_completion_by_180s on 2026-09-21. Binary success requires all case-specific required judgments correct, a valid prespecified acceptable evidence/support set for each required judgment in the assigned condition, no fabricated material set facts or unsupported authorization state, and completion by 180 seconds under the later-frozen primary timing clock. Timeout cannot succeed. Component outcomes remain secondary diagnostics and critical false clearance remains a separate safety endpoint. primary_timing_clock and effect_precision_target remain unresolved, so confirmatory derivation/freeze remains fail-closed."
     },
     "effect_or_precision_target": {
       "status": "pending",
