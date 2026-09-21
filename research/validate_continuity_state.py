@@ -55,7 +55,7 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.16":
+    if state.get("snapshot_version") != "project-continuity-v0.17":
         errors.append("machine-readable continuity snapshot_version is stale")
     if state.get("snapshot_date") != "2026-09-21":
         errors.append("machine-readable continuity snapshot_date is stale")
@@ -337,11 +337,28 @@ def main() -> int:
     if (dev.get("reproducibility_runner") or {}).get("external_reproduction_handoff") is not True:
         errors.append("external reproduction handoff continuity flag unexpectedly changed")
 
-    if governance.get("explicit_license_status") != "not_selected":
-        errors.append(
-            "repository license status changed; update continuity deliberately "
-            "before changing public licensing claims"
-        )
+    if governance.get("explicit_license_status") != "apache-2.0":
+        errors.append("repository license status must remain apache-2.0 after issue #44")
+
+    repository_license = governance.get("repository_license") or {}
+    required_license = {
+        "spdx_id": "Apache-2.0",
+        "copyright_holder": "Blake Gaucher",
+        "copyright_year": 2026,
+        "license_file": "LICENSE",
+        "notice_file": "NOTICE",
+        "scope": "project_authored_public_repository_material",
+        "private_human_study_material_auto_released": False,
+        "third_party_terms_preserved": True,
+        "trademark_rights_granted": False,
+        "cross_competition_lane_transfer": False,
+        "issue_44": "closed_completed_2026-09-21",
+    }
+    for key, expected in required_license.items():
+        if repository_license.get(key) != expected:
+            errors.append(
+                f"repository license continuity field {key!r} changed unexpectedly"
+            )
 
     markdown_integrity = governance.get("markdown_link_integrity") or {}
     if markdown_integrity.get("status") != "ci_and_reproducibility_guard":
@@ -368,12 +385,18 @@ def main() -> int:
             )
 
     license_preflight = governance.get("license_preflight_inventory") or {}
-    if license_preflight.get("status") != "prepared_not_legal_clearance":
+    if license_preflight.get("status") != "clear_owner_decision_applied_not_legal_clearance":
         errors.append("license preflight inventory status changed unexpectedly")
-    if license_preflight.get("inventory_version") != "third-party-inventory-v0.1":
+    if license_preflight.get("inventory_version") != "third-party-inventory-v0.2":
         errors.append("third-party inventory version changed unexpectedly")
     if license_preflight.get("direct_dependency_and_action_drift_check") is not True:
         errors.append("license preflight drift check unexpectedly disabled")
+    if license_preflight.get("current_preflight_clear") is not True:
+        errors.append("license preflight clear-state continuity unexpectedly changed")
+
+    open_governance_gates = state.get("open_project_governance_gates") or []
+    if "explicit_repository_license_selection" in open_governance_gates:
+        errors.append("resolved repository-license gate is still marked open")
 
     gates = state.get("claim_gates") or {}
     protected = {
