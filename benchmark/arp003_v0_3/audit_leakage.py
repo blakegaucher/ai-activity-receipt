@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BENCH = ROOT / "benchmark" / "arp003_v0_3"
 REPORT_SCHEMA = BENCH / "leakage-audit.schema.json"
 
-AUDIT_VERSION = "AR-P003-v0.3-leakage-audit-v0.1"
+AUDIT_VERSION = "AR-P003-v0.3-leakage-audit-v0.2"
 PRESENTATION_EXPANSION_RATIO_REVIEW = 1.75
 
 
@@ -73,11 +73,22 @@ def reviewer_visible_evidence(case: dict[str, Any]) -> tuple[str, int]:
     return "\n".join(parts), chars
 
 
-def receipt_chars(case: dict[str, Any]) -> int:
-    receipt = case.get("receipt")
-    if not isinstance(receipt, dict):
+def artifact_chars(value: Any) -> int:
+    if not isinstance(value, dict):
         return 0
-    return len(str(receipt["label"])) + len(str(receipt["content"]))
+    return len(str(value["label"])) + len(str(value["content"]))
+
+
+def presentation_condition(case: dict[str, Any]) -> str:
+    has_structured = isinstance(case.get("structured_event_table"), dict)
+    has_receipt = isinstance(case.get("receipt"), dict)
+    if has_structured and has_receipt:
+        raise ValueError("reviewer presentation contains both structured table and Receipt")
+    if has_receipt:
+        return "receipt"
+    if has_structured:
+        return "structured"
+    return "raw"
 
 
 def canonical_evidence_blob(case: dict[str, Any]) -> bytes:
@@ -126,7 +137,7 @@ def audit_build(build_dir: Path) -> dict[str, Any]:
         bundle_path = build_dir / summary["path"]
         bundle = load_json(bundle_path)
         for case in bundle["cases"]:
-            condition = "receipt" if case.get("receipt") is not None else "control"
+            condition = presentation_condition(case)
             presentations.setdefault(case["case_id"], []).append((condition, case))
 
     cases_out: list[dict[str, Any]] = []
@@ -149,13 +160,43 @@ def audit_build(build_dir: Path) -> dict[str, Any]:
             )
 
         evidence_text, evidence_char_count = reviewer_visible_evidence(rows[0][1])
-        receipt_sizes = [receipt_chars(case) for _, case in rows if case.get("receipt") is not None]
+        structured_sizes = [
+            artifact_chars(case.get("structured_event_table"))
+            for condition, case in rows
+            if condition == "structured"
+        ]
+        receipt_sizes = [
+            artifact_chars(case.get("receipt"))
+            for condition, case in rows
+            if condition == "receipt"
+        ]
+        structured_char_count = max(structured_sizes) if structured_sizes else 0
         receipt_char_count = max(receipt_sizes) if receipt_sizes else 0
 
         if evidence_char_count == 0:
-            ratio = 1.0 if receipt_char_count == 0 else float("inf")
+            structured_ratio = 1.0 if structured_char_count == 0 else float("inf")
+            receipt_ratio = 1.0 if receipt_char_count == 0 else float("inf")
         else:
-            ratio = (evidence_char_count + receipt_char_count) / evidence_char_count
+            structured_ratio = (
+                evidence_char_count + structured_char_count
+            ) / evidence_char_count
+            receipt_ratio = (
+                evidence_char_count + receipt_char_count
+            ) / evidence_char_count
+
+        structured_text = "\n".join(
+            [
+                str(case["structured_event_table"]["label"])
+                + "\n"
+                + str(case["structured_event_table"]["content"])
+                for condition, case in rows
+                if condition == "structured"
+            ]
+        )
+        structured_mentions = {
+            endpoint: literal_mentions(list(gold[endpoint]), structured_text)
+            for endpoint in ("material_actions", "material_sources", "incidents")
+        }
 
         mentions = {
             endpoint: literal_mentions(list(gold[endpoint]), evidence_text)
@@ -170,7 +211,9 @@ def audit_build(build_dir: Path) -> dict[str, Any]:
         review: list[str] = []
 
         if mentions["incidents"]:
-            high_risk.append("literal_gold_incident_label_in_control_evidence")
+            high_risk.append("literal_gold_incident_label_in_raw_evidence")
+        if structured_mentions["incidents"]:
+            review.append("literal_gold_incident_label_in_structured_control")
 
         for endpoint in ("material_actions", "material_sources", "incidents"):
             endpoint_audit = audit.get(endpoint) or {}
@@ -180,7 +223,9 @@ def audit_build(build_dir: Path) -> dict[str, Any]:
             ):
                 high_risk.append(f"{endpoint}_options_equal_gold_set")
 
-        if ratio > PRESENTATION_EXPANSION_RATIO_REVIEW:
+        if structured_ratio > PRESENTATION_EXPANSION_RATIO_REVIEW:
+            review.append("large_structured_presentation_expansion")
+        if receipt_ratio > PRESENTATION_EXPANSION_RATIO_REVIEW:
             review.append("large_receipt_presentation_expansion")
 
         if mentions["material_actions"]:
@@ -189,8 +234,8 @@ def audit_build(build_dir: Path) -> dict[str, Any]:
             review.append("literal_gold_source_label_present")
 
         conditions = sorted({condition for condition, _ in rows})
-        if conditions != ["control", "receipt"]:
-            review.append("case_not_observed_in_both_conditions")
+        if conditions != ["raw", "receipt", "structured"]:
+            review.append("case_not_observed_in_all_three_conditions")
 
         if high_risk:
             high_risk_count += 1
@@ -203,13 +248,16 @@ def audit_build(build_dir: Path) -> dict[str, Any]:
                 "n_presentations": len(rows),
                 "evidence_sha256": next(iter(evidence_hashes)),
                 "evidence_chars": evidence_char_count,
+                "structured_chars": structured_char_count,
                 "receipt_chars": receipt_char_count,
-                "presentation_expansion_ratio": round(ratio, 6),
+                "structured_presentation_expansion_ratio": round(structured_ratio, 6),
+                "receipt_presentation_expansion_ratio": round(receipt_ratio, 6),
                 "answer_option_audit": {
                     endpoint: audit[endpoint]
                     for endpoint in ("material_actions", "material_sources", "incidents")
                 },
                 "literal_gold_mentions": mentions,
+                "structured_literal_gold_mentions": structured_mentions,
                 "high_risk_flags": sorted(set(high_risk)),
                 "review_flags": sorted(set(review)),
             }
@@ -250,7 +298,7 @@ def make_self_test_build(root: Path) -> Path:
     (build / "reviewer_bundles").mkdir(parents=True)
     (build / "analysis").mkdir()
 
-    control_case = {
+    raw_case = {
         "case_id": "case-1",
         "evidence": [
             {
@@ -262,6 +310,7 @@ def make_self_test_build(root: Path) -> Path:
                 ),
             }
         ],
+        "structured_event_table": None,
         "receipt": None,
         "answer_options": {
             "material_actions": ["analyze", "send_email"],
@@ -269,7 +318,13 @@ def make_self_test_build(root: Path) -> Path:
             "incidents": ["authorization_violation", "tool_failure"],
         },
     }
-    receipt_case = json.loads(json.dumps(control_case))
+    structured_case = json.loads(json.dumps(raw_case))
+    structured_case["structured_event_table"] = {
+        "label": "Neutral structured event table",
+        "media_type": "text/markdown",
+        "content": "| operation | source |\\n|---|---|\\n|analyze|source-A|",
+    }
+    receipt_case = json.loads(json.dumps(raw_case))
     receipt_case["receipt"] = {
         "label": "Activity Receipt",
         "media_type": "application/json",
@@ -282,7 +337,11 @@ def make_self_test_build(root: Path) -> Path:
         ),
     }
 
-    for reviewer, case in (("R1", control_case), ("R2", receipt_case)):
+    for reviewer, case in (
+        ("R1", raw_case),
+        ("R2", structured_case),
+        ("R3", receipt_case),
+    ):
         write_json(
             build / "reviewer_bundles" / f"{reviewer}.json",
             {
@@ -370,15 +429,15 @@ def run_self_test() -> int:
         case = report["cases"][0]
         assert "authorization_violation" in case["literal_gold_mentions"]["incidents"]
         assert (
-            "literal_gold_incident_label_in_control_evidence"
+            "literal_gold_incident_label_in_raw_evidence"
             in case["high_risk_flags"]
         )
         assert "literal_gold_source_label_present" in case["review_flags"]
-        assert case["conditions_present"] == ["control", "receipt"]
+        assert case["conditions_present"] == ["raw", "receipt", "structured"]
 
-        drift = load_json(build / "reviewer_bundles" / "R2.json")
+        drift = load_json(build / "reviewer_bundles" / "R3.json")
         drift["cases"][0]["evidence"][0]["content"] += " changed"
-        write_json(build / "reviewer_bundles" / "R2.json", drift)
+        write_json(build / "reviewer_bundles" / "R3.json", drift)
         try:
             audit_build(build)
         except ValueError as exc:
@@ -388,7 +447,7 @@ def run_self_test() -> int:
 
     print(
         "AR-P003 leakage-audit self-test passed: literal incident leakage was "
-        "flagged and cross-presentation evidence drift was rejected."
+        "flagged and raw/structured/Receipt evidence drift was rejected."
     )
     return 0
 
