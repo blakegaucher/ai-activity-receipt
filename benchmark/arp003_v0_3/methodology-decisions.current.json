@@ -1,6 +1,6 @@
 {
   "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.1",
-  "protocol_version": "v0.3-draft-2026-09-20-three-condition-v0.1",
+  "protocol_version": "v0.3-draft-2026-09-21-integrated-challenge-v0.1",
   "status": "development_unresolved",
   "decisions": [
     {
@@ -104,12 +104,15 @@
       "decision_id": "challenge_design",
       "title": "Misleading-Receipt robustness design",
       "pre_freeze_required": true,
-      "status": "unresolved",
-      "current_implementation": "Current repository protocol includes stale, incomplete, and conflicting Receipt challenge strata alongside ordinary cases and requires separate reporting.",
-      "selected_candidate": null,
+      "status": "selected",
+      "current_implementation": "Selected integrated development architecture: ordinary, stale_receipt, incomplete_receipt, and conflicting_receipt cases remain inside the broader three-condition crossed assignment, with hidden stratum labels and separate ordinary/challenge reporting. Final challenge counts/allocation rules are not frozen.",
+      "selected_candidate": "integrated_challenge_strata",
       "evidence_refs": [
+        "docs/AR-P003-V0.3-CHALLENGE-DESIGN-DECISION-2026-09-21.md",
+        "benchmark/arp003_v0_3/methodology-impact-map.json",
+        "docs/AR-P003-V0.3-DECISION-SUPPORT.md",
         "docs/AR-P003-V0.3-PROTOCOL.md",
-        "benchmark/arp003_v0_3/runner-analysis.schema.json"
+        "AI_Activity_Receipt_Research_and_v03_Protocol.pdf"
       ],
       "candidates": [
         {
@@ -129,7 +132,8 @@
           ]
         }
       ],
-      "notes": "Either architecture can preserve the robustness question, but the sampling/randomization implications differ materially and must be chosen before corpus/assignment freeze."
+      "notes": "The current repository already implemented integrated stale/incomplete/conflicting strata, while the earlier project research review recommended a separate robustness cohort. The owner explicitly selected integrated_challenge_strata on 2026-09-21. separate_robustness_cohort remains preserved as the rejected historical alternative; final challenge counts/allocation and final-corpus review remain open.",
+      "rationale": "Selected explicitly by the project owner to preserve stale, incomplete, and conflicting Receipt robustness questions inside the same crossed human-study architecture as ordinary cases, avoiding a separate recruitment/cohort/randomization/power framework while requiring ordinary and challenge results to remain separately reported."
     },
     {
       "decision_id": "reviewer_population",
