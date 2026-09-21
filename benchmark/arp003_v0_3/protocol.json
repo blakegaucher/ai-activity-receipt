@@ -15,6 +15,14 @@
     "incomplete_receipt",
     "conflicting_receipt"
   ],
+  "challenge_design": {
+    "selected_candidate": "integrated_challenge_strata",
+    "architecture": "ordinary_and_challenge_cases_in_one_crossed_assignment",
+    "separate_robustness_cohort": false,
+    "ordinary_and_challenge_reporting": "separate",
+    "final_stratum_counts_frozen": false,
+    "final_challenge_allocation_rule_frozen": false
+  },
   "assignment": {
     "design": "randomized_balanced_incomplete_block",
     "same_case_both_conditions_per_reviewer": false,
@@ -26,6 +34,8 @@
     "balance_all_cases_across_conditions": true,
     "inspect_stratum_condition_balance_before_freeze": true,
     "freeze_generator_version_and_diagnostics": true,
+    "challenge_allocation_status": "not_frozen",
+    "challenge_strata_share_same_three_condition_architecture": true,
     "challenge_allocation_status": "not_frozen",
     "challenge_strata_share_same_three_condition_architecture": true
   },
