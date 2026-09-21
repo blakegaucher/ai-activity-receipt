@@ -277,7 +277,7 @@ def run_self_test(
         {
             "reviewer_id": "smoke-r3",
             "case_id": "smoke-3",
-            "condition": "control",
+            "condition": "receipt",
             "stratum": "stale_receipt",
             "elapsed_seconds": 75,
             "gold": {
