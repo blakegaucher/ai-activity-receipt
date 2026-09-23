@@ -59,9 +59,9 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.19":
+    if state.get("snapshot_version") != "project-continuity-v0.20":
         errors.append("machine-readable continuity snapshot_version is stale")
-    if state.get("snapshot_date") != "2026-09-21":
+    if state.get("snapshot_date") != "2026-09-23":
         errors.append("machine-readable continuity snapshot_date is stale")
     if "**Snapshot date:** 2026-09-21" not in latest_continuity_text:
         errors.append("latest human-readable continuity snapshot date is stale")
