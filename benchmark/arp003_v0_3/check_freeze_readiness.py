@@ -295,6 +295,10 @@ def synthetic_resolved_methodology(
                 decision["selected_candidate"] = (
                     methodology_validator.PRIMARY_ENDPOINT_CANDIDATE
                 )
+            elif decision["decision_id"] == "primary_timing_clock":
+                decision["selected_candidate"] = (
+                    methodology_validator.PRIMARY_TIMING_SELECTED
+                )
             else:
                 decision["selected_candidate"] = decision["candidates"][0]["candidate_id"]
             decision["rationale"] = "Synthetic self-test selection only."
