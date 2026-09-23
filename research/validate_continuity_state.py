@@ -21,7 +21,7 @@ RUNNER_RESPONSE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-response.s
 LATEST_CONTINUITY = (
     ROOT
     / "docs"
-    / "PROJECT-CONTINUITY-2026-09-21-AR-P003-PRIMARY-ENDPOINT.md"
+    / "PROJECT-CONTINUITY-2026-09-23-AR-P003-PRIMARY-TIMING.md"
 )
 EXPECTED_FREEZE = (
     "8a381f4ae20a5f6824e513c7f96920fdf3cfe6b00b0b8d301127f5e0b659d0fd"
@@ -63,7 +63,7 @@ def main() -> int:
         errors.append("machine-readable continuity snapshot_version is stale")
     if state.get("snapshot_date") != "2026-09-23":
         errors.append("machine-readable continuity snapshot_date is stale")
-    if "**Snapshot date:** 2026-09-21" not in latest_continuity_text:
+    if "**Snapshot date:** 2026-09-23" not in latest_continuity_text:
         errors.append("latest human-readable continuity snapshot date is stale")
 
     hist = ((state.get("historical") or {}).get("arp003_v0_2_3") or {})
