@@ -146,7 +146,7 @@ Score JSONL records:
 python benchmark/arp003_v0_3/score_responses.py responses.jsonl --output scored.json
 ```
 
-The scorer implements the selected binary primary endpoint contract but intentionally returns the confirmatory primary success as non-estimable while `primary_timing_clock` remains unresolved. It also reports development-only active-clock and wall/deadline sensitivity values. Component outcomes remain secondary diagnostics: set precision/recall/F1 for material actions, sources, and incidents; exact accuracy for authorization violation, verification state, and missing-evidence state; both timing measures; and confidence. Critical false clearance is reported separately as a safety endpoint. It does **not** generate a post-hoc weighted primary composite.
+The current scorer still preserves development-only active-clock and wall/deadline sensitivity values. The methodology ledger now selects wall elapsed time as the primary clock, but the runner/scorer execution contract remains development-only until the timing implementation and smoke-verification gate is completed. Component outcomes remain secondary diagnostics: set precision/recall/F1 for material actions, sources, and incidents; exact accuracy for authorization violation, verification state, and missing-evidence state; both timing measures; and confidence. Critical false clearance is reported separately as a safety endpoint. It does **not** generate a post-hoc weighted primary composite.
 
 ## Sample-size / precision development planning
 
@@ -240,7 +240,7 @@ Files:
 - `validate_methodology_decisions.py`
 - `../../docs/AR-P003-V0.3-METHODOLOGY-DECISIONS.md`
 
-The ledger records `comparison_conditions = three_condition_structured_control`, `challenge_design = integrated_challenge_strata`, `reviewer_population = relevant_professional_reviewers`, and `primary_endpoint = correct_completion_by_180s` as selected. The primary timing clock and meaningful effect/precision target remain unresolved. The selected population requires at least 1 year of relevant professional/practical experience, records 1–2/3–5/6+ year bands, and freezes language, familiarity, exclusion, assistance, and inference-scope rules without authorizing recruitment. CI rejects a frozen protocol while required methodology decisions or downstream freeze gates remain unresolved.
+The ledger records `comparison_conditions = three_condition_structured_control`, `challenge_design = integrated_challenge_strata`, `reviewer_population = relevant_professional_reviewers`, `primary_endpoint = correct_completion_by_180s`, and `primary_timing_clock = wall_deadline_with_hidden_sensitivity` as selected. The meaningful effect/precision target remains unresolved. The timing/exclusions implementation gate remains prepared until timeout/last-answer, technical-failure, reload/context-break, and browser/device rules are frozen and smoke-verified. The selected population requires at least 1 year of relevant professional/practical experience, records 1–2/3–5/6+ year bands, and freezes language, familiarity, exclusion, assistance, and inference-scope rules without authorizing recruitment. CI rejects a frozen protocol while required methodology decisions or downstream freeze gates remain unresolved.
 
 Run:
 
