@@ -1,6 +1,6 @@
 {
   "readiness_version": "AR-P003-v0.3-freeze-readiness-v0.2",
-  "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
+  "protocol_version": "v0.3-draft-2026-09-23-primary-timing-wall-v0.1",
   "study_status": "development_not_ready",
   "gates": {
     "comparison_conditions": {
@@ -45,7 +45,7 @@
         "benchmark/arp003_v0_3/response-record.schema.json",
         "benchmark/arp003_v0_3/score_responses.py"
       ],
-      "notes": "Owner selected correct_completion_by_180s on 2026-09-21. Binary success requires all case-specific required judgments correct, a valid prespecified acceptable evidence/support set for each required judgment in the assigned condition, no extra required material facts or mismatched authorization state, and completion by 180 seconds under the later-frozen primary timing clock. A deadline miss cannot succeed. Component outcomes remain secondary diagnostics and critical false clearance remains a separate safety endpoint. primary_timing_clock and effect_precision_target remain unresolved, so confirmatory derivation/freeze remains fail-closed."
+      "notes": "Owner selected correct_completion_by_180s on 2026-09-21 and wall_deadline_with_hidden_sensitivity on 2026-09-23. Binary success requires all case-specific required judgments correct, a valid prespecified acceptable evidence/support set for each required judgment in the assigned condition, no extra required material facts or mismatched authorization state, and completion within 180 seconds of wall elapsed time. Component outcomes remain secondary diagnostics and critical false clearance remains a separate safety endpoint. effect_precision_target remains unresolved."
     },
     "effect_or_precision_target": {
       "status": "pending",
@@ -133,11 +133,12 @@
     "timing_exclusions": {
       "status": "prepared",
       "evidence_refs": [
+        "docs/AR-P003-V0.3-PRIMARY-TIMING-CLOCK-DECISION-2026-09-23.md",
         "docs/AR-P003-V0.3-OFFLINE-RUNNER.md",
         "benchmark/arp003_v0_3/runner-response.schema.json",
         "benchmark/arp003_v0_3/methodology-decisions.current.json"
       ],
-      "notes": "Wall/active instrumentation exists; primary timing definition and technical-exclusion rules are not frozen."
+      "notes": "Primary timing methodology is selected as wall_deadline_with_hidden_sensitivity: hidden/background elapsed time remains in the 180-second wall deadline, active time is secondary/sensitivity, and >10 seconds hidden is reserved for prespecified sensitivity analysis. This gate remains prepared rather than complete until exact timeout/last-answer behavior, technical-failure and reload/context-break rules, and allowed browser/device timing behavior are frozen and smoke-verified."
     },
     "scorer_analysis_plan": {
       "status": "prepared",

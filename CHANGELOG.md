@@ -1,5 +1,14 @@
 ## Unreleased
 
+### AR-P003 primary timing-clock decision — 2026-09-23
+
+- select `primary_timing_clock = wall_deadline_with_hidden_sensitivity` after proposal PR #94 and preserve `active_time_primary` as the non-selected historical/development alternative;
+- define the 180-second primary deadline in wall elapsed time, keep hidden/background time inside the deadline, retain active time as secondary/sensitivity, and reserve >10 seconds hidden for prespecified sensitivity analysis;
+- version the methodology ledger and protocol to record the selection while leaving exact timeout/last-answer, technical-failure, reload/context-break, and browser/device rules as open pre-execution freeze requirements;
+- keep `effect_precision_target` unresolved and preserve critical false clearance as a separate safety endpoint with its threshold still open;
+- keep AR-P003 development-only, not frozen, not executed, with recruitment and human execution unauthorized.
+
+
 ### AR-P003 binary primary-endpoint decision
 
 - select `primary_endpoint = correct_completion_by_180s` while preserving `component_endpoint_set` as the non-selected historical candidate;

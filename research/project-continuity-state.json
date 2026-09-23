@@ -1,6 +1,6 @@
 {
-  "snapshot_version": "project-continuity-v0.19",
-  "snapshot_date": "2026-09-21",
+  "snapshot_version": "project-continuity-v0.20",
+  "snapshot_date": "2026-09-23",
   "project": "AI Activity Receipt",
   "owner": "Blake Gaucher / Ancient Immortal Art",
   "historical": {
@@ -59,8 +59,8 @@
         },
         "primary_endpoint": "selected:correct_completion_by_180s",
         "primary_endpoint_deadline_seconds": 180,
-        "primary_timing_clock": "unresolved",
-        "confirmatory_primary_derivation": "blocked_until_primary_timing_clock_selected",
+        "primary_timing_clock": "selected:wall_deadline_with_hidden_sensitivity",
+        "confirmatory_primary_derivation": "wall_clock_methodology_selected_implementation_and_freeze_checks_pending",
         "primary_endpoint_contract": "AR-P003-v0.3-primary-endpoint-case-v0.1",
         "scoring_record_contract": "AR-P003-v0.3-scoring-record-v0.2"
       },
@@ -69,7 +69,7 @@
         "path": "benchmark/arp003_v0_3/methodology-decisions.current.json",
         "comparison_conditions": "selected:three_condition_structured_control",
         "primary_endpoint": "selected:correct_completion_by_180s",
-        "primary_timing_clock": "unresolved",
+        "primary_timing_clock": "selected:wall_deadline_with_hidden_sensitivity",
         "challenge_design": "selected:integrated_challenge_strata",
         "reviewer_population": "selected:relevant_professional_reviewers",
         "effect_precision_target": "unresolved",
@@ -80,7 +80,7 @@
           "completeness_guard": true,
           "research_review_effect_thresholds_preserved_as_candidate": true
         },
-        "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
+        "protocol_version": "v0.3-draft-2026-09-23-primary-timing-wall-v0.1",
         "comparison_conditions_freeze_readiness": "complete",
         "challenge_strata_freeze_readiness": "prepared",
         "reviewer_population_freeze_readiness": "complete",
@@ -109,9 +109,18 @@
           "component_endpoints": "secondary_diagnostic_not_co_primary",
           "critical_false_clearance": "separate_prespecified_safety_endpoint",
           "critical_false_clearance_threshold": "unresolved_effect_precision_target",
-          "primary_timing_clock": "unresolved",
+          "primary_timing_clock": "wall_deadline_with_hidden_sensitivity",
           "development_contingency": "pre_freeze_stop_and_new_owner_decision_no_automatic_fallback",
-          "confirmatory_primary_derivation": "blocked_until_timing_selected"
+          "confirmatory_primary_derivation": "timing_methodology_selected_wall_clock_implementation_and_freeze_checks_pending"
+        },
+        "primary_timing_clock_freeze_readiness": "prepared",
+        "primary_timing_clock_design": {
+          "primary_clock": "wall_elapsed_seconds",
+          "deadline_seconds": 180,
+          "hidden_background_time": "included_in_primary_deadline",
+          "hidden_time_sensitivity_threshold_seconds": 10,
+          "active_time_role": "secondary_sensitivity_and_diagnostic_measure",
+          "execution_authorized": false
         }
       },
       "leakage_validation": {

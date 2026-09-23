@@ -79,9 +79,9 @@ Use only synthetic development bundles.
 
 ### Preregistration/freeze decisions — issue #47
 
-**Methodology-source conflicts:** explicitly tracked. Comparison conditions, integrated challenge architecture, relevant-professional reviewer population, and `primary_endpoint = correct_completion_by_180s` are selected in versioned controlled artifacts. Primary timing semantics and the meaningful effect/precision target remain unresolved. The repository continues to fail closed against confirmatory freeze and primary-outcome estimation while those required decisions and downstream gates remain open. See [AR-P003-V0.3-METHODOLOGY-DECISIONS.md](AR-P003-V0.3-METHODOLOGY-DECISIONS.md) and [AR-P003-V0.3-PRIMARY-ENDPOINT-DECISION-2026-09-21.md](AR-P003-V0.3-PRIMARY-ENDPOINT-DECISION-2026-09-21.md).
+**Methodology-source conflicts:** explicitly tracked. Comparison conditions, integrated challenge architecture, relevant-professional reviewer population, `primary_endpoint = correct_completion_by_180s`, and `primary_timing_clock = wall_deadline_with_hidden_sensitivity` are selected in versioned controlled artifacts. The meaningful effect/precision target remains unresolved. The repository continues to fail closed against confirmatory freeze while that required decision and downstream gates remain open. See [AR-P003-V0.3-METHODOLOGY-DECISIONS.md](AR-P003-V0.3-METHODOLOGY-DECISIONS.md), [AR-P003-V0.3-PRIMARY-ENDPOINT-DECISION-2026-09-21.md](AR-P003-V0.3-PRIMARY-ENDPOINT-DECISION-2026-09-21.md), and [AR-P003-V0.3-PRIMARY-TIMING-CLOCK-DECISION-2026-09-23.md](AR-P003-V0.3-PRIMARY-TIMING-CLOCK-DECISION-2026-09-23.md).
 
-**Status:** Open; primary endpoint selected, but timing/effect and remaining human-study freeze decisions are still required.
+**Status:** Open; primary endpoint and wall-clock timing methodology are selected, but the effect target and remaining human-study freeze decisions are still required.
 
 **Decision-support map:** prepared. Every current ledger candidate is now mapped to its implementation/planning consequences in [AR-P003-V0.3-DECISION-SUPPORT.md](AR-P003-V0.3-DECISION-SUPPORT.md), with a machine guard that prevents silent candidate omission or invention. The research review's proposed +5pp / 3pp / +2pp thresholds are preserved as a candidate only; no methodology choice has been made.
 
@@ -98,8 +98,8 @@ Before confirmatory human execution:
 - [x] select the comparison-condition design — three-condition structured control selected and versioned;
 - [x] define reviewer population/eligibility — relevant professional reviewers selected; recruitment remains unauthorized;
 - [x] freeze the primary endpoint — selected `correct_completion_by_180s`; component outcomes remain secondary and critical false clearance remains separate;
-- [ ] freeze the primary timing clock;
-- define meaningful effect/precision target;
+- [x] freeze the primary timing methodology — selected `wall_deadline_with_hidden_sensitivity`; timing/exclusion implementation checks remain open;
+- [ ] define meaningful effect/precision target;
 - freeze the assumptions/endpoint target for reviewer × case power/precision planning (design-specific crossed simulation tooling is now prepared);
 - freeze sample size/allocation/stopping rule;
 - create fresh sealed corpus;

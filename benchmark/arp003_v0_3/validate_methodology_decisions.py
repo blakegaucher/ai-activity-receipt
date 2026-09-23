@@ -89,6 +89,8 @@ PRIMARY_TIMING_CANDIDATES = [
     "active_time_primary",
     "wall_deadline_with_hidden_sensitivity",
 ]
+PRIMARY_TIMING_SELECTED = "wall_deadline_with_hidden_sensitivity"
+PRIMARY_HIDDEN_SENSITIVITY_SECONDS = 10
 
 REVIEWER_DOCUMENTATION_MARKERS = {
     "reviewer instructions": (
@@ -317,10 +319,10 @@ def semantic_errors(
                     "each_required_judgment_must_have_at_least_one_prespecified_"
                     "acceptable_support_set_for_the_assigned_condition"
                 ),
-                "primary_timing_clock": "unresolved",
+                "primary_timing_clock": PRIMARY_TIMING_SELECTED,
                 "timing_candidates": PRIMARY_TIMING_CANDIDATES,
                 "confirmatory_derivation_status": (
-                    "blocked_until_primary_timing_clock_selected"
+                    "timing_methodology_selected_wall_clock_implementation_and_freeze_checks_pending"
                 ),
                 "component_endpoints_role": "secondary_diagnostic_not_co_primary",
                 "critical_false_clearance_role": (
@@ -352,13 +354,39 @@ def semantic_errors(
                 )
 
         timing_decision = decisions_by_id.get("primary_timing_clock") or {}
-        if timing_decision.get("status") == "unresolved":
+        timing = protocol.get("timing") or {}
+        if timing_decision.get("status") == "selected":
+            if timing_decision.get("selected_candidate") != PRIMARY_TIMING_SELECTED:
+                errors.append(
+                    "LEDGER-20 selected primary_timing_clock must resolve to "
+                    f"{PRIMARY_TIMING_SELECTED!r} for this protocol version"
+                )
+            expected_timing = {
+                "primary_timing_clock": PRIMARY_TIMING_SELECTED,
+                "candidates": PRIMARY_TIMING_CANDIDATES,
+                "confirmatory_timeout_enforcement": (
+                    "selected_wall_deadline_methodology_implementation_and_smoke_verification_pending"
+                ),
+                "hidden_time_sensitivity_threshold_seconds": (
+                    PRIMARY_HIDDEN_SENSITIVITY_SECONDS
+                ),
+                "hidden_time_primary_rule": (
+                    "hidden_background_elapsed_time_remains_in_primary_wall_deadline"
+                ),
+                "active_time_role": "secondary_sensitivity_and_diagnostic_measure",
+            }
+            for key, expected in expected_timing.items():
+                if timing.get(key) != expected:
+                    errors.append(
+                        "LEDGER-22 protocol timing field "
+                        f"{key!r} does not match the selected wall-clock design"
+                    )
+        elif timing_decision.get("status") == "unresolved":
             if timing_decision.get("selected_candidate") is not None:
                 errors.append(
                     "LEDGER-20 unresolved primary_timing_clock must not carry "
                     "a selected candidate"
                 )
-            timing = protocol.get("timing") or {}
             if timing.get("primary_timing_clock") != "unresolved":
                 errors.append(
                     "LEDGER-22 protocol timing must remain unresolved until the "
@@ -563,9 +591,14 @@ def run_self_test() -> int:
         errors = validate(ledger, schema, mutated_protocol)
         assert any("LEDGER-18" in error for error in errors), (key, errors)
 
-    silently_selected_clock = copy.deepcopy(protocol)
-    silently_selected_clock["timing"]["primary_timing_clock"] = "active_time_primary"
-    errors = validate(ledger, schema, silently_selected_clock)
+    wrong_selected_clock = copy.deepcopy(protocol)
+    wrong_selected_clock["timing"]["primary_timing_clock"] = "active_time_primary"
+    errors = validate(ledger, schema, wrong_selected_clock)
+    assert any("LEDGER-22" in error for error in errors), errors
+
+    wrong_hidden_threshold = copy.deepcopy(protocol)
+    wrong_hidden_threshold["timing"]["hidden_time_sensitivity_threshold_seconds"] = 11
+    errors = validate(ledger, schema, wrong_hidden_threshold)
     assert any("LEDGER-22" in error for error in errors), errors
 
     bad_contingency = copy.deepcopy(protocol)
@@ -600,6 +633,8 @@ def run_self_test() -> int:
             decision["selected_candidate"] = REVIEWER_POPULATION_CANDIDATE
         elif decision["decision_id"] == "primary_endpoint":
             decision["selected_candidate"] = PRIMARY_ENDPOINT_CANDIDATE
+        elif decision["decision_id"] == "primary_timing_clock":
+            decision["selected_candidate"] = PRIMARY_TIMING_SELECTED
         else:
             decision["selected_candidate"] = decision["candidates"][0]["candidate_id"]
         decision["rationale"] = "Synthetic self-test selection only."

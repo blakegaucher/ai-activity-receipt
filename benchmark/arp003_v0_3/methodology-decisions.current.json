@@ -1,6 +1,6 @@
 {
-  "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.2",
-  "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
+  "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.3",
+  "protocol_version": "v0.3-draft-2026-09-23-primary-timing-wall-v0.1",
   "status": "development_unresolved",
   "decisions": [
     {
@@ -43,7 +43,7 @@
       "title": "Primary confirmatory endpoint",
       "pre_freeze_required": true,
       "status": "selected",
-      "current_implementation": "Selected binary primary endpoint: evidence-supported correct audit completion by 180 seconds. All case-specific required judgments must be correct and backed by a prespecified acceptable support set; extra required material facts or mismatched authorization state fail; a deadline miss cannot succeed. Component outcomes remain secondary diagnostics and critical false clearance remains a separate safety endpoint. The primary timing clock remains unresolved and confirmatory derivation therefore stays blocked.",
+      "current_implementation": "Selected binary primary endpoint: evidence-supported correct audit completion by 180 seconds. All case-specific required judgments must be correct and backed by a prespecified acceptable support set; extra required material facts or mismatched authorization state fail; a deadline miss cannot succeed. Component outcomes remain secondary diagnostics and critical false clearance remains a separate safety endpoint. The primary timing clock is selected separately as wall_deadline_with_hidden_sensitivity; implementation-specific timing/exclusion freeze checks remain open.",
       "selected_candidate": "correct_completion_by_180s",
       "evidence_refs": [
         "docs/AR-P003-V0.3-PRIMARY-ENDPOINT-DECISION-2026-09-21.md",
@@ -70,19 +70,22 @@
           ]
         }
       ],
-      "notes": "Historical unresolved state and both candidates remain preserved in this ledger and repository history. This decision selects only primary_endpoint. primary_timing_clock and effect_precision_target remain unresolved. Before confirmatory freeze only, a technically invalid or unusable 180-second endpoint requires STOP and a new explicit owner decision/protocol version rather than automatic promotion of component_endpoint_set.",
+      "notes": "Historical unresolved state and both candidates remain preserved in this ledger and repository history. This decision selects only primary_endpoint. The primary timing clock was subsequently selected as wall_deadline_with_hidden_sensitivity on 2026-09-23; effect_precision_target remains unresolved. Before confirmatory freeze only, a technically invalid or unusable 180-second endpoint requires STOP and a new explicit owner decision/protocol version rather than automatic promotion of component_endpoint_set.",
       "rationale": "Selected explicitly by the project owner as an interpretable binary confirmatory endpoint for the intended professional audit/evidence-review task. Success requires all prespecified case judgments to be correct, evidence-supportable under the frozen case contract, free of extra required material facts or mismatched authorization state, and within 180 seconds under the later-frozen primary timing clock. Component outcomes remain secondary diagnostics; critical false clearance remains a separate safety endpoint; no post-hoc weighted composite or automatic fallback primary is permitted."
     },
     {
       "decision_id": "primary_timing_clock",
       "title": "Primary timing definition",
       "pre_freeze_required": true,
-      "status": "unresolved",
-      "current_implementation": "Development runner records both wall and active elapsed time; page visibility automatically pauses active time and analysis requires an explicit active-vs-wall choice.",
-      "selected_candidate": null,
+      "status": "selected",
+      "current_implementation": "Owner-selected primary timing definition: the 180-second primary deadline uses elapsed wall time. Development tooling continues to preserve both wall and active elapsed time; active time is sensitivity/diagnostic only. Hidden/background elapsed time remains in the primary wall deadline, with >10 seconds hidden reserved for a prespecified sensitivity analysis. Exact technical-failure, reload/context-break, and browser/device rules remain pre-execution freeze requirements.",
+      "selected_candidate": "wall_deadline_with_hidden_sensitivity",
       "evidence_refs": [
-        "docs/AR-P003-V0.3-OFFLINE-RUNNER.md",
-        "benchmark/arp003_v0_3/runner-response.schema.json"
+        "docs/AR-P003-V0.3-PRIMARY-TIMING-CLOCK-DECISION-2026-09-23.md",
+        "docs/AR-P003-V0.3-PRIMARY-TIMING-CLOCK-DECISION-PROPOSAL-2026-09-23.md",
+        "benchmark/arp003_v0_3/methodology-impact-map.json",
+        "docs/AR-P003-V0.3-DECISION-SUPPORT.md",
+        "AI_Activity_Receipt_Research_and_v03_Protocol.pdf"
       ],
       "candidates": [
         {
@@ -102,7 +105,8 @@
           ]
         }
       ],
-      "notes": "Instrumentation already preserves both clocks, so this decision can be frozen later without losing development observability. Do not select timing after confirmatory outcomes are visible."
+      "notes": "The earlier active-time development interpretation remains preserved as a rejected alternative. The owner explicitly selected wall_deadline_with_hidden_sensitivity on 2026-09-23 after proposal PR #94. This resolves the methodology choice only; timing/exclusion implementation, browser/device smoke verification, and technical-failure rules remain open freeze gates. Recruitment and human execution remain unauthorized.",
+      "rationale": "The selected primary endpoint is correct completion by a fixed 180-second deadline. Wall elapsed time most directly represents that operational deadline and avoids making primary success depend on manual pause behavior, page-visibility pauses, or pause-detection implementation. Active time remains available for sensitivity analysis. Hidden/background time remains in the primary wall deadline, with >10 seconds hidden handled by prespecified sensitivity analysis rather than subtraction from the primary clock."
     },
     {
       "decision_id": "challenge_design",

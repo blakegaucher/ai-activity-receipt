@@ -1,7 +1,7 @@
 {
   "impact_map_version": "AR-P003-v0.3-methodology-impact-map-v0.2",
-  "protocol_version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
-  "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.2",
+  "protocol_version": "v0.3-draft-2026-09-23-primary-timing-wall-v0.1",
+  "ledger_version": "AR-P003-v0.3-methodology-decisions-v0.3",
   "status": "decision_support_only_no_selection",
   "decisions": [
     {
@@ -127,7 +127,7 @@
             "flag reload/timer-context breaks",
             "verify timing behavior in allowed browsers/devices"
           ],
-          "notes": "Matches the research-review recommendation that background time remain in the primary deadline, with >10 seconds hidden handled as a prespecified sensitivity analysis. The runner already preserves wall and visibility data, so development observability is retained."
+          "notes": "Selected by the owner on 2026-09-23. Background/hidden time remains in the primary 180-second wall deadline; >10 seconds hidden is reserved for prespecified sensitivity analysis. Implementation/freeze work remains required before execution."
         }
       ]
     },

@@ -10,7 +10,7 @@
   ],
   "properties": {
     "ledger_version": {
-      "const": "AR-P003-v0.3-methodology-decisions-v0.2"
+      "const": "AR-P003-v0.3-methodology-decisions-v0.3"
     },
     "protocol_version": {
       "type": "string",

@@ -21,7 +21,7 @@ RUNNER_RESPONSE_SCHEMA = ROOT / "benchmark" / "arp003_v0_3" / "runner-response.s
 LATEST_CONTINUITY = (
     ROOT
     / "docs"
-    / "PROJECT-CONTINUITY-2026-09-21-AR-P003-PRIMARY-ENDPOINT.md"
+    / "PROJECT-CONTINUITY-2026-09-23-AR-P003-PRIMARY-TIMING.md"
 )
 EXPECTED_FREEZE = (
     "8a381f4ae20a5f6824e513c7f96920fdf3cfe6b00b0b8d301127f5e0b659d0fd"
@@ -59,11 +59,11 @@ def main() -> int:
 
     errors: list[str] = []
 
-    if state.get("snapshot_version") != "project-continuity-v0.19":
+    if state.get("snapshot_version") != "project-continuity-v0.20":
         errors.append("machine-readable continuity snapshot_version is stale")
-    if state.get("snapshot_date") != "2026-09-21":
+    if state.get("snapshot_date") != "2026-09-23":
         errors.append("machine-readable continuity snapshot_date is stale")
-    if "**Snapshot date:** 2026-09-21" not in latest_continuity_text:
+    if "**Snapshot date:** 2026-09-23" not in latest_continuity_text:
         errors.append("latest human-readable continuity snapshot date is stale")
 
     hist = ((state.get("historical") or {}).get("arp003_v0_2_3") or {})
@@ -102,7 +102,7 @@ def main() -> int:
             "three_condition_structured_control"
         )
     if methodology.get("protocol_version") != (
-        "v0.3-draft-2026-09-21-primary-endpoint-v0.1"
+        "v0.3-draft-2026-09-23-primary-timing-wall-v0.1"
     ):
         errors.append("AR-P003 selected methodology protocol-version continuity is stale")
     if methodology.get("comparison_conditions_freeze_readiness") != "complete":
@@ -172,17 +172,18 @@ def main() -> int:
         "critical_false_clearance_threshold": (
             "unresolved_effect_precision_target"
         ),
-        "primary_timing_clock": "unresolved",
+        "primary_timing_clock": "wall_deadline_with_hidden_sensitivity",
         "development_contingency": (
             "pre_freeze_stop_and_new_owner_decision_no_automatic_fallback"
         ),
-        "confirmatory_primary_derivation": "blocked_until_timing_selected",
+        "confirmatory_primary_derivation": (
+            "timing_methodology_selected_wall_clock_implementation_and_freeze_checks_pending"
+        ),
     }
     if endpoint != expected_endpoint:
         errors.append("AR-P003 primary-endpoint continuity details are stale")
 
     required_methodology_unresolved = {
-        "primary_timing_clock",
         "effect_precision_target",
     }
     for decision_id in required_methodology_unresolved:
@@ -238,12 +239,14 @@ def main() -> int:
         errors.append("AR-P003 endpoint-aware runner continuity is stale")
     if runner.get("primary_endpoint_deadline_seconds") != 180:
         errors.append("AR-P003 primary endpoint deadline continuity is stale")
-    if runner.get("primary_timing_clock") != "unresolved":
-        errors.append("AR-P003 primary timing clock must remain unresolved")
-    if runner.get("confirmatory_primary_derivation") != (
-        "blocked_until_primary_timing_clock_selected"
+    if runner.get("primary_timing_clock") != (
+        "selected:wall_deadline_with_hidden_sensitivity"
     ):
-        errors.append("AR-P003 confirmatory primary derivation must remain blocked")
+        errors.append("AR-P003 selected primary timing clock continuity is stale")
+    if runner.get("confirmatory_primary_derivation") != (
+        "wall_clock_methodology_selected_implementation_and_freeze_checks_pending"
+    ):
+        errors.append("AR-P003 confirmatory primary derivation continuity is stale")
     if runner.get("primary_endpoint_contract") != (
         "AR-P003-v0.3-primary-endpoint-case-v0.1"
     ):

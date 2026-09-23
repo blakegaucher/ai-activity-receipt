@@ -1,6 +1,6 @@
 {
   "protocol_id": "AR-P003",
-  "version": "v0.3-draft-2026-09-21-primary-endpoint-v0.1",
+  "version": "v0.3-draft-2026-09-23-primary-timing-wall-v0.1",
   "status": "candidate_preregistration_draft",
   "frozen": false,
   "research_question": "Do a neutral structured event table and an AI Activity Receipt, each added to the same underlying heterogeneous evidence, change independent human reconstruction accuracy, reliability, or time relative to raw evidence, and does the Receipt add benefit beyond generic structuring?",
@@ -103,7 +103,7 @@
     "missing_evidence": "secondary_exact_accuracy",
     "elapsed_wall_seconds": "secondary_timing_measure",
     "elapsed_active_seconds": "secondary_timing_measure",
-    "primary_endpoint": "binary_correct_supported_completion_by_180_seconds_after_primary_timing_clock_is_frozen",
+    "primary_endpoint": "binary_correct_supported_completion_by_180_seconds_under_selected_wall_clock",
     "critical_false_clearance": "separate_safety_endpoint",
     "composite_primary_score": false
   },
@@ -113,12 +113,15 @@
     "automatic_slow_response_exclusion": false,
     "record_wall_and_active_during_development": true,
     "deadline_seconds": 180,
-    "primary_timing_clock": "unresolved",
+    "primary_timing_clock": "wall_deadline_with_hidden_sensitivity",
     "candidates": [
       "active_time_primary",
       "wall_deadline_with_hidden_sensitivity"
     ],
-    "confirmatory_timeout_enforcement": "blocked_until_primary_timing_clock_selected"
+    "confirmatory_timeout_enforcement": "selected_wall_deadline_methodology_implementation_and_smoke_verification_pending",
+    "hidden_time_sensitivity_threshold_seconds": 10,
+    "hidden_time_primary_rule": "hidden_background_elapsed_time_remains_in_primary_wall_deadline",
+    "active_time_role": "secondary_sensitivity_and_diagnostic_measure"
   },
   "confirmatory_requirements": [
     "fresh_sealed_corpus",
@@ -163,7 +166,7 @@
     "crossed_example_scenarios": "benchmark/arp003_v0_3/crossed-planning-scenarios.example.json",
     "crossed_planning_prepared": true,
     "primary_estimand": "binary_correct_completion_by_180s",
-    "primary_timing_clock": "unresolved",
+    "primary_timing_clock": "wall_deadline_with_hidden_sensitivity",
     "effect_precision_target": "unresolved",
     "final_sample_size_frozen": false
   },
@@ -172,7 +175,6 @@
     "path": "benchmark/arp003_v0_3/methodology-decisions.current.json",
     "required_before_freeze": true,
     "unresolved_decisions": [
-      "primary_timing_clock",
       "effect_precision_target"
     ]
   },
@@ -187,12 +189,12 @@
     "correctness_rule": "all_prespecified_required_judgments_for_the_case_must_be_correct",
     "material_fact_failure_rule": "extra_required_set_facts_or_mismatched_authorization_state_fail_primary",
     "timeout_failure_rule": "a_trial_over_the_frozen_180_second_primary_clock_cannot_succeed",
-    "primary_timing_clock": "unresolved",
+    "primary_timing_clock": "wall_deadline_with_hidden_sensitivity",
     "timing_candidates": [
       "active_time_primary",
       "wall_deadline_with_hidden_sensitivity"
     ],
-    "confirmatory_derivation_status": "blocked_until_primary_timing_clock_selected",
+    "confirmatory_derivation_status": "timing_methodology_selected_wall_clock_implementation_and_freeze_checks_pending",
     "component_endpoints_role": "secondary_diagnostic_not_co_primary",
     "critical_false_clearance_role": "separate_prespecified_safety_endpoint",
     "critical_false_clearance_threshold": "unresolved_effect_precision_target",
