@@ -43,7 +43,7 @@
       "title": "Primary confirmatory endpoint",
       "pre_freeze_required": true,
       "status": "selected",
-      "current_implementation": "Selected binary primary endpoint: evidence-supported correct audit completion by 180 seconds. All case-specific required judgments must be correct and backed by a prespecified acceptable support set; extra required material facts or mismatched authorization state fail; a deadline miss cannot succeed. Component outcomes remain secondary diagnostics and critical false clearance remains a separate safety endpoint. The primary timing clock remains unresolved and confirmatory derivation therefore stays blocked.",
+      "current_implementation": "Selected binary primary endpoint: evidence-supported correct audit completion by 180 seconds. All case-specific required judgments must be correct and backed by a prespecified acceptable support set; extra required material facts or mismatched authorization state fail; a deadline miss cannot succeed. Component outcomes remain secondary diagnostics and critical false clearance remains a separate safety endpoint. The primary timing clock is selected separately as wall_deadline_with_hidden_sensitivity; implementation-specific timing/exclusion freeze checks remain open.",
       "selected_candidate": "correct_completion_by_180s",
       "evidence_refs": [
         "docs/AR-P003-V0.3-PRIMARY-ENDPOINT-DECISION-2026-09-21.md",
@@ -70,7 +70,7 @@
           ]
         }
       ],
-      "notes": "Historical unresolved state and both candidates remain preserved in this ledger and repository history. This decision selects only primary_endpoint. primary_timing_clock and effect_precision_target remain unresolved. Before confirmatory freeze only, a technically invalid or unusable 180-second endpoint requires STOP and a new explicit owner decision/protocol version rather than automatic promotion of component_endpoint_set.",
+      "notes": "Historical unresolved state and both candidates remain preserved in this ledger and repository history. This decision selects only primary_endpoint. The primary timing clock was subsequently selected as wall_deadline_with_hidden_sensitivity on 2026-09-23; effect_precision_target remains unresolved. Before confirmatory freeze only, a technically invalid or unusable 180-second endpoint requires STOP and a new explicit owner decision/protocol version rather than automatic promotion of component_endpoint_set.",
       "rationale": "Selected explicitly by the project owner as an interpretable binary confirmatory endpoint for the intended professional audit/evidence-review task. Success requires all prespecified case judgments to be correct, evidence-supportable under the frozen case contract, free of extra required material facts or mismatched authorization state, and within 180 seconds under the later-frozen primary timing clock. Component outcomes remain secondary diagnostics; critical false clearance remains a separate safety endpoint; no post-hoc weighted composite or automatic fallback primary is permitted."
     },
     {
