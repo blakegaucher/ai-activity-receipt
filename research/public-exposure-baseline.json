@@ -1,0 +1,12 @@
+{
+  "schema": "aiar.public-exposure-baseline.v0.1",
+  "approved_review_paths": [
+    "docs/AR-P003-V0.3-RECRUITMENT-ELIGIBILITY.md",
+    "examples/invalid-private-reasoning-field.json"
+  ],
+  "notes": [
+    "These paths are intentionally public methodology/negative-fixture artifacts, not participant data or private reasoning.",
+    "A new risky-named path must be reviewed and added explicitly before CI will pass.",
+    "This baseline does not approve secrets, credentials, private keys, customer data, or human-study exports."
+  ]
+}
