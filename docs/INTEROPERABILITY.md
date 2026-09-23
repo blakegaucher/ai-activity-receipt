@@ -348,3 +348,56 @@ This is evidence of normalization consistency on one synthetic paired scenario, 
 - prototype an A2A evidence adapter only after the task/identity mapping and authenticated-context boundary are sufficiently clear;
 - monitor NIST AI-agent identity/authorization work and emerging industry standards;
 - avoid any standards-conformance claim until an explicit conformance target and test method exist.
+
+
+---
+
+## 12. Emerging agent-audit / delegation specifications — 2026-09-23 refresh
+
+This section records a targeted prior-art/interoperability refresh. These sources overlap the project's evidence and governance layer and should be treated as candidate evidence substrates or crosswalk targets, not as endorsements or conformance targets.
+
+### OCSF 1.9
+
+OCSF 1.9 adds an AI-agent object, an AI-operation profile, a delegation object that links actions to delegated authority, and a record-integrity profile carrying cryptographic attestation and optional tamper-evident chain references.
+
+Reference: https://github.com/ocsf/ocsf-schema/releases/tag/1.9.0
+
+**Candidate relationship:** OCSF events may serve as normalized security/operations evidence feeding the Canonical Activity Record. OCSF integrity/delegation fields should remain source evidence unless and until a versioned adapter maps them explicitly.
+
+### IETF Agent Audit Trail (AAT)
+
+The AAT Internet-Draft defines a JSON audit record with agent identity, action classification, outcome, trust level, ordered session links, pre-/post-execution record phase, tamper-evident chaining, and optional signatures.
+
+Reference: https://datatracker.ietf.org/doc/html/draft-sharif-agent-audit-trail-04
+
+**Candidate relationship:** AAT action, outcome, timing, and authorization-phase fields are plausible evidence inputs. The Receipt should not duplicate AAT as a competing logging format; it should preserve the source record and normalize only the evidence needed for human review.
+
+### Human Delegation Provenance Protocol (HDP)
+
+HDP binds a human principal and authorized scope to a session and records signed delegation hops in an append-only chain.
+
+Reference: https://datatracker.ietf.org/doc/html/draft-helixar-hdp-agentic-delegation-00
+
+**Candidate relationship:** HDP is relevant to principal identity, delegated scope, session binding, and multi-hop authority provenance. A future adapter should preserve the distinction between provenance of delegation and proof that a downstream action satisfied current authorization policy.
+
+### Governance Audit Record (GAR)
+
+GAR defines governance/session audit records, authority-lifecycle events, audit alerts, external audit packages, causal ordering, signatures, and transparency-log integration.
+
+Reference: https://datatracker.ietf.org/doc/draft-sato-soos-gar/06/
+
+**Candidate relationship:** GAR is relevant to session-level governance evidence, lifecycle state, external audit packaging, and integrity. AI Activity Receipt should remain a compact review layer rather than claiming to replace a full governance-audit architecture.
+
+### IETF architecture for auditing agent delegation and interactions
+
+This architecture explicitly links user intent, delegation, authorization, execution, distributed audit records, audit context propagation, optional attestation, and transparency logging.
+
+Reference: https://www.ietf.org/archive/id/draft-kuehlewind-audit-architecture-00.html
+
+**Candidate relationship:** The architecture reinforces the project's separation of identity, authority, observed action, and verification evidence. Cross-domain audit context and parent-event references are relevant to future multi-hop work.
+
+### Boundary from this refresh
+
+The existence of these overlapping standards/drafts means the project should not claim to originate agent identity records, delegated-authority chains, tamper-evident agent logs, or governance audit packages. The interoperability goal is to ingest or reference such evidence while testing whether the resulting compact Receipt improves human audit reconstruction under controlled conditions.
+
+See [Prior-Art Landscape Snapshot — 2026-09-23](PRIOR-ART-LANDSCAPE-2026-09-23.md).

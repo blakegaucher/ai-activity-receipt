@@ -61,6 +61,7 @@ A passing run reproduces repository-local deterministic/synthetic checks only. I
 - [One-Command Reproducibility Suite](docs/REPRODUCIBILITY.md)
 - [Independent Reproduction Handoff](docs/EXTERNAL-REPRODUCTION-HANDOFF.md)
 - [Interoperability Research Snapshot](docs/INTEROPERABILITY.md)
+- [Prior-Art Landscape Snapshot — 2026-09-23](docs/PRIOR-ART-LANDSCAPE-2026-09-23.md)
 - [Machine-Readable Interoperability Crosswalk](docs/MACHINE-READABLE-MAPPINGS.md)
 - [OpenTelemetry GenAI Adapter Prototype](docs/OTEL-ADAPTER.md)
 - [MCP 2026-07-28 Adapter Prototype](docs/MCP-ADAPTER.md)
