@@ -167,7 +167,7 @@
     },
     "reproducibility_runner": {
       "status": "public_repository_local",
-      "suite_version": "ai-activity-receipt-repro-v0.23",
+      "suite_version": "ai-activity-receipt-repro-v0.24",
       "ci_python": "3.12.14",
       "exact_dependency_lock": true,
       "github_actions_commit_pinned": true,
