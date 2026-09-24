@@ -24,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUITE_VERSION = "ai-activity-receipt-repro-v0.23"
+SUITE_VERSION = "ai-activity-receipt-repro-v0.24"
 
 CHECKS: list[dict[str, Any]] = [
     {
@@ -175,6 +175,19 @@ CHECKS: list[dict[str, Any]] = [
             "research/validate_external_evidence.py",
             "research/external-evidence-reference.schema.json",
             "research/external-evidence-reference.example.json",
+        ],
+    },
+    {
+        "id": "scientific-model-provenance-pilot",
+        "argv": ["research/scientific_model_provenance_pilot.py"],
+        "artifacts": [
+            "research/scientific_model_provenance_pilot.py",
+            "research/scientific-model-provenance/reference-only-record.json",
+            "research/scientific-model-provenance/invalid-overloaded-record.json",
+            "activity-record.schema.json",
+            "activity-receipt.schema.json",
+            "derive_receipt.py",
+            "docs/SCIENTIFIC-MODEL-PROVENANCE-PILOT.md",
         ],
     },
     {
