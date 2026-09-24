@@ -1,0 +1,76 @@
+{
+  "record_id": "record-scientific-model-ref-001",
+  "record_schema_version": "candidate-record-v0.1",
+  "trace_id": "trace-scientific-model-ref-001",
+  "system": {
+    "agent_id": "agent-research-assistant",
+    "version": "scientific-model-provenance-pilot-v0.1"
+  },
+  "actors": [
+    {
+      "actor_id": "principal-researcher",
+      "kind": "human",
+      "role": "principal"
+    },
+    {
+      "actor_id": "agent-research-assistant",
+      "kind": "agent",
+      "role": "delegate"
+    },
+    {
+      "actor_id": "inductive-bio-service",
+      "kind": "service",
+      "role": "external_scientific_prediction_service"
+    }
+  ],
+  "authority": {
+    "principal": "principal-researcher",
+    "delegate": "agent-research-assistant",
+    "scope": [
+      "read_public_structure",
+      "invoke_scientific_model"
+    ],
+    "prohibited": [
+      "submit_private_structure"
+    ],
+    "valid_from": "2026-09-24T06:00:00Z",
+    "valid_until": "2026-09-24T07:30:00Z"
+  },
+  "sources": [
+    {
+      "source_id": "src-public-structure",
+      "role": "scientific_model_input_source",
+      "material": true,
+      "uri": "https://pubchem.ncbi.nlm.nih.gov/compound/89594"
+    },
+    {
+      "source_id": "src-scientific-model-result",
+      "role": "external_model_result_evidence",
+      "material": true
+    }
+  ],
+  "events": [
+    {
+      "event_id": "event-scientific-model-call",
+      "occurred_at": "2026-09-24T06:15:00Z",
+      "actor_id": "agent-research-assistant",
+      "operation": "invoke_scientific_model",
+      "status": "completed",
+      "authorization": "not_required",
+      "consequential": false,
+      "material": true,
+      "source_refs": [
+        "src-public-structure",
+        "src-scientific-model-result"
+      ]
+    }
+  ],
+  "verification": {
+    "state": "uncertain"
+  },
+  "incidents": [],
+  "integrity": {
+    "generated_at": "2026-09-24T06:20:00Z"
+  },
+  "notes": "Public-safe source-to-record fidelity fixture. The typed record deliberately cannot state the invoked model ID/version, prediction value, uncertainty, or OOD/low-confidence flags; those details are the mapping gap under test."
+}
