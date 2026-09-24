@@ -4,16 +4,20 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
-from derive_receipt import (
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from derive_receipt import (  # noqa: E402
     derive_receipt,
     record_semantic_errors,
     validate_derived_receipt,
     validate_record_structure,
 )
 
-ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "research" / "scientific-model-provenance"
 
 
