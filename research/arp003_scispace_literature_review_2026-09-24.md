@@ -50,6 +50,12 @@ Within the search set reviewed here, no paper directly answers the AR-P003 confi
 
 This is a scoped literature-search finding, not a universal novelty or priority claim.
 
+## 1A. 2024–2026 agent-trace search extension
+
+A separate SciSpace search targeted recent human-subject work on reviewing or debugging LLM-agent trajectories, tool-use logs, provenance, and execution histories. It surfaced agent-evaluation and trace-diagnosis systems such as AgentAuditor (arXiv:2506.00641), AgentDiagnose (EMNLP 2025 demos, DOI 10.18653/v1/2025.emnlp-demos.15), structural trace-testing work, and human-oversight studies of GUI agents. These are relevant adjacent systems, but they do not duplicate the AR-P003 design of holding underlying evidence symmetric while comparing raw evidence, a neutral structured event table, and an AI Activity Receipt with professional reviewers on evidence-supported correct completion by a fixed deadline.
+
+This further narrows the current literature finding: recent work is active on agent evaluation, trace diagnosis, and auditability, while the specific human-review representation question tested by AR-P003 remains unestablished in the reviewed search set. This is still not a universal novelty claim.
+
 ## 2. Effect / precision target research
 
 ### What the statistical literature supports
