@@ -7,6 +7,8 @@
 
 > **Status:** Pre-commercial research and development. Current evidence is synthetic/technical; this repository does **not** claim proven productivity, safety, legal compliance, standards conformance, or commercial advantage.
 
+> **Terminology compatibility note (2026-09-29):** The canonical project name remains **AI Activity Receipt (AIAR)**. In prose, **AI/SI** may be used as a bridge between established *Artificial Intelligence (AI)* terminology and newer *Super Intelligence (SI)* terminology used in current U.S. executive-branch materials. Existing schema identifiers, standards names, historical records, frozen artifacts, and citations retain their original terminology. Use of **SI** does not assert that a system has achieved any technical definition of artificial superintelligence. See [Terminology and Field Semantics](docs/TERMINOLOGY.md).
+
 AI Activity Receipt is an independent research project by **Blake Gaucher / Ancient Immortal Art** exploring a simple question:
 
 > When an AI system performs meaningful work, what should a human be able to verify afterward?
@@ -54,6 +56,7 @@ A passing run reproduces repository-local deterministic/synthetic checks only. I
 - [Expected Derived Receipt](examples/derived-receipt.json)
 - [Candidate Invariants](docs/INVARIANTS.md)
 - [Terminology and Field Semantics](docs/TERMINOLOGY.md)
+- [AI/SI Frontier Controls Evidence Crosswalk — 2026-09-29](docs/AI-SI-FRONTIER-CONTROLS-CROSSWALK-2026-09-29.md)
 - [Fixture expectation manifest](examples/fixture-manifest.json)
 - [Validation Record](docs/VALIDATION.md)
 - [AR-P003 v0.2.3 Historical Frozen Baseline](docs/AR-P003-V0.2.3-HISTORICAL-BASELINE.md)
