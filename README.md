@@ -20,6 +20,23 @@ The project is developing a **model-neutral activity record and human-facing rec
 - **Security:** validation and CodeQL workflows are active; this is not a security certification or proof of zero vulnerabilities.
 - **License:** project-authored public repository material is licensed under the **Apache License 2.0**. This does **not** authorize release of future private human-study/participant/reviewer/hidden-analysis material, transfer third-party rights, or grant trademark/endorsement rights in Ancient Immortal Art or AI Activity Receipt. See [LICENSE](LICENSE), [NOTICE](NOTICE), [Licensing Status](docs/LICENSING.md), and [License Preflight](docs/LICENSE-PREFLIGHT.md).
 
+## For prospective evaluators and customer-discovery participants
+
+If you use AI in document review, research, finance/accounting, legal/policy review, or professional reporting and still need a person to verify the result, start with the [Prospective Evaluator Pack](docs/PROSPECTIVE-EVALUATOR-PACK.md).
+
+It explains:
+- the current workflow/buyer hypothesis;
+- what a first 20-minute discovery conversation needs (no confidential files required);
+- the minimum de-identified evidence package for any later retrospective evaluation;
+- what a bounded evaluation would return;
+- privacy/confidentiality boundaries;
+- what is **not yet proven**;
+- the current one-time fixed-scope commercial hypothesis, with pricing still unvalidated.
+
+Customer conversations, interest, technical demos, and standards discussions are kept separate from evidence of demand or revenue.
+
+---
+
 ## Reproduce the repository-local checks
 
 For the closest reproduction of the tested CI environment:
