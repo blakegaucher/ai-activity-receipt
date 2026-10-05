@@ -53,7 +53,8 @@ A passing run reproduces repository-local deterministic/synthetic checks only. I
 ---
 ## Project resources
 
-- [Sample Activity Receipt](examples/sample-receipt.json)
+- [Human-readable illustrative receipt](examples/sample-receipt-human-readable.md)
+- [Machine-readable sample Activity Receipt](examples/sample-receipt.json)
 - [Valid authorization fixture](examples/valid-completed-authorized-action.json)
 - [Intentionally invalid authorization fixture](examples/invalid-completed-with-denied-authorization.json)
 - [Candidate JSON Schema](activity-receipt.schema.json)
