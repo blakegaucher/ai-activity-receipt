@@ -127,9 +127,10 @@ A discovery conversation, expression of interest, technical demo, or standards d
 
 ## What is already public
 
-Technical readers can inspect:
+Technical and non-technical readers can inspect:
 
-- [Sample Activity Receipt](../examples/sample-receipt.json)
+- [Human-readable illustrative receipt](../examples/sample-receipt-human-readable.md)
+- [Machine-readable sample Activity Receipt](../examples/sample-receipt.json)
 - [Canonical Activity Record design](CANONICAL-RECORD.md)
 - [Candidate JSON Schema](../activity-receipt.schema.json)
 - [Validation record](VALIDATION.md)
