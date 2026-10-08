@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: Agenthon-2026/track4-analysis-public
-          ref: 1c744e1d6725340643a533f436517d72b53ca0e1
+          ref: 458bc07efc05983de342ccb371e2b3cd793d621f
           persist-credentials: false
           path: track4
       - name: Check out exact v2.5.1 toolkit tag commit
