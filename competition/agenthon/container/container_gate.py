@@ -17,7 +17,7 @@ import subprocess
 import sys
 import time
 
-TRACK = '1c744e1d6725340643a533f436517d72b53ca0e1'
+TRACK = '458bc07efc05983de342ccb371e2b3cd793d621f'
 TOOLKIT = '50fb2dc2b39c70f4cf81fcd269943782eddfaed0'
 BASE = 'python:3.13.15-slim@sha256:37134a49d21d2120e4c4d73bb76f8a4ab9aef31f096f7ec2ead48c2feead4332'
 ANSWER = 'e305c47d7dfca92e73b3304d24f937b26f0bf861082649e06629c92eae91b3d2'
