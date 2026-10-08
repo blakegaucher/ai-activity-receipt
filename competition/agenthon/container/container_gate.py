@@ -38,6 +38,20 @@ def base_ok(value):
     return value == BASE
 
 
+def require_no_declared_volumes(image_info, role, report):
+    # Final policy also forbids VOLUME inherited from the base image.
+    config = image_info.get('Config')
+    require(isinstance(config, dict), f'{role} Docker inspect Config missing or malformed')
+    declared = config.get('Volumes')
+    status = 'PASS' if declared is None or declared == {} else 'FAIL'
+    report.setdefault('image_volume_policy', {})[role] = {
+        'image_id': image_info.get('Id'),
+        'config_volumes': declared,
+        'status': status,
+    }
+    require(status == 'PASS', f'{role} image declares an inherited or explicit Docker VOLUME')
+
+
 def _text(value):
     return value.decode('utf-8', errors='replace') if isinstance(value, bytes) else (value or '')
 
@@ -143,7 +157,12 @@ def main():
         report['input_hashes'] = before
         command(['docker', 'build', '--platform', 'linux/amd64', '--pull', '--build-arg',
                  'PYTHON_BASE=' + args.base, '--tag', 'agenthon-smoke:local', str(context)], report, env, timeout=600)
+        base_images = json.loads(command(['docker', 'image', 'inspect', args.base], report, env))
+        require(isinstance(base_images, list) and len(base_images) == 1, 'Base image inspect did not return exactly one image')
+        report['base_image'] = base_images
+        require_no_declared_volumes(base_images[0], 'base', report)
         info = json.loads(command(['docker', 'image', 'inspect', 'agenthon-smoke:local'], report, env))[0]
+        require_no_declared_volumes(info, 'candidate', report)
         require(info['Architecture'] == 'amd64' and info['Os'] == 'linux', 'Built image platform mismatch')
         require(info['Config']['Labels']['qfbench2.interface_version'] == '2.0', 'Interface label mismatch')
         report['image'] = info
@@ -152,7 +171,6 @@ def main():
         report['container_python'] = command(sandbox_args(probe_name) + ['--entrypoint', 'python', info['Id'], '--version'], report, env, timeout=60).strip()
         require(report['container_python'] == 'Python 3.13.15', 'Runtime interpreter mismatch')
         report['python_probe_inspect'] = json.loads(command(['docker', 'inspect', probe_name], report, env))
-        report['base_image'] = json.loads(command(['docker', 'image', 'inspect', args.base], report, env))
         report['identity_boundary'] = 'Local image ID/config digest only; no participant registry manifest was created or pushed'
         output = evidence / 'output'
         output.mkdir(mode=0o777)
