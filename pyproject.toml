@@ -1,0 +1,16 @@
+[project]
+name = "ai-activity-receipt-vercel-pilot"
+version = "0.1.0"
+requires-python = ">=3.12,<3.15"
+dependencies = [
+  "fastapi>=0.117,<1",
+]
+
+[project.optional-dependencies]
+test = [
+  "httpx>=0.28,<1",
+  "pytest>=8,<9",
+]
+
+[tool.vercel]
+entrypoint = "main:app"
