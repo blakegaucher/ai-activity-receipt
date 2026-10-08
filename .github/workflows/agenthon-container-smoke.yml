@@ -1,6 +1,6 @@
 name: Agenthon participant container smoke (manual only)
 
-# Review candidate only. Install through a separately authorized PR; do not dispatch yet.
+# Manual-only execution remains closed until separate exact-head owner approval.
 on:
   workflow_dispatch:
     inputs:
@@ -9,7 +9,7 @@ on:
         required: true
         type: string
       approved_commit:
-        description: Exact reviewed 40-hex commit of competition/agenthon-container-522-pin-1c744e1
+        description: Exact reviewed 40-hex commit of competition/agenthon-container-522-volume-guard
         required: true
         type: string
 
@@ -24,7 +24,7 @@ jobs:
   smoke:
     if: >-
       github.repository == 'blakegaucher/ai-activity-receipt' &&
-      github.ref == 'refs/heads/competition/agenthon-container-522-pin-1c744e1' &&
+      github.ref == 'refs/heads/competition/agenthon-container-522-volume-guard' &&
       github.sha == inputs.approved_commit &&
       inputs.confirmation == 'CONTAINER_ONLY' &&
       github.event.repository.private == false
