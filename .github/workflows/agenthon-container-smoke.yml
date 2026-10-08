@@ -9,7 +9,7 @@ on:
         required: true
         type: string
       approved_commit:
-        description: Exact reviewed 40-hex commit of competition/agenthon-container-522
+        description: Exact reviewed 40-hex commit of competition/agenthon-container-522-pin-1c744e1
         required: true
         type: string
 
@@ -24,7 +24,7 @@ jobs:
   smoke:
     if: >-
       github.repository == 'blakegaucher/ai-activity-receipt' &&
-      github.ref == 'refs/heads/competition/agenthon-container-522' &&
+      github.ref == 'refs/heads/competition/agenthon-container-522-pin-1c744e1' &&
       github.sha == inputs.approved_commit &&
       inputs.confirmation == 'CONTAINER_ONLY' &&
       github.event.repository.private == false
@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: Agenthon-2026/track4-analysis-public
-          ref: ede7381d8c1ba9d8c84068f9d142f5e093a33892
+          ref: 458bc07efc05983de342ccb371e2b3cd793d621f
           persist-credentials: false
           path: track4
       - name: Check out exact v2.5.1 toolkit tag commit

@@ -17,7 +17,7 @@ import subprocess
 import sys
 import time
 
-TRACK = 'ede7381d8c1ba9d8c84068f9d142f5e093a33892'
+TRACK = '458bc07efc05983de342ccb371e2b3cd793d621f'
 TOOLKIT = '50fb2dc2b39c70f4cf81fcd269943782eddfaed0'
 BASE = 'python:3.13.15-slim@sha256:37134a49d21d2120e4c4d73bb76f8a4ab9aef31f096f7ec2ead48c2feead4332'
 ANSWER = 'e305c47d7dfca92e73b3304d24f937b26f0bf861082649e06629c92eae91b3d2'
@@ -185,7 +185,7 @@ def main():
         findings = [dataclasses.asdict(f) for f in check_claim_rules(answer, unit, token_counter=None)]
         report['claim_findings'] = findings
         require(all(f['code'] == 'claim_tokens_unchecked' for f in findings), 'Unexpected deterministic claim finding')
-        report['token_boundary'] = 'No fresh tokenizer/NLI run; identical answer/source hashes link to Oct 2 local 37/37 evidence only'
+        report['token_boundary'] = ('No fresh tokenizer/NLI run. October 2 local 37/37 evidence remains historical '\n                                    'under its prior exact source pin; this pin-advanced smoke does not relabel that '\n                                    'evidence or attest current-source tokenizer/NLI parity.')
         report['limits'] = {'cpus': 2, 'memory_gib': 4, 'smoke_timeout_seconds': 600,
                             'build_timeout_seconds': 600, 'probe_timeout_seconds': 60,
                             'cleanup_timeout_per_container_seconds': 30,
