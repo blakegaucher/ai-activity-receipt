@@ -1,12 +1,12 @@
-# Tested dependency snapshot from GitHub Actions on 2026-09-19.
+# Tested dependency snapshot from GitHub Actions on 2026-10-05.
 # Python: CPython 3.12.14
 # Keep requirements.txt as the supported-range declaration; use this file for
 # repository CI / exact reproduction of the tested dependency set.
 arrow==1.4.0
 attrs==26.1.0
 cffi==2.1.1
-cryptography==50.0.1
-fqdn==1.5.1
+cryptography==50.0.2
+fqdn==1.6.0
 idna==3.20
 isoduration==20.11.0
 jsonpointer==3.1.1
