@@ -8,7 +8,8 @@ Activity Receipt + the same evidence.
 The planner simulates the selected binary primary endpoint
 correct_completion_by_180s under reviewer and case random intercepts and
 reports prespecified development contrasts with two-way cluster-robust
-covariance. The primary timing clock and effect/precision target remain
+covariance. The primary timing clock is selected as
+wall_deadline_with_hidden_sensitivity; the effect/precision target remains
 unresolved, so current probabilities are illustrative and no sample size,
 allocation, stopping rule, or final analysis model is frozen.
 """
@@ -445,7 +446,7 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
             "contrasts_with_two_way_cluster_robust_covariance"
         ),
         "primary_endpoint": "correct_completion_by_180s",
-        "primary_timing_clock": "unresolved",
+        "primary_timing_clock": "wall_deadline_with_hidden_sensitivity",
         "effect_precision_target": "unresolved",
         "design": {
             "comparison_design": "three_condition_structured_control",
@@ -479,8 +480,8 @@ def simulate_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
             "Development-only sensitivity analysis for the selected binary primary "
             "endpoint and three-condition comparison architecture. Results depend on "
             "illustrative success probabilities, heterogeneity, assignment, and "
-            "analysis assumptions. The primary timing clock and effect/precision "
-            "target remain unresolved; this does not freeze reviewer count, case "
+            "analysis assumptions. The primary timing clock is selected as wall/deadline; "
+            "the effect/precision target remains unresolved. This does not freeze reviewer count, case "
             "count, cases per reviewer, allocation, or stopping."
         ),
     }
@@ -509,7 +510,7 @@ def run_plan(config: dict[str, Any]) -> dict[str, Any]:
         "comparison_design": "three_condition_structured_control",
         "challenge_design": "integrated_challenge_strata",
         "primary_endpoint": "correct_completion_by_180s",
-        "primary_timing_clock": "unresolved",
+        "primary_timing_clock": "wall_deadline_with_hidden_sensitivity",
         "effect_precision_target": "unresolved",
         "final_sample_size_frozen": False,
         "challenge_allocation_status": "not_frozen_not_modeled_in_example_scenarios",
@@ -545,7 +546,7 @@ def run_self_test() -> int:
     assert first == second
     assert first["design"]["total_reviewer_case_observations"] == 72
     assert first["primary_endpoint"] == "correct_completion_by_180s"
-    assert first["primary_timing_clock"] == "unresolved"
+    assert first["primary_timing_clock"] == "wall_deadline_with_hidden_sensitivity"
     assert first["effect_precision_target"] == "unresolved"
     assert set(first["simulation"]["contrasts"]) == set(CONTRASTS)
 
