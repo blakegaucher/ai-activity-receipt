@@ -85,6 +85,8 @@ jobs:
 
       - name: Compile Python sources
         run: python -m compileall -q validate_receipts.py derive_receipt.py adapters mappings research benchmark competition/agenthon/container
+      - name: Test Agenthon container guards without Docker or network execution
+        run: python -m unittest discover -s competition/agenthon/container -p 'test_container_gate.py' -v
 
       - name: Run repository security smoke test
         run: python research/security_smoke_test.py

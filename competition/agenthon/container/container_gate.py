@@ -75,6 +75,23 @@ def command(argv, report, env, timeout=60):
         report['events'].append(event)
 
 
+def prepare_base_image(value, report, env):
+    # BuildKit resolving FROM does not attest that Docker can inspect that reference.
+    # Pull/inspect the canonical name@digest for the SAME frozen Linux/amd64 image.
+    require(base_ok(value), 'Base image reference differs from the exact reviewed pin')
+    name, pinned_digest = value.split('@', 1)
+    reference = name.rsplit(':', 1)[0] + '@' + pinned_digest
+    report['base_image_reference'] = reference
+    command(['docker', 'pull', '--platform', 'linux/amd64', reference], report, env, timeout=60)
+    images = json.loads(command(['docker', 'image', 'inspect', reference], report, env))
+    require(isinstance(images, list) and len(images) == 1 and isinstance(images[0], dict),
+            'Base image inspect did not return exactly one image object')
+    report['base_image'] = images
+    require_no_declared_volumes(images[0], 'base', report)
+    require(images[0].get('Architecture') == 'amd64' and images[0].get('Os') == 'linux',
+            'Base image platform mismatch')
+
+
 def cleanup_containers(names, report, env):
     # Cleanup cannot mask the primary failure or prevent its evidence from being written.
     for name in reversed(names):
@@ -150,17 +167,15 @@ def main():
         tree_hashes(track / 'baselines/baseline_agent')
         shutil.copytree(track / 'baselines/baseline_agent', context / 'baseline_agent', ignore=shutil.ignore_patterns('__pycache__'))
         shutil.copy2(track / 'baselines/baseline_agent.py', context / 'baseline_agent.py')
+        shutil.copy2(track / 'LICENSE', context / 'LICENSE')
         shutil.copy2(args.dockerfile, context / 'Dockerfile')
         report['build_context_hashes'] = tree_hashes(context)
         unit = track / 'units/t4-EXAMPLE-eps-beat'
         before = tree_hashes(unit)
         report['input_hashes'] = before
+        prepare_base_image(args.base, report, env)
         command(['docker', 'build', '--platform', 'linux/amd64', '--pull', '--build-arg',
                  'PYTHON_BASE=' + args.base, '--tag', 'agenthon-smoke:local', str(context)], report, env, timeout=600)
-        base_images = json.loads(command(['docker', 'image', 'inspect', args.base], report, env))
-        require(isinstance(base_images, list) and len(base_images) == 1, 'Base image inspect did not return exactly one image')
-        report['base_image'] = base_images
-        require_no_declared_volumes(base_images[0], 'base', report)
         info = json.loads(command(['docker', 'image', 'inspect', 'agenthon-smoke:local'], report, env))[0]
         require_no_declared_volumes(info, 'candidate', report)
         require(info['Architecture'] == 'amd64' and info['Os'] == 'linux', 'Built image platform mismatch')
@@ -209,6 +224,7 @@ def main():
             'evidence or attest current-source tokenizer/NLI parity.'
         )
         report['limits'] = {'cpus': 2, 'memory_gib': 4, 'smoke_timeout_seconds': 600,
+                            'base_pull_timeout_seconds': 60,
                             'build_timeout_seconds': 600, 'probe_timeout_seconds': 60,
                             'cleanup_timeout_per_container_seconds': 30,
                             'parity': 'lower-resource offline smoke; organizer 16 CPU/128 GiB/House/GPU/Final parity unverified'}

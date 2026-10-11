@@ -9,7 +9,7 @@ on:
         required: true
         type: string
       approved_commit:
-        description: Exact reviewed 40-hex commit of competition/agenthon-container-530-pin-draft
+        description: Exact reviewed 40-hex commit of competition/agenthon-container-530-base-load-draft
         required: true
         type: string
 
@@ -24,7 +24,7 @@ jobs:
   smoke:
     if: >-
       github.repository == 'blakegaucher/ai-activity-receipt' &&
-      github.ref == 'refs/heads/competition/agenthon-container-530-pin-draft' &&
+      github.ref == 'refs/heads/competition/agenthon-container-530-base-load-draft' &&
       github.sha == inputs.approved_commit &&
       inputs.confirmation == 'CONTAINER_ONLY' &&
       github.event.repository.private == false
