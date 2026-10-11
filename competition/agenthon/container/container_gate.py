@@ -18,7 +18,7 @@ import sys
 import time
 
 TRACK = '5d3b726a49b8ea218543e4d24319895874dcff6e'
-TOOLKIT = '50fb2dc2b39c70f4cf81fcd269943782eddfaed0'
+TOOLKIT = 'bd01548e34d21fd660d88fd06157078fb25ece4e'
 BASE = 'python:3.13.15-slim@sha256:37134a49d21d2120e4c4d73bb76f8a4ab9aef31f096f7ec2ead48c2feead4332'
 ANSWER = 'e305c47d7dfca92e73b3304d24f937b26f0bf861082649e06629c92eae91b3d2'
 SCHEMA = '8a997f21a929f09596db805430839b281548ad0babab29bd1f3daa8456d38049'
@@ -140,7 +140,7 @@ def main():
     evidence.mkdir(parents=True, exist_ok=False)
     report = {'status': 'FAILED', 'scope': '5.3.0 bounded participant-container interface only',
               'production_parity': 'NOT LOCALLY ATTESTABLE', 'events': [],
-              'source_pins': {'track': TRACK, 'toolkit_v2.5.1': TOOLKIT, 'base': BASE}}
+              'source_pins': {'track': TRACK, 'toolkit_v2.6.0': TOOLKIT, 'base': BASE}}
     env = dict(os.environ)
     env.update(DOCKER_CONFIG=str(evidence / 'empty-docker-config'), HF_HUB_OFFLINE='1',
                TRANSFORMERS_OFFLINE='1', PYTHONDONTWRITEBYTECODE='1')
@@ -159,7 +159,7 @@ def main():
                           'python_executable': sys.executable, 'cpu_count': os.cpu_count(),
                           'memory': Path('/proc/meminfo').read_text(),
                           'installed_versions': {d.metadata['Name']: d.version for d in importlib.metadata.distributions()}}
-        require(importlib.metadata.version('qfbench2-common') == '2.5.1', 'Toolkit version mismatch')
+        require(importlib.metadata.version('qfbench2-common') == '2.6.0', 'Toolkit version mismatch')
         schema = toolkit / 'common/qfbench2_common/schemas/analysis.schema.json'
         require(digest(schema) == SCHEMA, 'Current Analysis schema byte mismatch')
         context = evidence / 'context'

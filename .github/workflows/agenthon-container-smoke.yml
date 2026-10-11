@@ -9,7 +9,7 @@ on:
         required: true
         type: string
       approved_commit:
-        description: Exact reviewed 40-hex commit of competition/agenthon-container-530-base-load-draft
+        description: Exact reviewed 40-hex commit of competition/agenthon-container-530-toolkit260-draft
         required: true
         type: string
 
@@ -24,7 +24,7 @@ jobs:
   smoke:
     if: >-
       github.repository == 'blakegaucher/ai-activity-receipt' &&
-      github.ref == 'refs/heads/competition/agenthon-container-530-base-load-draft' &&
+      github.ref == 'refs/heads/competition/agenthon-container-530-toolkit260-draft' &&
       github.sha == inputs.approved_commit &&
       inputs.confirmation == 'CONTAINER_ONLY' &&
       github.event.repository.private == false
@@ -53,11 +53,11 @@ jobs:
           ref: 5d3b726a49b8ea218543e4d24319895874dcff6e
           persist-credentials: false
           path: track4
-      - name: Check out exact v2.5.1 toolkit tag commit
+      - name: Check out exact v2.6.0 toolkit tag commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: Agenthon-2026/Agenthon2026-public
-          ref: 50fb2dc2b39c70f4cf81fcd269943782eddfaed0
+          ref: bd01548e34d21fd660d88fd06157078fb25ece4e
           persist-credentials: false
           path: toolkit
       - name: Set up matched Python version for host checks
