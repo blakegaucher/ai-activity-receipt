@@ -17,7 +17,7 @@ import subprocess
 import sys
 import time
 
-TRACK = '458bc07efc05983de342ccb371e2b3cd793d621f'
+TRACK = '5d3b726a49b8ea218543e4d24319895874dcff6e'
 TOOLKIT = '50fb2dc2b39c70f4cf81fcd269943782eddfaed0'
 BASE = 'python:3.13.15-slim@sha256:37134a49d21d2120e4c4d73bb76f8a4ab9aef31f096f7ec2ead48c2feead4332'
 ANSWER = 'e305c47d7dfca92e73b3304d24f937b26f0bf861082649e06629c92eae91b3d2'
@@ -121,7 +121,7 @@ def main():
     track, toolkit = Path(args.track).resolve(), Path(args.toolkit).resolve()
     evidence = Path(args.evidence).resolve()
     evidence.mkdir(parents=True, exist_ok=False)
-    report = {'status': 'FAILED', 'scope': '5.2.2 bounded participant-container interface only',
+    report = {'status': 'FAILED', 'scope': '5.3.0 bounded participant-container interface only',
               'production_parity': 'NOT LOCALLY ATTESTABLE', 'events': [],
               'source_pins': {'track': TRACK, 'toolkit_v2.5.1': TOOLKIT, 'base': BASE}}
     env = dict(os.environ)
