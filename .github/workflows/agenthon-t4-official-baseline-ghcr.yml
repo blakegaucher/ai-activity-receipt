@@ -1,0 +1,82 @@
+name: Agenthon T4 organizer-MIT-baseline fallback image
+on:
+  push:
+    branches:
+      - competition/agenthon-t4-organizer-baseline-fallback-20261012
+    paths:
+      - .github/workflows/agenthon-t4-official-baseline-ghcr.yml
+      - competition/agenthon/fallback-baseline-v1/**
+permissions:
+  contents: read
+  packages: write
+jobs:
+  build-and-publish:
+    if: github.repository == 'blakegaucher/ai-activity-receipt'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PIN: eef782bf5a92f4cc9a1a1522d766adde9f8a09a5
+      IMAGE: ghcr.io/blakegaucher/agenthon-t4-organizer-baseline:v1
+      EXPECTED_EXEMPLAR_SHA256: e305c47d7dfca92e73b3304d24f937b26f0bf861082649e06629c92eae91b3d2
+    steps:
+      - name: Fetch exact official MIT baseline source only
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Agenthon-2026/track4-analysis-public
+          ref: eef782bf5a92f4cc9a1a1522d766adde9f8a09a5
+          persist-credentials: false
+          path: official
+      - name: Validate pinned source and reference baseline locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C official rev-parse HEAD)" = "$PIN"
+          test -s official/LICENSE
+          grep -q 'MIT License' official/LICENSE
+          python3 official/baselines/baseline_agent.py analyze \
+            --task official/units/t4-EXAMPLE-eps-beat/task.json \
+            --corpus official/units/t4-EXAMPLE-eps-beat/corpus \
+            --out "$RUNNER_TEMP/answer.json"
+          echo "$EXPECTED_EXEMPLAR_SHA256  $RUNNER_TEMP/answer.json" | sha256sum -c -
+          python3 -c "import json,sys; x=json.load(open(sys.argv[1])); assert len(x['entity_predictions'])==1; print('source CLI exemplar PASS')" "$RUNNER_TEMP/answer.json"
+      - name: Preserve official MIT notice inside image
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp official/LICENSE official/baselines/LICENSE
+          printf '\nCOPY LICENSE /app/LICENSE\n' >> official/baselines/Dockerfile
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GitHub Container Registry using GITHUB_TOKEN only
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push official baseline image (not protected AIAR v20)
+        id: image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./official/baselines
+          file: ./official/baselines/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.IMAGE }}
+          provenance: true
+          labels: |
+            org.opencontainers.image.source=https://github.com/Agenthon-2026/track4-analysis-public
+            org.opencontainers.image.revision=eef782bf5a92f4cc9a1a1522d766adde9f8a09a5
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.description=Organizer Track4 reference baseline only, not AIAR protected v20
+      - name: Report immutable digest
+        env:
+          PUBLISHED_DIGEST: ${{ steps.image.outputs.digest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PUBLISHED_DIGEST"
+          echo "## Track 4 fallback image" >> "$GITHUB_STEP_SUMMARY"
+          echo "Tag: $IMAGE" >> "$GITHUB_STEP_SUMMARY"
+          echo "Digest: $PUBLISHED_DIGEST" >> "$GITHUB_STEP_SUMMARY"
+          echo "Use ghcr.io/blakegaucher/agenthon-t4-organizer-baseline@$PUBLISHED_DIGEST only after anonymous public access is verified." >> "$GITHUB_STEP_SUMMARY"
+          echo "No Team Key proof and no CodaBench upload were performed." >> "$GITHUB_STEP_SUMMARY"
