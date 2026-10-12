@@ -1,0 +1,98 @@
+name: Agenthon T4 published-digest runtime diagnostic
+on:
+  push:
+    branches:
+      - competition/agenthon-t4-runtime-diagnostic-20261012
+    paths:
+      - .github/workflows/agenthon-t4-published-runtime-diagnostic.yml
+permissions:
+  contents: read
+jobs:
+  run-existing-image:
+    if: github.repository == 'blakegaucher/ai-activity-receipt'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      IMAGE: ghcr.io/blakegaucher/agenthon-t4-organizer-baseline@sha256:00eb1d89b320ca5d1afa19ab85d71e92d4d6eba39e77d6f2e4b080b3a6e88687
+      PIN: eef782bf5a92f4cc9a1a1522d766adde9f8a09a5
+      EXPECTED_EXEMPLAR_SHA256: e305c47d7dfca92e73b3304d24f937b26f0bf861082649e06629c92eae91b3d2
+    steps:
+      - name: Fetch exact public organizer inputs and schema
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Agenthon-2026/track4-analysis-public
+          ref: eef782bf5a92f4cc9a1a1522d766adde9f8a09a5
+          persist-credentials: false
+          path: official
+      - name: Pull the submitted digest without registry credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C official rev-parse HEAD)" = "$PIN"
+          export DOCKER_CONFIG="$RUNNER_TEMP/anonymous-docker"
+          mkdir -p "$DOCKER_CONFIG"
+          printf '{"auths":{}}\n' > "$DOCKER_CONFIG/config.json"
+          timeout 180s docker pull --platform linux/amd64 "$IMAGE"
+          docker image inspect "$IMAGE" --format '{{json .}}' > "$RUNNER_TEMP/image-inspect.json"
+          python3 - "$RUNNER_TEMP/image-inspect.json" <<'PY'
+          import json, sys
+          x=json.load(open(sys.argv[1]))
+          assert (x["Os"],x["Architecture"]) == ("linux","amd64")
+          assert x["Config"]["Labels"]["qfbench2.interface_version"] == "2.0"
+          assert not x["Config"].get("Volumes")
+          print(json.dumps({k:x.get(k) for k in ("Id","RepoDigests","Os","Architecture")}))
+          print(json.dumps({"Entrypoint":x["Config"]["Entrypoint"],"Cmd":x["Config"]["Cmd"],"Volumes":x["Config"].get("Volumes")}))
+          PY
+      - name: Test default entrypoint and every public task with networking disabled
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 30s docker run --rm --platform linux/amd64 --network none "$IMAGE"
+          count=0
+          for unit in official/units/*; do
+            test -f "$unit/task.json" || continue
+            task_name="$(basename "$unit")"
+            output="$RUNNER_TEMP/runtime-output/$task_name"
+            mkdir -p "$output"
+            chmod 777 "$output"
+            echo "CONTAINER_START task=$task_name"
+            started="$(date +%s%N)"
+            timeout 60s docker run --rm --platform linux/amd64 --network none --cpus 2 --memory 1g \
+              --mount "type=bind,src=$GITHUB_WORKSPACE/$unit,dst=/input,readonly" \
+              --mount "type=bind,src=$output,dst=/output" \
+              "$IMAGE" analyze --task /input/task.json --corpus /input/corpus/ --out /output/answer.json
+            elapsed_ms=$(( ($(date +%s%N) - started) / 1000000 ))
+            test -s "$output/answer.json"
+            echo "CONTAINER_EXIT task=$task_name code=0 elapsed_ms=$elapsed_ms"
+            count=$((count+1))
+          done
+          test "$count" -eq 11
+          echo "$EXPECTED_EXEMPLAR_SHA256  $RUNNER_TEMP/runtime-output/t4-EXAMPLE-eps-beat/answer.json" | sha256sum -c -
+      - name: Validate real container outputs against the official schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check 'jsonschema==4.23.0'
+          python3 - "$RUNNER_TEMP/runtime-output" <<'PY'
+          import hashlib, json, pathlib, sys
+          import jsonschema
+          root=pathlib.Path("official")
+          schema=json.loads((root/"analysis.schema.json").read_text())
+          validator=jsonschema.Draft202012Validator(schema)
+          results=[]
+          for unit in sorted((root/"units").iterdir()):
+              if not (unit/"task.json").is_file(): continue
+              task=json.loads((unit/"task.json").read_text())
+              p=pathlib.Path(sys.argv[1])/unit.name/"answer.json"
+              ans=json.loads(p.read_text())
+              validator.validate(ans)
+              assert ans["task_id"] == task["task_id"]
+              assert ans.get("target_type") == task["target"]["type"]
+              actual=[x["entity_id"] for x in ans["entity_predictions"]]
+              expected=[x["entity_id"] for x in task["entities"]]
+              assert actual == expected, (actual,expected)
+              results.append({"task":unit.name,"schema":"PASS","roster":"PASS","sha256":hashlib.sha256(p.read_bytes()).hexdigest()})
+          assert len(results)==11
+          print("RUNTIME_DIAGNOSTIC_RESULTS="+json.dumps(results,separators=(",",":")))
+          print("ALL_PUBLIC_CONTAINER_STARTUP_TESTS_PASS")
+          PY
