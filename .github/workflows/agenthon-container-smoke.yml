@@ -9,7 +9,7 @@ on:
         required: true
         type: string
       approved_commit:
-        description: Exact reviewed 40-hex commit of competition/agenthon-container-530-toolkit260-draft
+        description: Exact reviewed 40-hex commit of competition/agenthon-container-530-security-v20-sourceonly
         required: true
         type: string
 
@@ -24,14 +24,14 @@ jobs:
   smoke:
     if: >-
       github.repository == 'blakegaucher/ai-activity-receipt' &&
-      github.ref == 'refs/heads/competition/agenthon-container-530-toolkit260-draft' &&
+      github.ref == 'refs/heads/competition/agenthon-container-530-security-v20-sourceonly' &&
       github.sha == inputs.approved_commit &&
       inputs.confirmation == 'CONTAINER_ONLY' &&
       github.event.repository.private == false
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
-      PYTHON_BASE: python:3.13.15-slim@sha256:37134a49d21d2120e4c4d73bb76f8a4ab9aef31f096f7ec2ead48c2feead4332
+      PYTHON_BASE: python:3.13.16-slim@sha256:8fb4cfa1a2616d7b8e0c2175cc6ad68f5729c34ea8488c0b360d2934b7be9024
       PYTHONDONTWRITEBYTECODE: '1'
       PIP_DISABLE_PIP_VERSION_CHECK: '1'
       PIP_NO_INPUT: '1'
@@ -63,7 +63,7 @@ jobs:
       - name: Set up matched Python version for host checks
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: '3.13.15'
+          python-version: '3.13.16'
       - name: Install bounded host validation dependencies
         run: |
           python -m pip install jsonschema==4.26.0 numpy==2.5.3 scipy==1.18.1
