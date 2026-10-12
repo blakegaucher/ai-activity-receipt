@@ -13,7 +13,7 @@ from unittest import mock
 import container_gate as gate
 
 
-PINNED_REFERENCE = 'python@sha256:37134a49d21d2120e4c4d73bb76f8a4ab9aef31f096f7ec2ead48c2feead4332'
+PINNED_REFERENCE = 'python@sha256:8fb4cfa1a2616d7b8e0c2175cc6ad68f5729c34ea8488c0b360d2934b7be9024'
 PULL = ['docker', 'pull', '--platform', 'linux/amd64', PINNED_REFERENCE]
 INSPECT = ['docker', 'image', 'inspect', PINNED_REFERENCE]
 REPO = Path(__file__).resolve().parents[3]
@@ -66,8 +66,8 @@ class ContainerGateTests(unittest.TestCase):
                                                env=self.env, timeout=60))
 
     def test_unreviewed_or_moving_base_rejected_before_subprocess(self):
-        for value in ['python:3.13.15-slim', 'python:latest', PINNED_REFERENCE,
-                      gate.BASE.replace('37134a49', '47134a49')]:
+        for value in ['python:3.13.16-slim', 'python:latest', PINNED_REFERENCE,
+                      gate.BASE.replace('8fb4cfa1', '9fb4cfa1')]:
             with self.subTest(value=value), self.assertRaises(RuntimeError):
                 gate.prepare_base_image(value, self.report, self.env)
         self.run.assert_not_called()
@@ -164,10 +164,10 @@ class ContainerGateTests(unittest.TestCase):
         self.assertIn('QFBENCH_SEED=0', run)
         self.run.assert_not_called()
 
-    def test_frozen_pins_and_hash_controls_unchanged(self):
+    def test_v20_proposed_base_and_other_hash_controls_unchanged(self):
         self.assertEqual(gate.TRACK, '5d3b726a49b8ea218543e4d24319895874dcff6e')
         self.assertEqual(gate.TOOLKIT, 'bd01548e34d21fd660d88fd06157078fb25ece4e')
-        self.assertEqual(gate.BASE, 'python:3.13.15-slim@sha256:37134a49d21d2120e4c4d73bb76f8a4ab9aef31f096f7ec2ead48c2feead4332')
+        self.assertEqual(gate.BASE, 'python:3.13.16-slim@sha256:8fb4cfa1a2616d7b8e0c2175cc6ad68f5729c34ea8488c0b360d2934b7be9024')
         self.assertEqual(gate.ANSWER, 'e305c47d7dfca92e73b3304d24f937b26f0bf861082649e06629c92eae91b3d2')
         self.assertEqual(gate.SCHEMA, '8a997f21a929f09596db805430839b281548ad0babab29bd1f3daa8456d38049')
 
@@ -203,7 +203,7 @@ class ContainerGateTests(unittest.TestCase):
         self.assertNotIn('pull_request:', tree)
         self.assertNotIn('schedule:', tree)
         for guard in ["github.repository == 'blakegaucher/ai-activity-receipt'",
-                      "github.ref == 'refs/heads/competition/agenthon-container-530-toolkit260-draft'",
+                      "github.ref == 'refs/heads/competition/agenthon-container-530-security-v20-sourceonly'",
                       'github.sha == inputs.approved_commit',
                       "inputs.confirmation == 'CONTAINER_ONLY'", 'github.event.repository.private == false']:
             self.assertIn(guard, workflow)

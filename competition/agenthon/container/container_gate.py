@@ -19,7 +19,7 @@ import time
 
 TRACK = '5d3b726a49b8ea218543e4d24319895874dcff6e'
 TOOLKIT = 'bd01548e34d21fd660d88fd06157078fb25ece4e'
-BASE = 'python:3.13.15-slim@sha256:37134a49d21d2120e4c4d73bb76f8a4ab9aef31f096f7ec2ead48c2feead4332'
+BASE = 'python:3.13.16-slim@sha256:8fb4cfa1a2616d7b8e0c2175cc6ad68f5729c34ea8488c0b360d2934b7be9024'
 ANSWER = 'e305c47d7dfca92e73b3304d24f937b26f0bf861082649e06629c92eae91b3d2'
 SCHEMA = '8a997f21a929f09596db805430839b281548ad0babab29bd1f3daa8456d38049'
 
@@ -148,7 +148,7 @@ def main():
     names = []
     primary_failure = None
     try:
-        require(platform.python_version() == '3.13.15', 'Host checker Python mismatch')
+        require(platform.python_version() == '3.13.16', 'Host checker Python mismatch')
         for root, expected in [(track, TRACK), (toolkit, TOOLKIT)]:
             require(command(['git', '-C', str(root), 'rev-parse', 'HEAD'], report, env).strip() == expected, 'Source commit mismatch')
             require(not command(['git', '-C', str(root), 'status', '--porcelain'], report, env).strip(), 'Source checkout is dirty')
@@ -184,7 +184,7 @@ def main():
         probe_name = 'agenthon-python-probe'
         names.append(probe_name)  # Also cleaned if the client times out during creation/run.
         report['container_python'] = command(sandbox_args(probe_name) + ['--entrypoint', 'python', info['Id'], '--version'], report, env, timeout=60).strip()
-        require(report['container_python'] == 'Python 3.13.15', 'Runtime interpreter mismatch')
+        require(report['container_python'] == 'Python 3.13.16', 'Runtime interpreter mismatch')
         report['python_probe_inspect'] = json.loads(command(['docker', 'inspect', probe_name], report, env))
         report['identity_boundary'] = 'Local image ID/config digest only; no participant registry manifest was created or pushed'
         output = evidence / 'output'
