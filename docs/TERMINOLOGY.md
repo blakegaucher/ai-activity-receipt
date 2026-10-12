@@ -8,6 +8,32 @@ The goal is to keep the public README, JSON Schema, invariant specification, fix
 
 ---
 
+## AI/SI terminology compatibility note — 2026-09-29
+
+The canonical project name remains **AI Activity Receipt (AIAR)**.
+
+For forward-compatible prose, this repository may use **AI/SI** to bridge two vocabularies:
+
+- **AI** — *Artificial Intelligence*, the established term used across current standards, legislation, technical specifications, research literature, APIs, and the existing AI Activity Receipt artifacts;
+- **SI** — *Super Intelligence*, a term now used in current U.S. executive-branch public materials for technologies that those materials previously described as AI.
+
+This is a **terminology compatibility rule**, not a capability claim.
+
+Accordingly:
+
+1. Existing schema names, field names, JSON identifiers, payload types, hashes, frozen artifacts, protocol versions, citations, and historical records are **not renamed retroactively**.
+2. Names of external standards and legal instruments are preserved exactly as their publishers name them (for example, NIST AI RMF and ISO/IEC 42001 Artificial Intelligence Management System).
+3. When reproducing or citing a source, use the source's own terminology. If useful, a first-use gloss may identify the bridge term, for example: **Super Intelligence (SI; source terminology for AI in this context)**.
+4. **AI/SI** is appropriate in new explanatory prose where both established AI vocabulary and newer SI vocabulary are relevant.
+5. Use of **SI** in this repository does **not** assert that any particular system exceeds human intelligence broadly, meets an AGI/ASI threshold, or satisfies any other technical definition of superintelligence.
+6. No AR-P003 methodology choice, schema invariant, validation result, or evidence claim changes solely because of this terminology bridge.
+
+### Source-status note
+
+As of this snapshot, White House public materials use **Super Intelligence (SI)**, including the September 22, 2026 United Nations release, the September 25 U.S.-China state-visit fact sheet, and the September 29 America.gov fact sheet. Contemporaneous reporting also describes a September 29 executive-branch terminology directive. Because standards bodies and other jurisdictions continue to use **AI**, the project retains **AI Activity Receipt** as its stable canonical identity and treats **AI/SI** as an interoperability label rather than a rename.
+
+See [AI/SI Frontier Controls Evidence Crosswalk — 2026-09-29](AI-SI-FRONTIER-CONTROLS-CROSSWALK-2026-09-29.md).
+
 ## Core concepts
 
 ### Evidence substrate
