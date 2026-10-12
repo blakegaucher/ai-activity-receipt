@@ -166,7 +166,7 @@ class ContainerGateTests(unittest.TestCase):
 
     def test_frozen_pins_and_hash_controls_unchanged(self):
         self.assertEqual(gate.TRACK, '5d3b726a49b8ea218543e4d24319895874dcff6e')
-        self.assertEqual(gate.TOOLKIT, '50fb2dc2b39c70f4cf81fcd269943782eddfaed0')
+        self.assertEqual(gate.TOOLKIT, 'bd01548e34d21fd660d88fd06157078fb25ece4e')
         self.assertEqual(gate.BASE, 'python:3.13.15-slim@sha256:37134a49d21d2120e4c4d73bb76f8a4ab9aef31f096f7ec2ead48c2feead4332')
         self.assertEqual(gate.ANSWER, 'e305c47d7dfca92e73b3304d24f937b26f0bf861082649e06629c92eae91b3d2')
         self.assertEqual(gate.SCHEMA, '8a997f21a929f09596db805430839b281548ad0babab29bd1f3daa8456d38049')
@@ -203,7 +203,7 @@ class ContainerGateTests(unittest.TestCase):
         self.assertNotIn('pull_request:', tree)
         self.assertNotIn('schedule:', tree)
         for guard in ["github.repository == 'blakegaucher/ai-activity-receipt'",
-                      "github.ref == 'refs/heads/competition/agenthon-container-530-base-load-draft'",
+                      "github.ref == 'refs/heads/competition/agenthon-container-530-toolkit260-draft'",
                       'github.sha == inputs.approved_commit',
                       "inputs.confirmation == 'CONTAINER_ONLY'", 'github.event.repository.private == false']:
             self.assertIn(guard, workflow)
