@@ -24,6 +24,13 @@ jobs:
           ref: eef782bf5a92f4cc9a1a1522d766adde9f8a09a5
           persist-credentials: false
           path: official
+      - name: Fetch the pinned official shared answer schema
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Agenthon-2026/Agenthon2026-public
+          ref: bd01548e34d21fd660d88fd06157078fb25ece4e
+          persist-credentials: false
+          path: toolkit
       - name: Pull the submitted digest without registry credentials
         shell: bash
         run: |
@@ -77,7 +84,9 @@ jobs:
           import hashlib, json, pathlib, sys
           import jsonschema
           root=pathlib.Path("official")
-          schema=json.loads((root/"analysis.schema.json").read_text())
+          schema_path=pathlib.Path("toolkit/common/qfbench2_common/schemas/analysis.schema.json")
+          assert hashlib.sha256(schema_path.read_bytes()).hexdigest() == "8a997f21a929f09596db805430839b281548ad0babab29bd1f3daa8456d38049"
+          schema=json.loads(schema_path.read_text())
           validator=jsonschema.Draft202012Validator(schema)
           results=[]
           for unit in sorted((root/"units").iterdir()):
