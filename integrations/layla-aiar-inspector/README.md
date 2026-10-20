@@ -29,3 +29,30 @@ From repository root:
 
 ## Out of scope / future owner decisions
 Optional host SDK connection to a chosen character, approved email drafting, Hugging Face or MCP access, scheduling, paid services, public publishing, and Run 1 verification remain disabled until separately approved.
+
+
+## iPhone import: avoid the GitHub ZIP wrapper
+
+**Known failure (2026-10-20):** Layla displayed *“The zip file is missing the required app.json file in its root.”* The GitHub Actions artifact download contained an **outer** ZIP with one file inside it: \`layla-aiar-inspector-v0.1.zip\`. The inner ZIP, not the outer artifact download, is the Layla import package.
+
+1. Open the workflow run's **Artifacts** and download \`layla-aiar-inspector-v0.1-candidate\`.
+2. In **iPhone Files**, tap the downloaded outer ZIP to extract it once.
+3. Locate the nested \`layla-aiar-inspector-v0.1.zip\` and **do not unzip this inner file**.
+4. In Layla use **Browse Apps → Import → Zip File → Choose a .zip file**, select that inner ZIP, then Import.
+5. On success, open the mini-app and perform a synthetic-only smoke test. Do not use frozen Run 1 records for exploratory tests.
+
+The source archive was checked on 2026-10-20 with these root entries only:
+
+\`\`\`text
+app.json
+index.html
+core.js
+\`\`\`
+
+Example diagnostic command (run against the selected ZIP, not GitHub's outer wrapper):
+
+\`\`\`bash
+python3 -c 'import sys,zipfile; z=zipfile.ZipFile(sys.argv[1]); print(z.namelist()); assert "app.json" in z.namelist()' layla-aiar-inspector-v0.1.zip
+\`\`\`
+
+**What this does not establish:** An archive with correct structure can still fail because of a Layla host/WebView compatibility issue. GitHub Actions passing is not an iPhone import test. Keep the PR separate from deployment/publishing decisions.
