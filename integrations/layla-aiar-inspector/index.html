@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>AIAR • Taylor Moon</title>
+<style>
+:root{color-scheme:dark;font:16px/1.45 system-ui,sans-serif;color:#f2f5fc;background:#101827}
+*{box-sizing:border-box}body{max-width:760px;margin:auto;padding:18px}
+h1{margin:.1em 0;font-size:1.7rem}h2{font-size:1.15rem;margin:0 0 .5rem}
+header{margin-bottom:20px}.eyebrow{color:#aac4ff;text-transform:uppercase;letter-spacing:.1em;font-size:.8rem}
+p,.note{color:#bdc9dd}section{background:#1d293c;border:1px solid #45536a;border-radius:16px;margin-bottom:16px;padding:18px}
+label{display:block;margin:12px 0 5px}textarea,input{display:block;width:100%;border:1px solid #5c7092;border-radius:8px;background:#101827;color:#fff;font:inherit;padding:10px}
+textarea{min-height:150px;font:12px/1.5 monospace;resize:vertical}button{border:0;border-radius:9px;background:#99adff;color:#0d1531;font-weight:bold;padding:11px 16px;margin:12px 0;cursor:pointer}
+pre{background:#111a2a;border-radius:9px;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.alert{border-left:4px solid #efcc78;background:#342b22;color:#fff2d0;padding:12px;margin-bottom:20px}
+</style></head><body>
+<header><div class="eyebrow">Taylor Moon · AI Activity Receipt</div><h1>Receipt Inspector</h1><p>Private, local, read-only receipt review and SHA-256 commitment comparison.</p></header>
+<div class="alert">Advisory prototype only. Do not expose the sealed Run 1 designer reference to a navigator or treat a matching hash as proof of authorship or time.</div>
+<section><h2>Inspect AIAR Receipt JSON</h2><p>Paste JSON or select a local file. Nothing is uploaded or automatically saved.</p>
+<label for="receipt">Receipt JSON</label><textarea id="receipt" spellcheck="false"></textarea>
+<label for="receipt-file">Load JSON file (max 2 MiB)</label><input id="receipt-file" type="file" accept=".json,application/json">
+<button id="inspect" type="button">Inspect</button><pre id="review-result" aria-live="polite">Waiting for receipt.</pre></section>
+<section><h2>Check SHA-256 commitment</h2><p>Digest comparison tests exact bytes only. Use a preexisting, independently preserved commitment.</p>
+<label for="expected">Expected SHA-256 digest</label><input id="expected" spellcheck="false" autocapitalize="off" maxlength="71" placeholder="sha256:64 hexadecimal characters">
+<label for="artifact">Select artifact (max 20 MiB)</label><input id="artifact" type="file">
+<button id="compare" type="button">Compare digest</button><pre id="hash-result" aria-live="polite">Waiting for artifact.</pre></section>
+<p class="note">Offline-only. No email, MCP calls, telemetry, payments, agent actions, storage, or background task. For a full result use the repository's Python validator.</p>
+<script src="core.js"></script><script>
+(function(){
+"use strict";
+const el=id=>document.getElementById(id);
+const show=(id,msg)=>{el(id).textContent=msg;};
+el("receipt-file").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ if(file.size>2097152)return show("review-result","Too large: maximum 2 MiB.");
+ try{el("receipt").value=await file.text();show("review-result","Loaded locally. Select Inspect.");}
+ catch{show("review-result","Unable to read JSON file.");}
+});
+el("inspect").addEventListener("click",()=>{
+ if(el("receipt").value.length>2097152)return show("review-result","Too large: maximum 2 MiB.");
+ try{const r=window.AIARCore.inspectReceipt(JSON.parse(el("receipt").value));
+ show("review-result",(r.issues.length?"ISSUES FOUND":"NO ISSUES IN LIMITED CHECKS")+
+ "\nNOT INDEPENDENTLY VERIFIED\n"+JSON.stringify(r,null,2));}
+ catch(e){show("review-result","Invalid receipt JSON: "+e.message);}
+});
+el("compare").addEventListener("click",async()=>{
+ const expected=window.AIARCore.normalizeDigest(el("expected").value),file=el("artifact").files[0];
+ if(!expected)return show("hash-result","Invalid expected SHA-256 digest.");
+ if(!file)return show("hash-result","Select a file to hash.");
+ if(file.size>20971520)return show("hash-result","Too large: maximum 20 MiB.");
+ if(!window.crypto?.subtle)return show("hash-result","Web Crypto is unavailable in this WebView. No verification performed.");
+ show("hash-result","Computing local SHA-256...");
+ try{const digest=await crypto.subtle.digest("SHA-256",await file.arrayBuffer());
+ const actual=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,"0")).join("");
+ show("hash-result",(expected===actual?"BYTE MATCH":"BYTE MISMATCH")+
+ "\nExpected: "+expected+"\nActual:   "+actual+"\nAuthorship, timestamp and independence NOT verified.");}
+ catch{show("hash-result","Hashing failed; no verification performed.");}
+});
+})();
+</script></body></html>
