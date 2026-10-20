@@ -146,6 +146,11 @@ jobs:
       - name: Run candidate-record-v0.2 multi-hop self-test
         run: python research/multi_hop_v02.py
 
+      - name: Run research decision/effect agreement regressions
+        run: |
+          python research/decision_effect_agreement.py
+          python -m unittest discover -s research -p 'test_decision_effect_agreement.py' -v
+
       - name: Run continuity guard
         run: python research/validate_continuity_state.py
 
