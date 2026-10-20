@@ -1,0 +1,53 @@
+name: Layla AIAR Inspector Prototype
+
+on:
+  pull_request:
+    paths:
+      - "integrations/layla-aiar-inspector/**"
+      - ".github/workflows/layla-aiar-inspector.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  offline-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install Node runtime
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+      - name: Run dependency-free unit tests
+        run: node --test integrations/layla-aiar-inspector/tests/inspector.test.cjs
+      - name: Package offline mini-app and validate ZIP root
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, zipfile
+          root = pathlib.Path("integrations/layla-aiar-inspector")
+          names = ("app.json", "index.html", "core.js")
+          app = json.loads((root / "app.json").read_text(encoding="utf8"))
+          assert app.get("title"), "title required"
+          index = (root / "index.html").read_text(encoding="utf8")
+          assert '<script src="core.js"></script>' in index, "local core missing"
+          assert not (root / "task.js").exists(), "no background execution"
+          out = pathlib.Path("layla-aiar-inspector-v0.1.zip")
+          with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as archive:
+              for name in names:
+                  archive.write(root / name, arcname=name)
+          with zipfile.ZipFile(out) as archive:
+              assert sorted(archive.namelist()) == sorted(names)
+              assert all(not n.startswith("/") and "/" not in n for n in archive.namelist())
+          print("Layla import ZIP root verified")
+          PY
+      - name: Save candidate import ZIP for manual device test
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: layla-aiar-inspector-v0.1-candidate
+          path: layla-aiar-inspector-v0.1.zip
+          if-no-files-found: error
+          retention-days: 14
