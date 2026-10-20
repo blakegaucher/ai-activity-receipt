@@ -1,6 +1,6 @@
 # Standards Watch — 2026-10-06
 
-Status: research-only comparison for issue #108. No standards-conformance or production-readiness claim.
+Status: original research hypothesis for issue #108. No standards-conformance or production-readiness claim. The [October 20 review](standards-review-2026-10-20.md) supersedes the tentative coverage labels and pins the compared sources.
 
 ## Decision matrix
 
