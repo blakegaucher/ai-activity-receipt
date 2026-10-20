@@ -14,6 +14,10 @@ def derive_agreement(decision: str, effect: str, *, attributable: bool, independ
         raise ValueError("invalid decision")
     if effect not in VALID_EFFECTS:
         raise ValueError("invalid effect")
+    if type(attributable) is not bool:
+        raise ValueError("attributable must be a boolean")
+    if type(independent_observer) is not bool:
+        raise ValueError("independent_observer must be a boolean")
 
     # Self/in-process observation cannot establish the independent effect side.
     if not independent_observer or decision == "unknown" or effect == "unknown":
