@@ -34,6 +34,11 @@ As of this snapshot, White House public materials use **Super Intelligence (SI)*
 
 See [AI/SI Frontier Controls Evidence Crosswalk — 2026-09-29](AI-SI-FRONTIER-CONTROLS-CROSSWALK-2026-09-29.md).
 
+The [2026-10-21 source audit](AI-SI-SOURCE-AUDIT-2026-10-21.md) now identifies
+the exact official September 29 executive order and archived Accord text.
+It supersedes the earlier reliance on contemporaneous reporting for that
+directive while preserving the dated historical snapshot.
+
 ## Core concepts
 
 ### Evidence substrate
