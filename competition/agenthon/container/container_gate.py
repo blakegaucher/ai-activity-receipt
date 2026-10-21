@@ -17,9 +17,9 @@ import subprocess
 import sys
 import time
 
-TRACK = 'ede7381d8c1ba9d8c84068f9d142f5e093a33892'
-TOOLKIT = '50fb2dc2b39c70f4cf81fcd269943782eddfaed0'
-BASE = 'python:3.13.15-slim@sha256:37134a49d21d2120e4c4d73bb76f8a4ab9aef31f096f7ec2ead48c2feead4332'
+TRACK = '5d3b726a49b8ea218543e4d24319895874dcff6e'
+TOOLKIT = 'bd01548e34d21fd660d88fd06157078fb25ece4e'
+BASE = 'python:3.13.16-slim@sha256:8fb4cfa1a2616d7b8e0c2175cc6ad68f5729c34ea8488c0b360d2934b7be9024'
 ANSWER = 'e305c47d7dfca92e73b3304d24f937b26f0bf861082649e06629c92eae91b3d2'
 SCHEMA = '8a997f21a929f09596db805430839b281548ad0babab29bd1f3daa8456d38049'
 
@@ -36,6 +36,20 @@ def require(condition, message):
 
 def base_ok(value):
     return value == BASE
+
+
+def require_no_declared_volumes(image_info, role, report):
+    # Final policy also forbids VOLUME inherited from the base image.
+    config = image_info.get('Config')
+    require(isinstance(config, dict), f'{role} Docker inspect Config missing or malformed')
+    declared = config.get('Volumes')
+    status = 'PASS' if declared is None or declared == {} else 'FAIL'
+    report.setdefault('image_volume_policy', {})[role] = {
+        'image_id': image_info.get('Id'),
+        'config_volumes': declared,
+        'status': status,
+    }
+    require(status == 'PASS', f'{role} image declares an inherited or explicit Docker VOLUME')
 
 
 def _text(value):
@@ -59,6 +73,23 @@ def command(argv, report, env, timeout=60):
     finally:
         event['seconds'] = time.monotonic() - start
         report['events'].append(event)
+
+
+def prepare_base_image(value, report, env):
+    # BuildKit resolving FROM does not attest that Docker can inspect that reference.
+    # Pull/inspect the canonical name@digest for the SAME frozen Linux/amd64 image.
+    require(base_ok(value), 'Base image reference differs from the exact reviewed pin')
+    name, pinned_digest = value.split('@', 1)
+    reference = name.rsplit(':', 1)[0] + '@' + pinned_digest
+    report['base_image_reference'] = reference
+    command(['docker', 'pull', '--platform', 'linux/amd64', reference], report, env, timeout=60)
+    images = json.loads(command(['docker', 'image', 'inspect', reference], report, env))
+    require(isinstance(images, list) and len(images) == 1 and isinstance(images[0], dict),
+            'Base image inspect did not return exactly one image object')
+    report['base_image'] = images
+    require_no_declared_volumes(images[0], 'base', report)
+    require(images[0].get('Architecture') == 'amd64' and images[0].get('Os') == 'linux',
+            'Base image platform mismatch')
 
 
 def cleanup_containers(names, report, env):
@@ -107,9 +138,9 @@ def main():
     track, toolkit = Path(args.track).resolve(), Path(args.toolkit).resolve()
     evidence = Path(args.evidence).resolve()
     evidence.mkdir(parents=True, exist_ok=False)
-    report = {'status': 'FAILED', 'scope': '5.2.2 bounded participant-container interface only',
+    report = {'status': 'FAILED', 'scope': '5.3.0 bounded participant-container interface only',
               'production_parity': 'NOT LOCALLY ATTESTABLE', 'events': [],
-              'source_pins': {'track': TRACK, 'toolkit_v2.5.1': TOOLKIT, 'base': BASE}}
+              'source_pins': {'track': TRACK, 'toolkit_v2.6.0': TOOLKIT, 'base': BASE}}
     env = dict(os.environ)
     env.update(DOCKER_CONFIG=str(evidence / 'empty-docker-config'), HF_HUB_OFFLINE='1',
                TRANSFORMERS_OFFLINE='1', PYTHONDONTWRITEBYTECODE='1')
@@ -117,7 +148,7 @@ def main():
     names = []
     primary_failure = None
     try:
-        require(platform.python_version() == '3.13.15', 'Host checker Python mismatch')
+        require(platform.python_version() == '3.13.16', 'Host checker Python mismatch')
         for root, expected in [(track, TRACK), (toolkit, TOOLKIT)]:
             require(command(['git', '-C', str(root), 'rev-parse', 'HEAD'], report, env).strip() == expected, 'Source commit mismatch')
             require(not command(['git', '-C', str(root), 'status', '--porcelain'], report, env).strip(), 'Source checkout is dirty')
@@ -128,7 +159,7 @@ def main():
                           'python_executable': sys.executable, 'cpu_count': os.cpu_count(),
                           'memory': Path('/proc/meminfo').read_text(),
                           'installed_versions': {d.metadata['Name']: d.version for d in importlib.metadata.distributions()}}
-        require(importlib.metadata.version('qfbench2-common') == '2.5.1', 'Toolkit version mismatch')
+        require(importlib.metadata.version('qfbench2-common') == '2.6.0', 'Toolkit version mismatch')
         schema = toolkit / 'common/qfbench2_common/schemas/analysis.schema.json'
         require(digest(schema) == SCHEMA, 'Current Analysis schema byte mismatch')
         context = evidence / 'context'
@@ -136,23 +167,25 @@ def main():
         tree_hashes(track / 'baselines/baseline_agent')
         shutil.copytree(track / 'baselines/baseline_agent', context / 'baseline_agent', ignore=shutil.ignore_patterns('__pycache__'))
         shutil.copy2(track / 'baselines/baseline_agent.py', context / 'baseline_agent.py')
+        shutil.copy2(track / 'LICENSE', context / 'LICENSE')
         shutil.copy2(args.dockerfile, context / 'Dockerfile')
         report['build_context_hashes'] = tree_hashes(context)
         unit = track / 'units/t4-EXAMPLE-eps-beat'
         before = tree_hashes(unit)
         report['input_hashes'] = before
+        prepare_base_image(args.base, report, env)
         command(['docker', 'build', '--platform', 'linux/amd64', '--pull', '--build-arg',
                  'PYTHON_BASE=' + args.base, '--tag', 'agenthon-smoke:local', str(context)], report, env, timeout=600)
         info = json.loads(command(['docker', 'image', 'inspect', 'agenthon-smoke:local'], report, env))[0]
+        require_no_declared_volumes(info, 'candidate', report)
         require(info['Architecture'] == 'amd64' and info['Os'] == 'linux', 'Built image platform mismatch')
         require(info['Config']['Labels']['qfbench2.interface_version'] == '2.0', 'Interface label mismatch')
         report['image'] = info
         probe_name = 'agenthon-python-probe'
         names.append(probe_name)  # Also cleaned if the client times out during creation/run.
         report['container_python'] = command(sandbox_args(probe_name) + ['--entrypoint', 'python', info['Id'], '--version'], report, env, timeout=60).strip()
-        require(report['container_python'] == 'Python 3.13.15', 'Runtime interpreter mismatch')
+        require(report['container_python'] == 'Python 3.13.16', 'Runtime interpreter mismatch')
         report['python_probe_inspect'] = json.loads(command(['docker', 'inspect', probe_name], report, env))
-        report['base_image'] = json.loads(command(['docker', 'image', 'inspect', args.base], report, env))
         report['identity_boundary'] = 'Local image ID/config digest only; no participant registry manifest was created or pushed'
         output = evidence / 'output'
         output.mkdir(mode=0o777)
@@ -185,8 +218,13 @@ def main():
         findings = [dataclasses.asdict(f) for f in check_claim_rules(answer, unit, token_counter=None)]
         report['claim_findings'] = findings
         require(all(f['code'] == 'claim_tokens_unchecked' for f in findings), 'Unexpected deterministic claim finding')
-        report['token_boundary'] = 'No fresh tokenizer/NLI run; identical answer/source hashes link to Oct 2 local 37/37 evidence only'
+        report['token_boundary'] = (
+            'No fresh tokenizer/NLI run. October 2 local 37/37 evidence remains historical '
+            'under its prior exact source pin; this pin-advanced smoke does not relabel that '
+            'evidence or attest current-source tokenizer/NLI parity.'
+        )
         report['limits'] = {'cpus': 2, 'memory_gib': 4, 'smoke_timeout_seconds': 600,
+                            'base_pull_timeout_seconds': 60,
                             'build_timeout_seconds': 600, 'probe_timeout_seconds': 60,
                             'cleanup_timeout_per_container_seconds': 30,
                             'parity': 'lower-resource offline smoke; organizer 16 CPU/128 GiB/House/GPU/Final parity unverified'}

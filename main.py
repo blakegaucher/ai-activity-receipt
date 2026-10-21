@@ -10,6 +10,9 @@ app = FastAPI(
     title="AI Activity Receipt — Read-only Pilot",
     description="Pre-commercial research demonstration. Synthetic/technical evidence only.",
     version="0.1.0",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
 )
 
 @app.get("/")

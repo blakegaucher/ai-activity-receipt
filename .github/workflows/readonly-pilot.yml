@@ -1,0 +1,50 @@
+name: Read-only pilot endpoints
+
+on:
+  pull_request:
+    paths:
+      - "main.py"
+      - "pyproject.toml"
+      - "requirements-pilot-ci.txt"
+      - "tests/test_vercel_readonly_*.py"
+      - ".github/workflows/readonly-pilot.yml"
+  push:
+    branches: [main]
+    paths:
+      - "main.py"
+      - "pyproject.toml"
+      - "requirements-pilot-ci.txt"
+      - "tests/test_vercel_readonly_*.py"
+      - ".github/workflows/readonly-pilot.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  endpoints:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12.14", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install the explicit single-module pilot and test dependencies
+        run: |
+          python -m pip install 'setuptools==84.0.0'
+          python -m pip install --no-build-isolation -c requirements-pilot-ci.txt '.[test]'
+      - name: Exercise installed artifact outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test_dir="$(mktemp -d "$RUNNER_TEMP/readonly-pilot.XXXXXX")"
+          cp tests/test_vercel_readonly_pilot.py tests/test_vercel_readonly_boundary.py "$test_dir/"
+          cd "$test_dir"
+          python -c 'import main, os; assert not os.path.realpath(main.__file__).startswith(os.path.realpath(os.environ["GITHUB_WORKSPACE"])+os.sep), main.__file__'
+          python -m pytest test_vercel_readonly_pilot.py test_vercel_readonly_boundary.py -q

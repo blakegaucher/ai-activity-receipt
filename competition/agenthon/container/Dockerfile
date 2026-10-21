@@ -5,6 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY baseline_agent ./baseline_agent
 COPY baseline_agent.py ./baseline_agent.py
+COPY LICENSE ./LICENSE
 USER 65534:65534
 ENTRYPOINT ["python", "baseline_agent.py"]
 CMD ["analyze", "--help"]
