@@ -2,6 +2,11 @@
 
 **Status:** research-only, non-normative; issue #108. Synthetic external service checks; not an AIAR adapter or standards-conformance claim.
 
+Current qualification: [2026-10-21 primary-source audit](plugin-primary-source-audit-2026-10-21.md).
+The original service identifiers below are historical reports, not newly
+re-executed or independently authenticated observations. In particular, the
+Sugra timestamp documentation changed after this dated snapshot.
+
 ## Live baseline consulted
 
 - `README.md`, `docs/CANONICAL-RECORD.md`, `docs/INVARIANTS.md`, `docs/INTEROPERABILITY.md` on main, 2026-10-07.
