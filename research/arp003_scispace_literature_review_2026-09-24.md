@@ -5,6 +5,12 @@ Status: DEVELOPMENT-ONLY RESEARCH NOTE
 Execution/recruitment authorization: NONE  
 Protocol freeze effect: NONE
 
+Source correction: 2026-10-21. Seven author/DOI mappings were corrected after
+checking primary publisher or author records. Exact source/version and access
+limits are retained in [the source audit](arp003_primary_source_audit_2026-10-21.md).
+The original note remains in Git history. This correction changes no numerical
+methodology choice, selected timing clock, frozen protocol or study result.
+
 ## Protected current methodology state
 
 This note does not reopen or alter selected AR-P003 v0.3 decisions:
@@ -29,16 +35,16 @@ The primary endpoint remains binary evidence-supported correct completion by 180
 
 | Evidence lane | Source | What it supports | Human outcome evidence? | Relevance to AR-P003 | Important limitation |
 | --- | --- | --- | --- | --- | --- |
-| Autonomous decision provenance | Lange (2022), *Autonomous decision provenance as a requirement for building trust*, DOI 10.1117/12.2622922 | Provenance can support transparency, accountability and explanation of autonomous decisions | No direct AR-P003-style controlled human comparison | Supports the problem premise for recording decision provenance | Does not establish that the AI Activity Receipt representation improves human review |
+| Autonomous decision provenance | Lange (2022), *Autonomous decision provenance as a requirement for building trust*, DOI 10.1117/12.2622922 | Prior search reported a provenance/trust argument; primary text was not recovered in this audit | UNVERIFIED from exact primary text | Background lead only | Do not use an inaccessible paper as verified human-outcome support |
 | AI auditing | Mökander (2023), *Auditing of AI: Legal, Ethical and Technical Approaches*, DOI 10.1007/s44206-023-00074-y | AI auditing should combine technical and process/governance evidence in structured procedures | Review/synthesis rather than AR-P003-style user experiment | Supports joining technical events with governance/authorization context | Does not validate any particular receipt schema or interface |
-| Data provenance | Stahl et al. (2022), *Establishing Data Provenance for Responsible Artificial Intelligence Systems*, DOI 10.1145/3503488 | Provenance supports accountability, transparency and responsible-AI traceability | Primarily conceptual/review evidence | Supports provenance as a governance substrate | Focuses substantially on data provenance, not agent-action review |
-| Structured log analysis | Locke et al. (2021/2022), *LogAssist: Assisting Log Analysis Through Log Summarization*, DOI 10.1109/TSE.2021.3083715 | Structured workflow-oriented log summaries can reduce analysis burden | Yes: user study; reported average 40% reduction in log-analysis task time, plus up to 99% event reduction | Strong adjacent evidence that organization/normalization of evidence can materially change reviewer performance | Software-log analysis is not AI-agent auditing; it does not establish accuracy or safety benefit for AIAR |
-| Structured/visual logs | Liu et al. (2023), *Log-it: Supporting Programming with Interactive, Contextual, Structured, and Visual Logs*, DOI 10.1145/3544548.3581403 | Structure, context and visualization help programmers locate, synthesize and understand logs | Yes: user study with novice and expert programmers | Supports the neutral-structured-control condition: generic structuring itself may create benefit | Does not isolate an AI Activity Receipt-specific effect |
-| Failure-reproduction timelines | Rößler et al. (2013), *Monitoring user interactions for supporting failure reproduction*, DOI 10.1109/ICPC.2013.6613835 | Visualized interaction traces can help derive failure reproduction steps | Yes, but benefits were heterogeneous and especially useful for some inexperienced developers | Reinforces that representation can alter audit/debug behavior | Not an AI audit task; some timed results did not favor the trace condition |
+| Data provenance | Werder, Ramesh & Zhang (2022), *Establishing Data Provenance for Responsible Artificial Intelligence Systems*, DOI 10.1145/3503488 | Connects data provenance with responsible-AI traceability | Conceptual/framework evidence, not the AR-P003 comparison | Supports provenance as a governance substrate | Data provenance is distinct from agent-action review |
+| Structured log analysis | Locke et al. (2021/2022), *LogAssist: Assisting Log Analysis Through Log Summarization*, DOI 10.1109/TSE.2021.3083715 | Author thesis provides adjacent evidence about log summarization; exact journal full text was not recovered | PARTIAL: thesis evidence does not verify every journal claim | Motivates testing a neutral structured control | Earlier numerical claims are quarantined pending exact-paper verification; no AIAR effect follows |
+| Structured/visual logs | Jiang, Sun & Xia (2023), *Log-it: Supporting Programming with Interactive, Contextual, Structured, and Visual Logs*, DOI 10.1145/3544548.3581403 | Publisher abstract and author project describe contextual structured/visual logging | Abstract reports novice/expert programmer evaluation; effect details not reverified here | Motivates the neutral-structured-control condition | Does not isolate an AI Activity Receipt-specific effect |
+| Failure-reproduction timelines | Roehm, Gurbanova, Bruegge, Joubert & Maalej (2013), *Monitoring user interactions for supporting failure reproduction*, DOI 10.1109/ICPC.2013.6613835 | Primary author bibliography verifies the work's identity | Exact study outcomes UNVERIFIED because full text was not recovered | Background lead for interaction-trace representation | Prior heterogeneous/timed benefit claims are not retained as verified findings |
 | Explanation / trust calibration | Zhang et al. (2020), *Effect of Confidence and Explanation on Accuracy and Trust Calibration in AI-Assisted Decision Making*, DOI 10.1145/3351095.3372852 | Confidence can improve trust calibration, while explanation/trust improvements need not improve decision accuracy | Yes | Supports objective performance endpoints rather than treating trust as a proxy | Different decision task and assistance design |
-| Explanation effectiveness | Bansal et al. / related XAI comparison literature, *Are Explanations Helpful?*, DOI 10.1145/3397481.3450650 | Explanation effects vary by task and user expertise; explanations can fail to improve desired outcomes | Yes | Supports a controlled empirical test rather than assuming transparency causes benefit | XAI prediction explanations are not provenance receipts |
+| Explanation effectiveness | Wang & Yin (2021), *Are Explanations Helpful?*, DOI 10.1145/3397481.3450650 | Explanation effects depend on explanation form, task and expertise | Yes, in the author-hosted IUI paper | Supports a controlled empirical test rather than assuming transparency causes benefit | XAI prediction explanations are not provenance receipts |
 | Expertise effects | Zhao, Castelle & Turkay (2025), *Domain Experience and Expertise in Explainable AI Applications*, DOI 10.1145/3757583 | Practical experience and domain expertise change how professionals interpret and rely on AI explanations | Yes: task-led study with professionals | Direct support for defining and recording reviewer experience rather than assuming a homogeneous population | Small/context-specific professional sample; not an audit-receipt evaluation |
-| LLM audit trails | Ojewale, Suresh & Venkatasubramanian (2026), *Audit Trails for Accountability in Large Language Models*, arXiv:2601.20727 | Context-rich audit trails can link technical provenance to approvals, waivers and attestations so events and authorization can be reconstructed | Architecture/framework paper, not a controlled AR-P003 human-benefit test | Very close conceptual prior art for lifecycle traceability and authorization reconstruction | Does not answer whether a compact Receipt improves professional reviewer accuracy or speed |
+| LLM audit trails | Ojewale, Suresh & Venkatasubramanian (2026), *Audit Trails for Accountability in Large Language Models*, arXiv:2601.20727v1 | Context-rich audit trails connect technical provenance with governance context | Architecture/framework paper, not a controlled AR-P003 human-benefit test | Conceptual prior art for lifecycle traceability and authorization reconstruction | Does not answer whether a compact Receipt improves professional reviewer accuracy or speed |
 
 ### Evidence classification
 
@@ -69,11 +75,17 @@ AR-P003's primary endpoint is binary and reviewers will make repeated judgments 
 - allocation and missingness/attrition assumptions.
 
 Relevant methods include:
-- Rochon (1994), *Sample size for repeated measures studies with binary responses*, DOI 10.1002/SIM.4780131205;
-- Hedeker et al. (2004), *Sample-Size Requirements for Comparisons of Two Groups on Repeated Observations of a Binary Outcome*, DOI 10.1177/0163278703261198;
-- Jung & Ahn (2008), *Sample Size Requirements for Clinical Trials with Repeated Binary Outcomes*, DOI 10.1177/009286150804200202.
+- Lipsitz & Fitzmaurice (1994), *Sample size for repeated measures studies with binary responses*, DOI 10.1002/SIM.4780131205;
+- Leon (2004), *Sample-Size Requirements for Comparisons of Two Groups on Repeated Observations of a Binary Outcome*, DOI 10.1177/0163278703261198;
+- Ahn (2008), *Sample Size Requirements for Clinical Trials with Repeated Binary Outcomes*, DOI 10.1177/009286150804200202.
 
 These papers support designing around an explicitly chosen practically meaningful effect and modeled repeated-measure correlation. They do not provide a universal percentage-point threshold that can simply be imported into AR-P003.
+
+This audit verified the methods papers' publisher identities and abstracts,
+not every full-text equation. In particular, simple inverse-completer inflation
+is an illustrative sensitivity screen, not a generally valid longitudinal
+dropout adjustment. Crossed reviewer/case planning needs a separately specified
+model and simulation after the substantive owner decisions.
 
 ### Implication for the existing +5pp / 3pp / +2pp candidates
 
@@ -111,6 +123,9 @@ This rationale is consistent with the selected population definition:
 - no specific degree, certification, or job title required;
 - prior general AI Activity Receipt familiarity permitted and recorded;
 - external assistance during study cases prohibited absent a pre-execution versioned amendment.
+
+The one-year cutoff and experience bands are project-defined eligibility rules;
+the cited literature does not establish those exact numerical boundaries.
 
 ### Evidence basis
 
@@ -153,14 +168,14 @@ That simulation can then determine whether the project-defined thresholds are es
 
 1. Lange DS. Autonomous decision provenance as a requirement for building trust. 2022. DOI: 10.1117/12.2622922.
 2. Mökander J. Auditing of AI: Legal, Ethical and Technical Approaches. 2023. DOI: 10.1007/s44206-023-00074-y.
-3. Stahl BC et al. Establishing Data Provenance for Responsible Artificial Intelligence Systems. 2022. DOI: 10.1145/3503488.
+3. Werder K, Ramesh B, Zhang S (Rongen). Establishing Data Provenance for Responsible Artificial Intelligence Systems. 2022. DOI: 10.1145/3503488.
 4. Locke S et al. LogAssist: Assisting Log Analysis Through Log Summarization. DOI: 10.1109/TSE.2021.3083715.
-5. Liu et al. Log-it: Supporting Programming with Interactive, Contextual, Structured, and Visual Logs. DOI: 10.1145/3544548.3581403.
-6. Rößler et al. Monitoring user interactions for supporting failure reproduction. DOI: 10.1109/ICPC.2013.6613835.
-7. Zhang Y et al. Effect of Confidence and Explanation on Accuracy and Trust Calibration in AI-Assisted Decision Making. DOI: 10.1145/3351095.3372852.
-8. Are Explanations Helpful? A Comparative Study of the Effects of Explanations in AI-Assisted Decision-Making. DOI: 10.1145/3397481.3450650.
+5. Jiang P, Sun F, Xia H. Log-it: Supporting Programming with Interactive, Contextual, Structured, and Visual Logs. DOI: 10.1145/3544548.3581403.
+6. Roehm T, Gurbanova N, Bruegge B, Joubert C, Maalej W. Monitoring user interactions for supporting failure reproduction. DOI: 10.1109/ICPC.2013.6613835.
+7. Zhang Y, Liao QV, Bellamy RKE. Effect of Confidence and Explanation on Accuracy and Trust Calibration in AI-Assisted Decision Making. DOI: 10.1145/3351095.3372852. Author preprint arXiv:2001.02114v1.
+8. Wang X, Yin M. Are Explanations Helpful? A Comparative Study of the Effects of Explanations in AI-Assisted Decision-Making. DOI: 10.1145/3397481.3450650.
 9. Zhao Z, Castelle M, Turkay C. Domain Experience and Expertise in Explainable AI Applications: A Bearing Fault Diagnosis Case Study. 2025. DOI: 10.1145/3757583.
-10. Ojewale V, Suresh H, Venkatasubramanian S. Audit Trails for Accountability in Large Language Models. 2026. arXiv:2601.20727.
-11. Rochon J. Sample size for repeated measures studies with binary responses. 1994. DOI: 10.1002/SIM.4780131205.
-12. Sample-Size Requirements for Comparisons of Two Groups on Repeated Observations of a Binary Outcome. 2004. DOI: 10.1177/0163278703261198.
-13. Sample Size Requirements for Clinical Trials with Repeated Binary Outcomes. 2008. DOI: 10.1177/009286150804200202.
+10. Ojewale V, Suresh H, Venkatasubramanian S. Audit Trails for Accountability in Large Language Models. 2026. arXiv:2601.20727v1.
+11. Lipsitz SR, Fitzmaurice GM. Sample size for repeated measures studies with binary responses. 1994. DOI: 10.1002/SIM.4780131205.
+12. Leon AC. Sample-Size Requirements for Comparisons of Two Groups on Repeated Observations of a Binary Outcome. 2004. DOI: 10.1177/0163278703261198.
+13. Ahn C. Sample Size Requirements for Clinical Trials with Repeated Binary Outcomes. 2008. DOI: 10.1177/009286150804200202.
