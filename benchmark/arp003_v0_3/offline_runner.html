@@ -8,15 +8,15 @@
 <style>
   :root { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color-scheme: light dark; }
   body { margin: 0; background: Canvas; color: CanvasText; }
-  main { max-width: 980px; margin: 0 auto; padding: 24px; }
+  main { max-width: 980px; margin: 0 auto; padding: 24px; overflow-wrap: anywhere; }
   h1, h2, h3 { line-height: 1.2; }
   .muted { opacity: .75; }
   .card { border: 1px solid color-mix(in srgb, CanvasText 20%, transparent); border-radius: 12px; padding: 16px; margin: 16px 0; }
   .receipt { border-width: 2px; }
-  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-  fieldset { border: 1px solid color-mix(in srgb, CanvasText 20%, transparent); border-radius: 10px; padding: 12px; margin: 0; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); }
+  fieldset { min-width: 0; border: 1px solid color-mix(in srgb, CanvasText 20%, transparent); border-radius: 10px; padding: 12px; margin: 0; }
   legend { font-weight: 700; padding: 0 6px; }
-  label.option { display: block; padding: 5px 0; }
+  label.option { display: block; padding: 5px 0; overflow-wrap: anywhere; }
   pre { white-space: pre-wrap; overflow-wrap: anywhere; background: color-mix(in srgb, CanvasText 6%, Canvas); padding: 12px; border-radius: 8px; max-height: 420px; overflow: auto; }
   button, input[type="file"] { font: inherit; }
   button { padding: 10px 14px; border-radius: 9px; border: 1px solid color-mix(in srgb, CanvasText 25%, transparent); cursor: pointer; }
