@@ -1,0 +1,298 @@
+{
+  "profile_version": "proposal-0.1",
+  "status": "design_examples_not_executed",
+  "fictional_world": "Atholia",
+  "example_context": {
+    "reviewer": "Iria Solen",
+    "organization": "Morrowfen Archives Office",
+    "city": "Mirehaven",
+    "country": "Atholia",
+    "address": "742 Fernway Terrace",
+    "contact": "catalog@archives.atholia.example",
+    "event_date": "2034-06-12",
+    "reference_url": "https://records.atholia.example/catalog/ATH-SYN-642",
+    "notice": "All actors, organizations, identifiers, dates, amounts, addresses and places in the illustrative context and scenarios are invented. No private case was renamed or transformed."
+  },
+  "cases": [
+    {
+      "case_id": "ATH-SYN-641",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "page_link",
+      "claim": "An archive changed its opening day.",
+      "fictional_assumptions": [
+        "A link was supplied but never opened."
+      ],
+      "expected_profile": {
+        "verification_level": "V0",
+        "transformation_labels": [
+          "unassessed"
+        ],
+        "claim_support": "not_assessed",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "A URL alone establishes neither current content nor publication history."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-642",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "screenshot",
+      "claim": "The supplied screen displays an archive intake receipt.",
+      "fictional_assumptions": [
+        "The image was inspected and the receipt line is visible; no live source access occurred."
+      ],
+      "expected_profile": {
+        "verification_level": "V1",
+        "transformation_labels": [
+          "unassessed"
+        ],
+        "claim_support": "limited_to_visible_content",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "Visible receipt wording does not establish issuer identity, staff reading or approval."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-643",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "cropped_image",
+      "claim": "A preserved sign contains the words Open on Emberday.",
+      "fictional_assumptions": [
+        "The original and a declared crop were compared; those words and their relevant context match."
+      ],
+      "expected_profile": {
+        "verification_level": "V2",
+        "transformation_labels": [
+          "presentation_change"
+        ],
+        "claim_support": "supports_narrow_claim",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "Other context outside the crop is not represented; the edit history before the original is unknown."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-644",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "cropped_document",
+      "claim": "A document approved an archive purchase.",
+      "fictional_assumptions": [
+        "A screenshot displays approved but omits a visible qualifier in the separately supplied full document: subject to inventory review."
+      ],
+      "expected_profile": {
+        "verification_level": "V2",
+        "transformation_labels": [
+          "presentation_change"
+        ],
+        "claim_support": "does_not_support_unqualified_claim",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "The crop changed the interpretation even though no visible text was rewritten."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-645",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "custodian_record",
+      "claim": "The archive received catalog request ATH-REQ-873.",
+      "fictional_assumptions": [
+        "A custodian reply obtained through an established channel identifies the exact request and its native receipt entry."
+      ],
+      "expected_profile": {
+        "verification_level": "V3",
+        "transformation_labels": [
+          "unassessed"
+        ],
+        "claim_support": "supports_receipt_only",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "Receipt is not approval or a guarantee that catalog entries are correct."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-646",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "declared_ai_illustration",
+      "claim": "A real courtyard contained a blue sundial.",
+      "fictional_assumptions": [
+        "The creator declares the image is a fictional AI illustration; only the supplied image and declaration were inspected."
+      ],
+      "expected_profile": {
+        "verification_level": "V1",
+        "transformation_labels": [
+          "generated_or_reconstructed"
+        ],
+        "claim_support": "does_not_support_real_scene",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "A declared synthetic image can illustrate a proposal but cannot prove a photographed event."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-647",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "image_with_provenance_reference",
+      "claim": "A picture depicts an actual finished building.",
+      "fictional_assumptions": [
+        "A credential link is present; no credential validation was performed."
+      ],
+      "expected_profile": {
+        "verification_level": "V1",
+        "transformation_labels": [
+          "unassessed"
+        ],
+        "claim_support": "not_established",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "A credential locator or logo is not a validation result and provenance would not prove scene truth."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-648",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "image_without_exif",
+      "claim": "The picture must be fake because metadata is absent.",
+      "fictional_assumptions": [
+        "No EXIF was found in the supplied copy; its creation and processing history are unknown."
+      ],
+      "expected_profile": {
+        "verification_level": "V1",
+        "transformation_labels": [
+          "unassessed"
+        ],
+        "claim_support": "unsupported_accusation",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "Absent metadata does not establish forgery or AI generation."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-649",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "resized_image",
+      "claim": "A resized copy matches its preserved original for a broad visible layout.",
+      "fictional_assumptions": [
+        "The declared resize was compared with the original; layout matches within the performed comparison but the hashes differ."
+      ],
+      "expected_profile": {
+        "verification_level": "V2",
+        "transformation_labels": [
+          "presentation_change"
+        ],
+        "claim_support": "supports_limited_comparison",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "Hash difference alone does not identify a material edit; pixel details and hidden metadata were not authenticated."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-650",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "edited_invoice",
+      "claim": "A historical invoice charged 73 fictional crowns.",
+      "fictional_assumptions": [
+        "The original says 37 fictional crowns; the supplied derivative changes the digits to 73."
+      ],
+      "expected_profile": {
+        "verification_level": "V2",
+        "transformation_labels": [
+          "content_change"
+        ],
+        "claim_support": "contradicted_by_original",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "The material change is established in the assumed comparison; whether AI made the edit is unknown."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-651",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "csv_extract",
+      "claim": "The catalog contains 84 unique books.",
+      "fictional_assumptions": [
+        "The CSV has 84 rows, including duplicate book identifiers; uniqueness has not been reconciled to the catalog."
+      ],
+      "expected_profile": {
+        "verification_level": "V1",
+        "transformation_labels": [
+          "unassessed"
+        ],
+        "claim_support": "not_established",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "Row count, identifier uniqueness and real catalog entities are different claims."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-652",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "duplicated_pdf",
+      "claim": "Two independent sources confirm the catalog date.",
+      "fictional_assumptions": [
+        "Two PDFs contain the same source document and share one origin; no independent source was checked."
+      ],
+      "expected_profile": {
+        "verification_level": "V1",
+        "transformation_labels": [
+          "unassessed"
+        ],
+        "claim_support": "no_independent_corroboration",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "Repeated copies do not raise the verification level."
+        ]
+      },
+      "checks_executed": false
+    },
+    {
+      "case_id": "ATH-SYN-653",
+      "scenario_mode": "hypothetical_design_example",
+      "source_type": "live_page",
+      "claim": "The current archive webpage lists a closing time.",
+      "fictional_assumptions": [
+        "The relevant live page was opened and the statement/version and retrieval date recorded."
+      ],
+      "expected_profile": {
+        "verification_level": "V2",
+        "transformation_labels": [
+          "unassessed"
+        ],
+        "claim_support": "supports_current_page_statement",
+        "provenance_validation": "not_checked",
+        "limitations": [
+          "This does not prove the same statement appeared on an earlier date or that the physical archive follows it."
+        ]
+      },
+      "checks_executed": false
+    }
+  ],
+  "evaluation_status": {
+    "image_detector_run": false,
+    "credential_validation_run": false,
+    "human_evaluation_run": false,
+    "market_validation": false,
+    "note": "Expected profiles illustrate the proposal under stated assumptions. They are not runtime results or validated labels."
+  }
+}
