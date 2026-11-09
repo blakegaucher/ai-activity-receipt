@@ -1,0 +1,5 @@
+{
+  "title": "AIAR Receipt Inspector",
+  "tagline": "Offline AI activity receipt checks",
+  "description": "Advisory AI Activity Receipt JSON inspection and local SHA-256 comparison. No network calls, email, spending or background automation."
+}
