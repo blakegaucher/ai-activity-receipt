@@ -1,0 +1,249 @@
+{
+  "per_unit": [
+    {
+      "entities": 7,
+      "original": {
+        "answer_entities": 7,
+        "answer_sha256": "dfecc9b6a3285dddb904581820ca2e0a381e44fea5227d991d35c90f5e1d41be",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "prototype_v20a": {
+        "answer_entities": 7,
+        "answer_sha256": "dfecc9b6a3285dddb904581820ca2e0a381e44fea5227d991d35c90f5e1d41be",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "unit": "t4-auction-btc-202411-us7"
+    },
+    {
+      "entities": 10,
+      "original": {
+        "answer_entities": 10,
+        "answer_sha256": "f495dc95e6a05a4acf3a994f1fe233b628ed00846083274eeb8ce5d46ba12c21",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "prototype_v20a": {
+        "answer_entities": 10,
+        "answer_sha256": "f495dc95e6a05a4acf3a994f1fe233b628ed00846083274eeb8ce5d46ba12c21",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "unit": "t4-cotpos-202411-us10"
+    },
+    {
+      "entities": 11,
+      "original": {
+        "answer_entities": 11,
+        "answer_sha256": "c50fe47f28c1f1d9e407e374fe9292870e924b2bdf53c720ca1a4abdbecd8e6d",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "prototype_v20a": {
+        "answer_entities": 11,
+        "answer_sha256": "c50fe47f28c1f1d9e407e374fe9292870e924b2bdf53c720ca1a4abdbecd8e6d",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "unit": "t4-cpicomp-202410-us11"
+    },
+    {
+      "entities": 8,
+      "original": {
+        "answer_entities": 8,
+        "answer_sha256": "9507ef0c4cfb190d3861771475d9c884a75a2e52025cb66f8b1e0f52f709db5e",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1,
+          "claim_wrong_entity": 3
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "prototype_v20a": {
+        "answer_entities": 8,
+        "answer_sha256": "6b1902759b10c54cd23af541b654d4989a0e6e9ca89074671bc0c1440290f0cb",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "unit": "t4-credit-event-2023"
+    },
+    {
+      "entities": 8,
+      "original": {
+        "answer_entities": 8,
+        "answer_sha256": "6f17cdc3a7f83287ccfd387fd7806ab42a93e9c62f7cc7f77a4130fb2546d817",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1,
+          "claim_wrong_entity": 2
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "prototype_v20a": {
+        "answer_entities": 8,
+        "answer_sha256": "0969f63aebe8dab990d1c7d785099a43d275c222b15261df9feb703774ef8985",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "unit": "t4-eps-growth-2024Q3-banks"
+    },
+    {
+      "entities": 6,
+      "original": {
+        "answer_entities": 6,
+        "answer_sha256": "14759ac967f66462d53d49d2b343c85e830bae653e790b974136a0fe0165f5c2",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1,
+          "claim_wrong_entity": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "prototype_v20a": {
+        "answer_entities": 6,
+        "answer_sha256": "d01bbca3ead02bcfd4bf3358507d6d16c14622696d2a836364cdfca9dc0589ba",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "unit": "t4-eps-yoy-2023Q2-mixed"
+    },
+    {
+      "entities": 6,
+      "original": {
+        "answer_entities": 6,
+        "answer_sha256": "959b3875f9b88defbfb6897f436725b7c1c21e48cc14dd07b684e7545ff71c89",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "prototype_v20a": {
+        "answer_entities": 6,
+        "answer_sha256": "959b3875f9b88defbfb6897f436725b7c1c21e48cc14dd07b684e7545ff71c89",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "unit": "t4-fomc-curve-20220728"
+    },
+    {
+      "entities": 6,
+      "original": {
+        "answer_entities": 6,
+        "answer_sha256": "943823740067ff3e248447cc7b89b708a6bb3987b794e1cdfbd7fcb28569e7bc",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "prototype_v20a": {
+        "answer_entities": 6,
+        "answer_sha256": "943823740067ff3e248447cc7b89b708a6bb3987b794e1cdfbd7fcb28569e7bc",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "unit": "t4-fomc-curve-20240918"
+    },
+    {
+      "entities": 12,
+      "original": {
+        "answer_entities": 12,
+        "answer_sha256": "5f5011c580793116406f7d75933ea840597f8775cf8c7513064de07af666314b",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1,
+          "claim_wrong_entity": 10
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "prototype_v20a": {
+        "answer_entities": 12,
+        "answer_sha256": "2706070ec8744452ec6999fbd6834636fdce30bb9725b2294f12185a4a661846",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "unit": "t4-macrorev-20240930-us6"
+    },
+    {
+      "entities": 3,
+      "original": {
+        "answer_entities": 3,
+        "answer_sha256": "4019d76432004391febce52405347bc12489c2a017cc7a2f65d361019eebd122",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1,
+          "claim_wrong_entity": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "prototype_v20a": {
+        "answer_entities": 3,
+        "answer_sha256": "0723dfc27fa7780fde0e43432682623470d5448b151707bc5f32fb9b73861c6a",
+        "rail_by_code": {
+          "claim_tokens_unchecked": 1
+        },
+        "shape_date_by_code": {},
+        "status": "completed"
+      },
+      "unit": "t4-postearn-20240201-megacap"
+    }
+  ],
+  "pins": {
+    "toolkit": "bd01548e34d21fd660d88fd06157078fb25ece4e",
+    "track": "5d3b726a49b8ea218543e4d24319895874dcff6e"
+  },
+  "summary": {
+    "conclusion": "ONLY SOURCE-ONLY DETERMINISTIC CLAIM AND DATE/SHAPE RAILS; official NLI and scored CodaBench not run",
+    "entities": 77,
+    "original_claim_findings": {
+      "claim_tokens_unchecked": 10,
+      "claim_wrong_entity": 17
+    },
+    "original_wrong": 17,
+    "prototype_claim_findings": {
+      "claim_tokens_unchecked": 10
+    },
+    "prototype_shape_issues": {},
+    "prototype_wrong": 0,
+    "uncompleted": [],
+    "units": 10
+  }
+}
