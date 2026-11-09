@@ -1,0 +1,122 @@
+{
+  "schema": "aiar.automated-browser-supplement.v0.1",
+  "date": "2026-10-26",
+  "source_base_commit": "54b360554dee6879b2ee0bec62f86c009e9171d9",
+  "runner_commit": null,
+  "runner_sha256": "sha256:44e5c5b3bdabfcb1c1105ffac56529b0ba369857c165d0f9b06326e83baecb15",
+  "bundle_sha256": "sha256:e876b54f84454d54bd6db77cab385820a5057595912d6dc703329a69cf7cd05b",
+  "tester_role": "AUTOMATED_AGENT_NOT_MANUAL_TESTER",
+  "environment": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v24.22.1",
+    "scope": "Linux headless Chromium; desktop and narrow viewport, not native iPhone",
+    "browser": "152.0.7977.0"
+  },
+  "checks": [
+    {
+      "name": "invalid analysis-side bundle rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "oversized file rejected before reading",
+      "status": "PASS"
+    },
+    {
+      "name": "valid authored synthetic bundle loads",
+      "status": "PASS"
+    },
+    {
+      "name": "keyboard activation enters comprehension gate",
+      "status": "PASS"
+    },
+    {
+      "name": "comprehension incorrect answer blocked then correct gate passes",
+      "status": "PASS"
+    },
+    {
+      "name": "practice incorrect answer blocked then correct gate passes",
+      "status": "PASS"
+    },
+    {
+      "name": "manual pause stops active clock while wall clock continues",
+      "status": "PASS",
+      "detail": {
+        "wall_delta": 0.25339999999990687,
+        "active_delta": 0
+      }
+    },
+    {
+      "name": "real tab visibility pause",
+      "status": "NOT_OBSERVED",
+      "detail": "No document.hidden transition in this headless environment; no injected visibility event or override."
+    },
+    {
+      "name": "long evidence supports actual scrolling",
+      "status": "PASS",
+      "detail": {
+        "height": 2415,
+        "viewport": 900,
+        "scroll": 924
+      }
+    },
+    {
+      "name": "narrow viewport plus CSS text enlargement retains controls",
+      "status": "PASS",
+      "detail": {
+        "proxy_only": "CSS font increase; native browser text zoom not tested",
+        "width": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "name": "structured answer controls accept synthetic case 1",
+      "status": "PASS"
+    },
+    {
+      "name": "intermission has no active case 1",
+      "status": "PASS"
+    },
+    {
+      "name": "mid-session download",
+      "status": "PASS"
+    },
+    {
+      "name": "structured answer controls accept synthetic case 2",
+      "status": "PASS"
+    },
+    {
+      "name": "intermission has no active case 2",
+      "status": "PASS"
+    },
+    {
+      "name": "structured answer controls accept synthetic case 3",
+      "status": "PASS"
+    },
+    {
+      "name": "completed export has all cases exactly once in order",
+      "status": "PASS"
+    }
+  ],
+  "page_errors": [],
+  "observed_external_page_requests": [],
+  "manual_acceptance": false,
+  "human_study_executed": false,
+  "visibility_observation": {
+    "state": "visible",
+    "paused": false
+  },
+  "zoom_observation": {
+    "width": 390,
+    "scroll": 390,
+    "offenders": []
+  },
+  "remaining_manual_checks": [
+    "native iPhone/Safari/Layla behavior",
+    "real hidden/background timing transition",
+    "complete keyboard-only session and human-visible focus",
+    "actual browser text zoom",
+    "reload/navigation warning in supported native host"
+  ],
+  "status": "AUTOMATED_SUPPLEMENT_PASS_MANUAL_ACCEPTANCE_INCOMPLETE"
+}
