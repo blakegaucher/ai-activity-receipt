@@ -7,13 +7,13 @@
     {
       "profile_id": "opentelemetry-genai",
       "source_name": "OpenTelemetry OTLP + GenAI semantic conventions",
-      "source_version": "OTLP current; GenAI conventions development snapshot 2026-09-18",
+      "source_version": "GenAI reviewed commit 547934afa90a34298441caf80c43b27255c3a292 (2026-10-20); OTLP references retained",
       "status": "implemented_adapter",
       "adapter_path": "adapters/otel_genai.py",
       "reference_uris": [
         "https://opentelemetry.io/docs/specs/otlp/",
-        "https://github.com/open-telemetry/semantic-conventions-genai/blob/main/docs/gen-ai/gen-ai-agent-spans.md",
-        "https://github.com/open-telemetry/semantic-conventions-genai/blob/main/docs/gen-ai/gen-ai-spans.md"
+        "https://github.com/open-telemetry/semantic-conventions-genai/blob/547934afa90a34298441caf80c43b27255c3a292/docs/gen-ai/gen-ai-agent-spans.md",
+        "https://github.com/open-telemetry/semantic-conventions-genai/blob/547934afa90a34298441caf80c43b27255c3a292/docs/gen-ai/gen-ai-spans.md"
       ],
       "notes": "Telemetry is observed execution evidence. Authorization, materiality, and principal identity remain separate evidence.",
       "mappings": [
